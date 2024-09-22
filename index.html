@@ -3,33 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>דיווח שעות עבודה</title>
+    <title>מערכת מורחבת לניהול שעות עבודה</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.3.0/luxon.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/he.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <style>
-        .overflow-visible {
-    overflow: visible !important;
-}
+        .overflow-visible { overflow: visible !important; }
+        .z-10 { z-index: 10 !important; }
+        body.modal-open {
+        overflow: hidden;
+    }
 
-.z-10 {
-    z-index: 10 !important;
-}
 
+
+    #edit-modal.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto p-4">
         <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">דיווח שעות עבודה</h1>
-        
+
         <div class="mb-6">
             <label for="view-selector" class="block mb-2 text-sm font-medium text-gray-900">בחר תצוגה:</label>
-            <select id="view-selector" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" aria-label="בחירת תצוגת דוח">
+            <select id="view-selector" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                 <option value="month">חודשי</option>
                 <option value="day">יומי</option>
             </select>
@@ -45,63 +47,70 @@
         </button>
     </div>
 
-    <!-- Modal for editing -->
-    <div id="edit-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div class="relative w-full max-w-md max-h-full">
-            <div class="relative bg-white rounded-lg shadow">
-                <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-hide="edit-modal" aria-label="סגור חלון">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    <span class="sr-only">סגור חלון</span>
-                </button>
-                <div class="px-6 py-6 lg:px-8">
-                    <h3 class="mb-4 text-xl font-medium text-gray-900">עריכת רשומה</h3>
-                    <form id="edit-form" class="space-y-6" novalidate>
-                        <input type="hidden" id="edit-id">
-                        <div>
-                            <label for="edit-date" class="block mb-2 text-sm font-medium text-gray-900">תאריך:</label>
-                            <input type="text" id="edit-date" name="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required aria-required="true" aria-invalid="false">
-                            <p id="edit-date-error" class="mt-2 text-sm text-red-600 hidden"></p>
-                        </div>
-                        <div>
-                            <label for="edit-type" class="block mb-2 text-sm font-medium text-gray-900">סוג דיווח:</label>
-                            <select id="edit-type" name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required aria-required="true" aria-invalid="false">
-                                <option value="">בחר סוג דיווח</option>
-                                <option value="work">עבודה רגילה</option>
-                                <option value="sick">מחלה</option>
-                                <option value="vacation">חופשה</option>
-                                <option value="reserve">מילואים</option>
-                                <option value="bereavement">אבל</option>
-                                <option value="study">ימי השתלמות</option>
-                            </select>
-                            <p id="edit-type-error" class="mt-2 text-sm text-red-600 hidden"></p>
-                        </div>
-                        <div>
-                            <label for="edit-location" class="block mb-2 text-sm font-medium text-gray-900">מיקום עבודה:</label>
-                            <input type="text" id="edit-location" name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required aria-required="true" aria-invalid="false" minlength="2" maxlength="50">
-                            <p id="edit-location-error" class="mt-2 text-sm text-red-600 hidden"></p>
-                        </div>
-                        <div>
-                            <label for="edit-client" class="block mb-2 text-sm font-medium text-gray-900">לקוח לחיוב:</label>
-                            <input type="text" id="edit-client" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required aria-required="true" aria-invalid="false" minlength="2" maxlength="50">
-                            <p id="edit-client-error" class="mt-2 text-sm text-red-600 hidden"></p>
-                        </div>
-                        <div>
-                            <label for="edit-start-time" class="block mb-2 text-sm font-medium text-gray-900">שעת התחלה:</label>
-                            <input type="text" id="edit-start-time" name="start-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required aria-required="true" aria-invalid="false">
-                            <p id="edit-start-time-error" class="mt-2 text-sm text-red-600 hidden"></p>
-                        </div>
-                        <div>
-                            <label for="edit-end-time" class="block mb-2 text-sm font-medium text-gray-900">שעת סיום:</label>
-                            <input type="text" id="edit-end-time" name="end-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required aria-required="true" aria-invalid="false">
-                            <p id="edit-end-time-error" class="mt-2 text-sm text-red-600 hidden"></p>
-                        </div>
-                        <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">עדכן רשומה</button>
-                    </form>
-                </div>
+<!-- Edit Modal -->
+<div id="modal-overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden"></div>
+<div id="edit-modal" class="modal fixed top-0 left-0 right-0 z-50 hidden w-full h-full overflow-auto flex items-center justify-center">
+    <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md m-4">
+        <button type="button" class="close absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">סגור חלון</span>
+        </button>
+        <div class="px-6 py-6 lg:px-8">
+            <h3 class="mb-4 text-xl font-medium text-gray-900">עריכת רשומה</h3>
+                <form id="edit-form" class="space-y-6" novalidate>
+                    <input type="hidden" id="edit-id">
+                    <div>
+                        <label for="edit-date" class="block mb-2 text-sm font-medium text-gray-900">תאריך:</label>
+                        <input type="text" id="edit-date" name="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="edit-type" class="block mb-2 text-sm font-medium text-gray-900">סוג דיווח:</label>
+                        <select id="edit-type" name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                            <option value="">בחר סוג דיווח</option>
+                            <option value="work">עבודה רגילה</option>
+                            <option value="sick">מחלה</option>
+                            <option value="family_sick">מחלה משפחתית</option>
+                            <option value="parent_sick">מחלת הורה</option>
+                            <option value="spouse_sick">מחלת בן/בת זוג</option>
+                            <option value="spouse_absence">היעדרות בגין בת זוג</option>
+                            <option value="child_sick">מחלת ילד</option>
+                            <option value="vacation">חופשה</option>
+                            <option value="reserve">מילואים</option>
+                            <option value="bereavement">אבל</option>
+                            <option value="study">ימי השתלמות</option>
+                        </select>
+                    </div>
+                    <div id="edit-attachment-container" class="hidden mt-4">
+                        <label for="edit-attachment" class="block mb-2 text-sm font-medium text-gray-900">צרף מסמך:</label>
+                        <input type="file" id="edit-attachment" name="attachment" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+                        <p id="edit-attachment-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                    </div>
+                    <div>
+                        <label for="edit-location" class="block mb-2 text-sm font-medium text-gray-900">מיקום עבודה:</label>
+                        <input type="text" id="edit-location" name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="edit-client" class="block mb-2 text-sm font-medium text-gray-900">לקוח לחיוב:</label>
+                        <input type="text" id="edit-client" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="edit-start-time" class="block mb-2 text-sm font-medium text-gray-900">שעת התחלה:</label>
+                        <input type="text" id="edit-start-time" name="start-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="edit-end-time" class="block mb-2 text-sm font-medium text-gray-900">שעת סיום:</label>
+                        <input type="text" id="edit-end-time" name="end-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">עדכן רשומה</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="work-log-app.js"></script>
 </body>
 </html>

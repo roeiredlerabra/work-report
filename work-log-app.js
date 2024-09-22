@@ -1,6 +1,8 @@
+// work-log-app.js
 const DateTime = luxon.DateTime;
 let workLogs = [];
 let currentDate = DateTime.now();
+const leaveTypesRequiringAttachment = ['sick', 'family_sick', 'parent_sick', 'spouse_sick', 'spouse_absence', 'child_sick'];
 
 // Initialize Flatpickr for date and time inputs
 flatpickr.localize(flatpickr.l10ns.he);
@@ -114,9 +116,16 @@ function validateForm(formId) {
         isValid = false;
     }
 
+    // Validate attachment for leave types that require it
+    const typeSelect = form.querySelector('[name="type"]');
+    const attachmentInput = form.querySelector('[name="attachment"]');
+    if (leaveTypesRequiringAttachment.includes(typeSelect.value) && (!attachmentInput || !attachmentInput.files.length)) {
+        showError(`${formId === 'edit-form' ? 'edit-' : ''}attachment-error`, 'חובה לצרף מסמך לסוג דיווח זה');
+        isValid = false;
+    }
+
     return isValid;
 }
-
 
 function updateReport() {
     const view = document.getElementById('view-selector').value;
@@ -136,6 +145,7 @@ function updateReport() {
             break;
     }
 }
+
 function displayMonthCalendar() {
     const reportContent = document.getElementById('report-content');
     const startOfMonth = currentDate.startOf('month');
@@ -146,7 +156,7 @@ function displayMonthCalendar() {
         <div class="flex justify-between items-center mb-4">
             <button onclick="changeMonth(-1)" class="text-blue-600 hover:text-blue-800" aria-label="חודש קודם">&lt; חודש קודם</button>
             <h3 class="text-lg font-semibold">${currentDate.toFormat('MMMM yyyy')}</h3>
-            <button onclick="changeMonth(1)" class="text-blue-600 hover:text-blue-800" aria-label="חודש הבא">חודש הבא &gt;</button>
+<button onclick="changeMonth(1)" class="text-blue-600 hover:text-blue-800" aria-label="חודש הבא">חודש הבא &gt;</button>
         </div>
         <div class="text-right mb-4">
             <p>סה"כ שעות בחודש: <span id="total-hours"></span></p>
@@ -196,8 +206,18 @@ function displayDayView(dateString) {
     document.getElementById('view-selector').value = 'day';
 
     const reportContent = document.getElementById('report-content');
-    const dayLogs = workLogs.filter(log => DateTime.fromISO(log.date).hasSame(date, 'day'))
-        .sort((a, b) => a['start-time'].localeCompare(b['start-time']));
+    const dayLogs = workLogs.filter(log => {
+        const logDate = DateTime.fromISO(log.date);
+        return logDate && logDate.hasSame(date, 'day');
+    });
+
+    // Sort the logs, handling potential undefined 'start-time'
+    dayLogs.sort((a, b) => {
+        if (!a['start-time'] && !b['start-time']) return 0;
+        if (!a['start-time']) return 1;
+        if (!b['start-time']) return -1;
+        return a['start-time'].localeCompare(b['start-time']);
+    });
 
     let html = `
         <div class="flex justify-between items-center mb-4">
@@ -223,6 +243,11 @@ function displayDayView(dateString) {
                                 <option value="">בחר סוג דיווח</option>
                                 <option value="work">עבודה רגילה</option>
                                 <option value="sick">מחלה</option>
+                                <option value="family_sick">מחלה משפחתית</option>
+                                <option value="parent_sick">מחלת הורה</option>
+                                <option value="spouse_sick">מחלת בן/בת זוג</option>
+                                <option value="spouse_absence">היעדרות בגין בת זוג</option>
+                                <option value="child_sick">מחלת ילד</option>
                                 <option value="vacation">חופשה</option>
                                 <option value="reserve">מילואים</option>
                                 <option value="bereavement">אבל</option>
@@ -230,12 +255,12 @@ function displayDayView(dateString) {
                             </select>
                             <p id="day-type-error" class="mt-2 text-sm text-red-600 hidden"></p>
                         </div>
-                        <div>
+                        <div id="day-location-container">
                             <label for="day-location" class="block mb-2 text-sm font-medium text-gray-900">מיקום עבודה:</label>
                             <input type="text" id="day-location" name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required minlength="2" maxlength="50">
                             <p id="day-location-error" class="mt-2 text-sm text-red-600 hidden"></p>
                         </div>
-                        <div>
+                        <div id="day-client-container">
                             <label for="day-client" class="block mb-2 text-sm font-medium text-gray-900">לקוח לחיוב:</label>
                             <input type="text" id="day-client" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required minlength="2" maxlength="50">
                             <p id="day-client-error" class="mt-2 text-sm text-red-600 hidden"></p>
@@ -250,6 +275,11 @@ function displayDayView(dateString) {
                             <input type="text" id="day-end-time" name="end-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
                             <p id="day-end-time-error" class="mt-2 text-sm text-red-600 hidden"></p>
                         </div>
+                        <div id="attachment-container" class="hidden">
+                            <label for="attachment" class="block mb-2 text-sm font-medium text-gray-900">צרף מסמך:</label>
+                            <input type="file" id="attachment" name="attachment" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+                            <p id="attachment-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                        </div>
                         <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">הוסף דיווח</button>
                     </div>
                 </form>
@@ -259,7 +289,49 @@ function displayDayView(dateString) {
 
     reportContent.innerHTML = html;
 
-    // Initialize Flatpickr for the new form
+    initializeFlatpickr();
+
+    // Add event listener for the new form
+    document.getElementById('day-work-log-form').addEventListener('submit', handleDayFormSubmit);
+
+    // Add event listener for the type select to show/hide attachment input and update fields
+    const typeSelect = document.getElementById('day-type');
+    const attachmentContainer = document.getElementById('attachment-container');
+    const locationContainer = document.getElementById('day-location-container');
+    const clientContainer = document.getElementById('day-client-container');
+
+    typeSelect.addEventListener('change', () => {
+        const selectedType = typeSelect.value;
+        
+        // Show/hide attachment input
+        if (leaveTypesRequiringAttachment.includes(selectedType)) {
+            attachmentContainer.classList.remove('hidden');
+        } else {
+            attachmentContainer.classList.add('hidden');
+        }
+
+        // Update labels and visibility of location and client fields
+        if (selectedType === 'work') {
+            locationContainer.querySelector('label').textContent = 'מיקום עבודה:';
+            clientContainer.querySelector('label').textContent = 'לקוח לחיוב:';
+            locationContainer.style.display = 'block';
+            clientContainer.style.display = 'block';
+        } else if (selectedType) {
+            locationContainer.querySelector('label').textContent = 'סיבת היעדרות:';
+            clientContainer.querySelector('label').textContent = 'פרטים נוספים:';
+            locationContainer.style.display = 'block';
+            clientContainer.style.display = 'block';
+        } else {
+            // If no type is selected, hide both fields
+            locationContainer.style.display = 'none';
+            clientContainer.style.display = 'none';
+        }
+    });
+
+    // Trigger the change event to set the initial state
+    typeSelect.dispatchEvent(new Event('change'));
+}
+function initializeFlatpickr() {
     flatpickr("#day-start-time, #day-end-time", {
         enableTime: true,
         noCalendar: true,
@@ -267,11 +339,7 @@ function displayDayView(dateString) {
         time_24hr: true,
         minuteIncrement: 15,
     });
-
-    // Add event listener for the new form
-    document.getElementById('day-work-log-form').addEventListener('submit', handleDayFormSubmit);
 }
-
 function generateTimelineHtml(logs) {
     const timeSlots = new Array(24).fill().map((_, i) => {
         const time = i.toString().padStart(2, '0') + ':00';
@@ -332,7 +400,6 @@ function generateTimelineHtml(logs) {
     `;
 }
 
-
 function handleOverlappingReports(logs) {
     logs.sort((a, b) => a['start-time'].localeCompare(b['start-time']));
     const overlaps = new Array(logs.length).fill(0);
@@ -364,6 +431,11 @@ function getHebrewType(type) {
     const types = {
         'work': 'עבודה רגילה',
         'sick': 'מחלה',
+        'family_sick': 'מחלה משפחתית',
+        'parent_sick': 'מחלת הורה',
+        'spouse_sick': 'מחלת בן/בת זוג',
+        'spouse_absence': 'היעדרות בגין בת זוג',
+        'child_sick': 'מחלת ילד',
         'vacation': 'חופשה',
         'reserve': 'מילואים',
         'bereavement': 'אבל',
@@ -380,6 +452,14 @@ function handleDayFormSubmit(e) {
     const newLog = Object.fromEntries(formData.entries());
     newLog.id = Date.now().toString();
 
+    // Handle file attachment
+    const attachmentInput = document.getElementById('attachment');
+    if (attachmentInput && attachmentInput.files.length > 0) {
+        newLog.attachmentName = attachmentInput.files[0].name;
+        // In a real application, you would upload the file to a server here
+        // and store the file reference or URL instead of the file name
+    }
+
     workLogs.push(newLog);
     saveWorkLogs();
     displayDayView(currentDate.toISO());
@@ -387,20 +467,46 @@ function handleDayFormSubmit(e) {
     // Show success message
     showSuccessMessage('הדיווח נשמר בהצלחה');
 }
+
+
 function editLog(id) {
     const log = workLogs.find(log => log.id === id);
     if (log) {
         document.getElementById('edit-id').value = log.id;
-        document.getElementById('edit-date').value = log.date;
+        
+        // Auto-populate the date field
+        const dateInput = document.getElementById('edit-date');
+        if (dateInput) {
+            dateInput.value = log.date;
+            dateInput._flatpickr.setDate(log.date);
+        }
+
         document.getElementById('edit-type').value = log.type;
         document.getElementById('edit-location').value = log.location;
         document.getElementById('edit-client').value = log.client;
         document.getElementById('edit-start-time').value = log['start-time'];
         document.getElementById('edit-end-time').value = log['end-time'];
+
+        // Show/hide attachment input based on log type
+        const attachmentContainer = document.getElementById('edit-attachment-container');
+        if (leaveTypesRequiringAttachment.includes(log.type)) {
+            attachmentContainer.classList.remove('hidden');
+        } else {
+            attachmentContainer.classList.add('hidden');
+        }
         
-        const modal = document.getElementById('edit-modal');
-        const modalInstance = new Modal(modal);
-        modalInstance.show();
+        // Show the modal
+        openModal('edit-modal');
+
+        // Add event listener for the type select to show/hide attachment input
+        const typeSelect = document.getElementById('edit-type');
+        typeSelect.addEventListener('change', () => {
+            if (leaveTypesRequiringAttachment.includes(typeSelect.value)) {
+                attachmentContainer.classList.remove('hidden');
+            } else {
+                attachmentContainer.classList.add('hidden');
+            }
+        });
     }
 }
 
@@ -480,29 +586,6 @@ function exportToCSV() {
     }
 }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    lazyLoadWorkLogs();
-    updateReport();
-
-    document.getElementById('view-selector').addEventListener('change', updateReport);
-    document.getElementById('edit-form').addEventListener('submit', handleEditFormSubmit);
-    document.getElementById('export-csv').addEventListener('click', exportToCSV);
-
-    // Keyboard navigation for calendar
-    document.addEventListener('keydown', handleCalendarKeyboardNavigation);
-
-    // Initialize all modals
-    const modals = document.querySelectorAll('[data-modal-target]');
-    modals.forEach(modalTrigger => {
-        const modalId = modalTrigger.getAttribute('data-modal-target');
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            new Modal(modal);
-        }
-    });
-});
-
 function handleEditFormSubmit(e) {
     e.preventDefault();
     if (!validateForm('edit-form')) return;
@@ -511,18 +594,21 @@ function handleEditFormSubmit(e) {
     const updatedLog = Object.fromEntries(formData.entries());
     const id = document.getElementById('edit-id').value;
     
+    // Handle file attachment
+    const attachmentInput = document.getElementById('edit-attachment');
+    if (attachmentInput && attachmentInput.files.length > 0) {
+        updatedLog.attachmentName = attachmentInput.files[0].name;
+        // In a real application, you would upload the file to a server here
+        // and store the file reference or URL instead of the file name
+    }
+
     const index = workLogs.findIndex(log => log.id === id);
     if (index !== -1) {
         workLogs[index] = { ...workLogs[index], ...updatedLog };
         saveWorkLogs();
         updateReport();
-        const modal = document.getElementById('edit-modal');
+        closeModal('edit-modal');
         showSuccessMessage('הדיווח עודכן בהצלחה');
-        const modalInstance = Modal.getInstance(modal);
-        if (modalInstance) {
-            modalInstance.hide();
-        }
-
     }
 }
 
@@ -558,6 +644,74 @@ function handleCalendarKeyboardNavigation(e) {
         }
     }
 }
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    lazyLoadWorkLogs();
+    updateReport();
+
+    document.getElementById('view-selector').addEventListener('change', updateReport);
+    document.getElementById('edit-form').addEventListener('submit', handleEditFormSubmit);
+    document.getElementById('export-csv').addEventListener('click', exportToCSV);
+
+    // Keyboard navigation for calendar
+    document.addEventListener('keydown', handleCalendarKeyboardNavigation);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+
+    // Close modal when clicking on close button
+    const closeButtons = document.querySelectorAll('.modal .close');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modal = button.closest('.modal');
+            if (modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+});
+// Modal functions
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const overlay = document.getElementById('modal-overlay');
+    if (modal && overlay) {
+        document.body.classList.add('modal-open');
+        overlay.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.add('opacity-50');
+            modal.classList.add('active');
+        }, 10);
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const overlay = document.getElementById('modal-overlay');
+    if (modal && overlay) {
+        document.body.classList.remove('modal-open');
+        modal.classList.remove('active');
+        overlay.classList.remove('opacity-50');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            overlay.classList.add('hidden');
+        }, 0);
+    }
+}
+// Event listener for closing the modal when clicking outside
+document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('modal')) {
+        closeModal(event.target.id);
+    }
+});
 
 // Initialize the report
 updateReport();
