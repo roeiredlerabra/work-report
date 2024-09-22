@@ -121,33 +121,35 @@ button:hover {
                 <div class="flex-shrink-0">
                     <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" alt="Workflow">
                 </div>
-
+    
                 <!-- Navigation -->
-                <nav class="hidden md:flex space-x-10">
-                    <a href="#" class="text-gray-500 hover:text-gray-900">בית</a>
-                    <a href="#" class="text-gray-500 hover:text-gray-900">דוחות</a>
-                    <a href="#" class="text-gray-500 hover:text-gray-900">פרויקטים</a>
-                    <a href="#" class="text-gray-500 hover:text-gray-900">לקוחות</a>
+                <nav class="hidden md:grid md:grid-cols-4 md:gap-8">
+                    <a href="#" class="text-gray-500 hover:text-gray-900 text-center">בית</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 text-center">דוחות</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 text-center">פרויקטים</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 text-center">לקוחות</a>
                 </nav>
-
+                
+                
+    
                 <!-- Profile dropdown -->
                 <div class="relative profile-dropdown">
                     <button type="button" class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                         <span class="sr-only">פתח תפריט משתמש</span>
                         <img class="h-10 w-10 rounded-full" src="https://media.licdn.com/dms/image/v2/C5103AQF2XkMyV8jPIQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1516253497657?e=2147483647&v=beta&t=xInUExu50jqd8foK4lifAW6vs_rDD3ER_XDchNV5NjQ" alt="">
                     </button>
-
+    
                     <!-- Profile dropdown menu -->
-                    <div class="profile-menu" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                    <div class="profile-menu hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-0">הפרופיל שלך</a>
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-1">הגדרות</a>
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-2">התנתקות</a>
                     </div>
                 </div>
-
+    
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
-                    <button type="button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="false">
+                    <button id="mobile-menu-button" type="button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <span class="sr-only">פתח תפריט ראשי</span>
                         <!-- Icon when menu is closed -->
                         <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -160,10 +162,21 @@ button:hover {
                     </button>
                 </div>
             </div>
+    
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden">
+                <nav class="flex flex-col space-y-4 py-4">
+                    <a href="#" class="text-gray-500 hover:text-gray-900">בית</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900">דוחות</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900">פרויקטים</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900">לקוחות</a>
+                </nav>
+            </div>
         </div>
-
-
     </header>
+    
+    
+    
     <div class="container mx-auto p-4">
         <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">דיווח שעות עבודה</h1>
 
@@ -249,6 +262,20 @@ button:hover {
         </div>
     </div>
 </div>
+<script>
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const profileMenu = document.querySelector('.profile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    const userMenuButton = document.getElementById('user-menu-button');
+    userMenuButton.addEventListener('click', () => {
+        profileMenu.classList.toggle('hidden');
+    });
+</script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script src="work-log-app.js"></script>
