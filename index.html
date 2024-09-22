@@ -93,6 +93,24 @@
         border-radius: 9999px;
         object-fit: cover;
     }
+    @media (max-width: 640px) {
+    .grid-cols-7 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+button {
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+}
+
+button:hover {
+    border-color: rgba(99, 102, 241, 0.5); /* Subtle border effect on hover */
+}
+.day-header {
+    line-height: 1.5; /* Adjust this value for more or less spacing */
+}
+
     </style>
 </head>
 <body class="bg-gray-100 font-sans">

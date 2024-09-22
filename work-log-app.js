@@ -153,27 +153,22 @@ function displayMonthCalendar() {
     const totalDays = endOfMonth.day;
 
     let html = `
-        <div class="flex justify-between items-center mb-4">
-            <button onclick="changeMonth(-1)" class="text-blue-600 hover:text-blue-800" aria-label="חודש קודם">&lt; חודש קודם</button>
-            <h3 class="text-lg font-semibold">${currentDate.toFormat('MMMM yyyy')}</h3>
-<button onclick="changeMonth(1)" class="text-blue-600 hover:text-blue-800" aria-label="חודש הבא">חודש הבא &gt;</button>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-4 p-4 bg-white shadow-lg rounded-lg border border-gray-200">
+            <button onclick="changeMonth(-1)" class="text-indigo-600 hover:text-indigo-800 p-2 rounded-lg transition duration-200" aria-label="חודש קודם">&lt; חודש קודם</button>
+            <h3 class="text-lg font-semibold text-gray-800 text-center mb-2 md:mb-0">${currentDate.toFormat('MMMM yyyy')}</h3>
+            <button onclick="changeMonth(1)" class="text-indigo-600 hover:text-indigo-800 p-2 rounded-lg transition duration-200" aria-label="חודש הבא">חודש הבא &gt;</button>
         </div>
-        <div class="text-right mb-4">
-            <p>סה"כ שעות בחודש: <span id="total-hours"></span></p>
+        <div class="text-right mb-4 p-4 bg-gray-100 rounded-lg">
+            <p class="font-bold text-gray-600">סה"כ שעות בחודש: <span id="total-hours" class="text-gray-800"></span></p>
         </div>
         <div class="grid grid-cols-7 gap-2 text-center" role="grid" aria-label="לוח שנה חודשי">
-            <div class="font-bold" role="columnheader">ראשון</div>
-            <div class="font-bold" role="columnheader">שני</div>
-            <div class="font-bold" role="columnheader">שלישי</div>
-            <div class="font-bold" role="columnheader">רביעי</div>
-            <div class="font-bold" role="columnheader">חמישי</div>
-            <div class="font-bold" role="columnheader">שישי</div>
-            <div class="font-bold" role="columnheader">שבת</div>
+            ${['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
+              .map(day => `<div class="flex justify-center items-center font-bold text-gray-600 text-sm md:text-lg p-2 day-header" role="columnheader">${day}</div>`).join('')}
     `;
 
     // Add empty cells for days before the 1st of the month
     for (let i = 0; i < startOfMonth.weekday % 7; i++) {
-        html += '<div class="bg-gray-100 p-2 h-24" role="gridcell"></div>';
+        html += '<div class="bg-gray-200 p-2 h-24" role="gridcell"></div>';
     }
 
     // Add cells for each day of the month
@@ -183,9 +178,13 @@ function displayMonthCalendar() {
         const totalHours = calculateTotalHours(dayLogs);
 
         html += `
-            <div class="bg-white p-2 h-24 border cursor-pointer" role="gridcell" tabindex="0" onclick="displayDayView('${date.toISO()}')" aria-label="${date.toFormat('d בMMMM')}" data-date="${date.toISODate()}">
-                <div class="font-bold">${day}</div>
-                <div class="text-sm">${totalHours.toFixed(1)} שעות</div>
+            <div class="bg-white p-2 h-24 border rounded-lg cursor-pointer flex flex-col justify-between items-center hover:bg-indigo-50 transition duration-200" 
+                 role="gridcell" tabindex="0" 
+                 onclick="displayDayView('${date.toISO()}')" 
+                 aria-label="${date.toFormat('d בMMMM')}" 
+                 data-date="${date.toISODate()}">
+                <div class="font-bold text-gray-800">${day}</div>
+                <div class="text-gray-600">${totalHours.toFixed(1)}</div>
             </div>
         `;
     }
@@ -199,6 +198,8 @@ function displayMonthCalendar() {
     ));
     document.getElementById('total-hours').textContent = totalMonthHours.toFixed(1);
 }
+
+
 
 function displayDayView(dateString) {
     const date = DateTime.fromISO(dateString);
