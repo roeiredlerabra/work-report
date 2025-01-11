@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת מורחבת לניהול שעות עבודה</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.3.0/luxon.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/he.js"></script>
+    <style>
+           /* Existing styles */
+    .overflow-visible { overflow: visible !important; }
+    .z-10 { z-index: 10 !important; }
+    body.modal-open { overflow: hidden; }
+    #edit-modal.active { opacity: 1; pointer-events: auto; }
+
+    /* Improved profile menu styles */
+    .profile-dropdown {
+        position: relative;
+    }
+
+    .profile-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        width: 10rem;
+        margin-top: 0.5rem;
+        padding: 0.5rem 0;
+        background-color: white;
+        border-radius: 0.375rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .profile-dropdown:focus-within .profile-menu {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .profile-menu-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        color: #374151;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        transition: background-color 0.2s ease;
+    }
+
+    .profile-menu-item:hover {
+        background-color: #F3F4F6;
+    }
+
+    .profile-menu-item svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-left: 0.75rem;
+        color: #6B7280;
+    }
+
+    .profile-menu hr {
+        margin: 0.5rem 0;
+        border-top: 1px solid #E5E7EB;
+    }
+
+    .profile-button {
+        display: flex;
+        align-items: center;
+        padding: 0.25rem;
+        background-color: white;
+        border-radius: 9999px;
+        border: 2px solid transparent;
+        transition: border-color 0.2s ease;
+    }
+
+    .profile-button:focus {
+        outline: none;
+        border-color: #4F46E5;
+    }
+
+    .profile-image {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 9999px;
+        object-fit: cover;
+    }
+    @media (max-width: 640px) {
+    .grid-cols-7 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+button {
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+}
+
+button:hover {
+    border-color: rgba(99, 102, 241, 0.5); /* Subtle border effect on hover */
+}
+.day-header {
+    line-height: 1.5; /* Adjust this value for more or less spacing */
+}
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg" alt="Workflow">
+                </div>
+    
+                <!-- Navigation -->
+                <nav class="hidden md:grid md:grid-cols-4 md:gap-8">
+                    <a href="#" class="text-gray-500 hover:text-gray-900 text-center">בית</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 text-center">דוחות</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 text-center">פרויקטים</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900 text-center">לקוחות</a>
+                </nav>
+                
+                
+    
+                <!-- Profile dropdown -->
+                <div class="relative profile-dropdown">
+                    <button type="button" class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                        <span class="sr-only">פתח תפריט משתמש</span>
+                        <img class="h-10 w-10 rounded-full" src="https://media.licdn.com/dms/image/v2/C5103AQF2XkMyV8jPIQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1516253497657?e=2147483647&v=beta&t=xInUExu50jqd8foK4lifAW6vs_rDD3ER_XDchNV5NjQ" alt="">
+                    </button>
+    
+                    <!-- Profile dropdown menu -->
+                    <div class="profile-menu hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-0">הפרופיל שלך</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-1">הגדרות</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-2">התנתקות</a>
+                    </div>
+                </div>
+    
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" type="button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <span class="sr-only">פתח תפריט ראשי</span>
+                        <!-- Icon when menu is closed -->
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <!-- Icon when menu is open -->
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+    
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden">
+                <nav class="flex flex-col space-y-4 py-4">
+                    <a href="#" class="text-gray-500 hover:text-gray-900">בית</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900">דוחות</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900">פרויקטים</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-900">לקוחות</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    
+    
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">דיווח שעות עבודה</h1>
+
+        <div class="mb-6">
+            <label for="view-selector" class="block mb-2 text-sm font-medium text-gray-900">בחר תצוגה:</label>
+            <select id="view-selector" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <option value="month">חודשי</option>
+                <option value="day">יומי</option>
+            </select>
+        </div>
+
+        <div id="report-container" class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">דו"ח זמני עבודה</h2>
+            <div id="report-content"></div>
+        </div>
+
+        <button id="export-csv" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+            ייצא לקובץ CSV
+        </button>
+    </div>
+
+<!-- Edit Modal -->
+<div id="modal-overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden"></div>
+<div id="edit-modal" class="modal fixed top-0 left-0 right-0 z-50 hidden w-full h-full overflow-auto flex items-center justify-center">
+    <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md m-4">
+        <button type="button" class="close absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">סגור חלון</span>
+        </button>
+        <div class="px-6 py-6 lg:px-8">
+            <h3 class="mb-4 text-xl font-medium text-gray-900"style="
+            padding-right: 20px;
+        ">עריכת רשומה</h3>
+                <form id="edit-form" class="space-y-6" novalidate>
+                    <input type="hidden" id="edit-id">
+                    <div>
+                        <label for="edit-date" class="block mb-2 text-sm font-medium text-gray-900">תאריך:</label>
+                        <input type="text" id="edit-date" name="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="edit-type" class="block mb-2 text-sm font-medium text-gray-900">סוג דיווח:</label>
+                        <select id="edit-type" name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                            <option value="">בחר סוג דיווח</option>
+                            <option value="work">עבודה רגילה</option>
+                            <option value="sick">מחלה</option>
+                            <option value="family_sick">מחלה משפחתית</option>
+                            <option value="parent_sick">מחלת הורה</option>
+                            <option value="spouse_sick">מחלת בן/בת זוג</option>
+                            <option value="spouse_absence">היעדרות בגין בת זוג</option>
+                            <option value="child_sick">מחלת ילד</option>
+                            <option value="vacation">חופשה</option>
+                            <option value="reserve">מילואים</option>
+                            <option value="bereavement">אבל</option>
+                            <option value="study">ימי השתלמות</option>
+                        </select>
+                    </div>
+                    <div id="edit-attachment-container" class="hidden mt-4">
+                        <label for="edit-attachment" class="block mb-2 text-sm font-medium text-gray-900">צרף מסמך:</label>
+                        <input type="file" id="edit-attachment" name="attachment" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+                        <p id="edit-attachment-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                    </div>
+                    <div>
+                        <label for="edit-location" class="block mb-2 text-sm font-medium text-gray-900">מיקום עבודה:</label>
+                        <input type="text" id="edit-location" name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="edit-client" class="block mb-2 text-sm font-medium text-gray-900">לקוח לחיוב:</label>
+                        <input type="text" id="edit-client" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="edit-start-time" class="block mb-2 text-sm font-medium text-gray-900">שעת התחלה:</label>
+                        <input type="text" id="edit-start-time" name="start-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <div>
+                        <label for="edit-end-time" class="block mb-2 text-sm font-medium text-gray-900">שעת סיום:</label>
+                        <input type="text" id="edit-end-time" name="end-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                    </div>
+                    <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">עדכן רשומה</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const profileMenu = document.querySelector('.profile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    const userMenuButton = document.getElementById('user-menu-button');
+    userMenuButton.addEventListener('click', () => {
+        profileMenu.classList.toggle('hidden');
+    });
+</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+    <script>
+    // work-log-app.js
+
+    const recentLocations = {
+    locations: [],
+    maxItems: 5,
+
+    add(location) {
+        this.locations = [location, ...this.locations.filter(l => l !== location)]
+            .slice(0, this.maxItems);
+        localStorage.setItem('recentLocations', JSON.stringify(this.locations));
+    },
+
+    load() {
+        const saved = localStorage.getItem('recentLocations');
+        if (saved) this.locations = JSON.parse(saved);
+    }
+};
+const DateTime = luxon.DateTime;
+let workLogs = [];
+let currentDate = DateTime.now();
+const leaveTypesRequiringAttachment = ['sick', 'family_sick', 'parent_sick', 'spouse_sick', 'spouse_absence', 'child_sick'];
+
+// Initialize Flatpickr for date and time inputs
+flatpickr.localize(flatpickr.l10ns.he);
+
+flatpickr("#edit-date", {
+    dateFormat: "Y-m-d",
+    allowInput: true,
+    altInput: true,
+    altFormat: "d/m/Y",
+});
+
+flatpickr("#edit-start-time, #edit-end-time", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    minuteIncrement: 15,
+});
+
+function safelyParseJSON(json) {
+    try {
+        return JSON.parse(json);
+    } catch (e) {
+        console.error('Error parsing JSON from localStorage:', e);
+        return null;
+    }
+}
+
+function lazyLoadWorkLogs() {
+    try {
+        const storedLogs = localStorage.getItem('workLogs');
+        if (storedLogs) {
+            const parsedLogs = safelyParseJSON(storedLogs);
+            if (parsedLogs && Array.isArray(parsedLogs)) {
+                workLogs = parsedLogs;
+            } else {
+                console.error('Invalid data in localStorage');
+                workLogs = [];
+            }
+        }
+    } catch (error) {
+        console.error('Error loading work logs:', error);
+        workLogs = [];
+    }
+}
+
+function saveWorkLogs() {
+    try {
+        localStorage.setItem('workLogs', JSON.stringify(workLogs));
+    } catch (error) {
+        console.error('Error saving work logs:', error);
+        alert('אירעה שגיאה בשמירת הנתונים. אנא נסה שנית מאוחר יותר.');
+    }
+}
+
+function showError(elementId, message) {
+    let errorElement = document.getElementById(elementId);
+    if (!errorElement) {
+        errorElement = document.createElement('p');
+        errorElement.id = elementId;
+        errorElement.className = 'mt-2 text-sm text-red-600';
+        const inputElement = document.getElementById(elementId.replace('-error', ''));
+        if (inputElement && inputElement.parentNode) {
+            inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
+        }
+    }
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+    const inputElement = document.getElementById(elementId.replace('-error', ''));
+    if (inputElement) {
+        inputElement.setAttribute('aria-invalid', 'true');
+    }
+}
+
+function hideError(elementId) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.textContent = '';
+        errorElement.classList.add('hidden');
+    }
+    const inputElement = document.getElementById(elementId.replace('-error', ''));
+    if (inputElement) {
+        inputElement.setAttribute('aria-invalid', 'false');
+    }
+}
+
+function validateForm(formId) {
+    const form = document.getElementById(formId);
+    let isValid = true;
+
+    form.querySelectorAll('input, select').forEach(element => {
+        const errorId = `${element.id}-error`;
+        if (element.hasAttribute('required') && !element.value.trim()) {
+            showError(errorId, 'שדה זה הוא חובה');
+            isValid = false;
+        } else if (element.hasAttribute('minlength') && element.value.trim().length < parseInt(element.getAttribute('minlength'))) {
+            showError(errorId, `אורך מינימלי הוא ${element.getAttribute('minlength')} תווים`);
+            isValid = false;
+        } else if (element.hasAttribute('maxlength') && element.value.trim().length > parseInt(element.getAttribute('maxlength'))) {
+            showError(errorId, `אורך מקסימלי הוא ${element.getAttribute('maxlength')} תווים`);
+            isValid = false;
+        } else {
+            hideError(errorId);
+        }
+    });
+
+    const startTime = form.querySelector('[name="start-time"]');
+    const endTime = form.querySelector('[name="end-time"]');
+    if (startTime && endTime && startTime.value && endTime.value && startTime.value >= endTime.value) {
+        showError(`${formId === 'work-log-form' ? '' : formId === 'edit-form' ? 'edit-' : 'day-'}end-time-error`, 'שעת הסיום חייבת להיות אחרי שעת ההתחלה');
+        isValid = false;
+    }
+
+    // Validate attachment for leave types that require it
+    const typeSelect = form.querySelector('[name="type"]');
+    const attachmentInput = form.querySelector('[name="attachment"]');
+    if (leaveTypesRequiringAttachment.includes(typeSelect.value) && (!attachmentInput || !attachmentInput.files.length)) {
+        showError(`${formId === 'edit-form' ? 'edit-' : ''}attachment-error`, 'חובה לצרף מסמך לסוג דיווח זה');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function updateReport() {
+    const view = document.getElementById('view-selector').value;
+    const reportContent = document.getElementById('report-content');
+    reportContent.innerHTML = '';
+
+    console.log('Current view:', view);
+    console.log('Current date:', currentDate.toISO());
+    console.log('Number of work logs:', workLogs.length);
+
+    switch (view) {
+        case 'month':
+            displayMonthCalendar();
+            break;
+        case 'day':
+            displayDayView(currentDate);
+            break;
+    }
+}
+function generateDonutChart(dayLogs, size = 40) {
+    const FULL_DAY_MINUTES = 9 * 60; // 9 hours in minutes
+    const radius = size / 2;
+    const strokeWidth = size / 8;
+    const center = size / 2;
+    
+    // Calculate total worked minutes
+    const totalMinutes = dayLogs.reduce((sum, log) => {
+        if (log.type === 'work') {
+            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+            return sum + endTime.diff(startTime, 'minutes').minutes;
+        }
+        return sum;
+    }, 0);
+
+    // Calculate percentage and arc properties
+    const percentage = Math.min((totalMinutes / FULL_DAY_MINUTES) * 100, 100);
+    const circumference = 2 * Math.PI * (radius - strokeWidth / 2);
+    const dashArray = (percentage * circumference) / 100;
+    const dashOffset = circumference - dashArray;
+
+    // Color based on percentage
+    const color = percentage >= 100 ? '#22c55e' :  // Green for complete days
+                 percentage >= 75 ? '#3b82f6' :   // Blue for mostly complete
+                 percentage >= 50 ? '#eab308' :   // Yellow for half days
+                 percentage > 0 ? '#ef4444' :     // Red for partial days
+                 '#e5e7eb';                       // Gray for no hours
+
+    return `
+        <svg width="${size}" height="${size}" class="inline-block">
+            <!-- Background circle -->
+            <circle
+                cx="${center}"
+                cy="${center}"
+                r="${radius - strokeWidth / 2}"
+                fill="none"
+                stroke="#e5e7eb"
+                stroke-width="${strokeWidth}"
+            />
+            <!-- Foreground circle -->
+            <circle
+                cx="${center}"
+                cy="${center}"
+                r="${radius - strokeWidth / 2}"
+                fill="none"
+                stroke="${color}"
+                stroke-width="${strokeWidth}"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${dashOffset}"
+                transform="rotate(-90 ${center} ${center})"
+            />
+            <!-- Percentage text -->
+            <text
+                x="${center}"
+                y="${center}"
+                text-anchor="middle"
+                dominant-baseline="middle"
+                fill="currentColor"
+                font-size="${size/3}px"
+            >${Math.round(percentage)}%</text>
+        </svg>
+    `;
+}
+function displayMonthCalendar() {
+    const reportContent = document.getElementById('report-content');
+    const startOfMonth = currentDate.startOf('month');
+    const endOfMonth = currentDate.endOf('month');
+    const totalDays = endOfMonth.day;
+
+    let html = `
+        <div class="flex flex-col md:flex-row justify-between items-center mb-4 p-4 bg-white shadow-lg rounded-lg border border-gray-200">
+            <button onclick="changeMonth(-1)" class="text-indigo-600 hover:text-indigo-800 p-2 rounded-lg transition duration-200" aria-label="חודש קודם">&lt; חודש קודם</button>
+            <h3 class="text-lg font-semibold text-gray-800 text-center mb-2 md:mb-0">${currentDate.toFormat('MMMM yyyy')}</h3>
+            <button onclick="changeMonth(1)" class="text-indigo-600 hover:text-indigo-800 p-2 rounded-lg transition duration-200" aria-label="חודש הבא">חודש הבא &gt;</button>
+        </div>
+        <div class="text-right mb-4 p-4 bg-gray-100 rounded-lg">
+            <p class="font-bold text-gray-600">סה"כ שעות בחודש: <span id="total-hours" class="text-gray-800"></span></p>
+        </div>
+        <div class="grid grid-cols-7 gap-2 text-center" role="grid" aria-label="לוח שנה חודשי">
+            ${['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
+              .map(day => `<div class="flex justify-center items-center font-bold text-gray-600 text-sm md:text-lg p-2 day-header" role="columnheader">${day}</div>`).join('')}
+    `;
+
+    // Add empty cells for days before the 1st of the month
+    for (let i = 0; i < startOfMonth.weekday % 7; i++) {
+        html += '<div class="bg-gray-200 p-2 h-32" role="gridcell"></div>';
+    }
+
+    // Add cells for each day of the month
+    for (let day = 1; day <= totalDays; day++) {
+        const date = startOfMonth.set({ day });
+        const dayLogs = workLogs.filter(log => DateTime.fromISO(log.date).hasSame(date, 'day'));
+        const totalHours = calculateTotalHours(dayLogs);
+
+        html += `
+            <div class="bg-white p-2 h-32 border rounded-lg cursor-pointer flex flex-col justify-between hover:bg-indigo-50 transition duration-200" 
+                 role="gridcell" tabindex="0" 
+                 onclick="displayDayView('${date.toISO()}')" 
+                 aria-label="${date.toFormat('d בMMMM')}" 
+                 data-date="${date.toISODate()}">
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-gray-800">${day}</span>
+                    ${generateDonutChart(dayLogs)}
+                </div>
+                <div class="text-sm text-gray-600">
+                    <div>${totalHours.toFixed(1)} שעות</div>
+                    ${dayLogs.map(log => `
+                        <div class="text-xs truncate" style="color: ${getColorForLogType(log.type)}">
+                            ${getHebrewType(log.type)}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    html += '</div>';
+    reportContent.innerHTML = html;
+
+    // Update total hours for the month
+    const totalMonthHours = calculateTotalHours(workLogs.filter(log => 
+        DateTime.fromISO(log.date).hasSame(currentDate, 'month')
+    ));
+    document.getElementById('total-hours').textContent = totalMonthHours.toFixed(1);
+}
+
+
+
+function displayDayView(dateString) {
+    const date = DateTime.fromISO(dateString);
+    currentDate = date;
+    document.getElementById('view-selector').value = 'day';
+
+    const reportContent = document.getElementById('report-content');
+    const dayLogs = workLogs.filter(log => {
+        const logDate = DateTime.fromISO(log.date);
+        return logDate && logDate.hasSame(date, 'day');
+    });
+
+    // Sort the logs, handling potential undefined 'start-time'
+    dayLogs.sort((a, b) => {
+        if (!a['start-time'] && !b['start-time']) return 0;
+        if (!a['start-time']) return 1;
+        if (!b['start-time']) return -1;
+        return a['start-time'].localeCompare(b['start-time']);
+    });
+
+    let html = `
+        <div class="flex justify-between items-center mb-4">
+            <button onclick="changeDay(-1)" class="text-blue-600 hover:text-blue-800" aria-label="יום קודם">&lt; יום קודם</button>
+            <h3 class="text-lg font-semibold">${date.toFormat('dd/MM/yyyy')}</h3>
+            <button onclick="changeDay(1)" class="text-blue-600 hover:text-blue-800" aria-label="יום הבא">יום הבא &gt;</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <h4 class="text-lg font-semibold">דיווחי היום</h4>
+                <div class="relative h-[600px] border border-gray-300 rounded">
+                    ${generateTimelineHtml(dayLogs)}
+                </div>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-4">הוסף דיווח חדש</h4>
+                <form id="day-work-log-form" novalidate>
+                    <input type="hidden" id="day-date" name="date" value="${date.toFormat('yyyy-MM-dd')}">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="day-type" class="block mb-2 text-sm font-medium text-gray-900">סוג דיווח:</label>
+                            <select id="day-type" name="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                                <option value="">בחר סוג דיווח</option>
+                                <option value="work">עבודה רגילה</option>
+                                <option value="sick">מחלה</option>
+                                <option value="family_sick">מחלה משפחתית</option>
+                                <option value="parent_sick">מחלת הורה</option>
+                                <option value="spouse_sick">מחלת בן/בת זוג</option>
+                                <option value="spouse_absence">היעדרות בגין בת זוג</option>
+                                <option value="child_sick">מחלת ילד</option>
+                                <option value="vacation">חופשה</option>
+                                <option value="reserve">מילואים</option>
+                                <option value="bereavement">אבל</option>
+                                <option value="study">ימי השתלמות</option>
+                            </select>
+                            <p id="day-type-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                        </div>
+                        <div id="day-location-container">
+                            <label for="day-location" class="block mb-2 text-sm font-medium text-gray-900">מיקום עבודה:</label>
+                            <input type="text" id="day-location" name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required minlength="2" maxlength="50">
+                            <p id="day-location-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                        </div>
+                        <div id="day-client-container">
+                            <label for="day-client" class="block mb-2 text-sm font-medium text-gray-900">לקוח לחיוב:</label>
+                            <input type="text" id="day-client" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required minlength="2" maxlength="50">
+                            <p id="day-client-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                        </div>
+                        <div>
+                            <label for="day-start-time" class="block mb-2 text-sm font-medium text-gray-900">שעת התחלה:</label>
+                            <input type="text" id="day-start-time" name="start-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                            <p id="day-start-time-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                        </div>
+                        <div>
+                            <label for="day-end-time" class="block mb-2 text-sm font-medium text-gray-900">שעת סיום:</label>
+                            <input type="text" id="day-end-time" name="end-time" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                            <p id="day-end-time-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                        </div>
+                        <div id="attachment-container" class="hidden">
+                            <label for="attachment" class="block mb-2 text-sm font-medium text-gray-900">צרף מסמך:</label>
+                            <input type="file" id="attachment" name="attachment" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
+                            <p id="attachment-error" class="mt-2 text-sm text-red-600 hidden"></p>
+                        </div>
+                        <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">הוסף דיווח</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+    reportContent.innerHTML = html;
+
+    initializeFlatpickr();
+
+    // Add event listener for the new form
+    document.getElementById('day-work-log-form').addEventListener('submit', handleDayFormSubmit);
+
+    // Add event listener for the type select to show/hide attachment input and update fields
+    const typeSelect = document.getElementById('day-type');
+    const attachmentContainer = document.getElementById('attachment-container');
+    const locationContainer = document.getElementById('day-location-container');
+    const clientContainer = document.getElementById('day-client-container');
+
+    typeSelect.addEventListener('change', () => {
+        const selectedType = typeSelect.value;
+        
+        // Show/hide attachment input
+        if (leaveTypesRequiringAttachment.includes(selectedType)) {
+            attachmentContainer.classList.remove('hidden');
+        } else {
+            attachmentContainer.classList.add('hidden');
+        }
+
+        // Update labels and visibility of location and client fields
+        if (selectedType === 'work') {
+            locationContainer.querySelector('label').textContent = 'מיקום עבודה:';
+            clientContainer.querySelector('label').textContent = 'לקוח לחיוב:';
+            locationContainer.style.display = 'block';
+            clientContainer.style.display = 'block';
+        } else if (selectedType) {
+            locationContainer.querySelector('label').textContent = 'סיבת היעדרות:';
+            clientContainer.querySelector('label').textContent = 'פרטים נוספים:';
+            locationContainer.style.display = 'block';
+            clientContainer.style.display = 'block';
+        } else {
+            // If no type is selected, hide both fields
+            locationContainer.style.display = 'none';
+            clientContainer.style.display = 'none';
+        }
+    });
+
+    // Trigger the change event to set the initial state
+    typeSelect.dispatchEvent(new Event('change'));
+}
+function initializeFlatpickr() {
+    flatpickr("#day-start-time, #day-end-time", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        minuteIncrement: 15,
+    });
+}
+function enhanceCalendarDayCell(date, dayLogs) {
+    const isToday = date.hasSame(DateTime.now(), 'day');
+    const isWeekend = [6, 7].includes(date.weekday);
+    const totalHours = calculateTotalHours(dayLogs);
+    
+    return `
+        <div class="bg-white p-2 h-32 border rounded-lg cursor-pointer 
+                    ${isToday ? 'ring-2 ring-indigo-500' : ''}
+                    ${isWeekend ? 'bg-gray-50' : ''}
+                    hover:bg-indigo-50 transition duration-200"
+             role="gridcell" tabindex="0">
+            <div class="flex justify-between items-start">
+                <span class="font-bold ${isToday ? 'text-indigo-600' : 'text-gray-800'}">${date.day}</span>
+                ${generateDonutChart(dayLogs)}
+            </div>
+            <div class="mt-1 text-xs">
+                ${totalHours > 0 ? 
+                    `<span class="inline-flex items-center px-2 py-1 rounded-full ${
+                        totalHours >= 9 ? 'bg-green-100 text-green-800' : 
+                        totalHours >= 6 ? 'bg-yellow-100 text-yellow-800' : 
+                        'bg-red-100 text-red-800'
+                    }">${totalHours.toFixed(1)} שעות</span>` : 
+                    ''
+                }
+            </div>
+            <div class="mt-1 text-xs space-y-1">
+                ${dayLogs.map(log => `
+                    <div class="truncate text-gray-600">
+                        ${log['start-time']} - ${log['end-time']}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+function showFeedback(message, type = 'success') {
+    const feedback = document.createElement('div');
+    feedback.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg transform transition-all duration-500 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white max-w-sm`;
+    
+    feedback.innerHTML = `
+        <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                ${type === 'success' ? 
+                    '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>' :
+                    '<path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>'
+                }
+            </svg>
+            <span>${message}</span>
+        </div>
+    `;
+
+    document.body.appendChild(feedback);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+        feedback.style.transform = 'translateY(0)';
+    });
+
+    // Remove after delay
+    setTimeout(() => {
+        feedback.style.transform = 'translateY(-100%)';
+        setTimeout(() => feedback.remove(), 500);
+    }, 3000);
+}
+function addRecentLocationsToForm() {
+    const locationInput = document.getElementById('day-location');
+    if (!locationInput) return;
+
+    const recentList = document.createElement('div');
+    recentList.className = 'mt-1 flex flex-wrap gap-2';
+    
+    recentLocations.locations.forEach(location => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 py-1 px-2 rounded-full';
+        chip.textContent = location;
+        chip.onclick = () => {
+            locationInput.value = location;
+        };
+        recentList.appendChild(chip);
+    });
+
+    locationInput.parentNode.appendChild(recentList);
+}
+function generateTimelineHtml(logs) {
+    const timeSlots = new Array(24).fill().map((_, i) => {
+        const time = i.toString().padStart(2, '0') + ':00';
+        return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" style="top: ${i * (100 / 24)}%">${time}</div>`;
+    });
+
+    const processedLogs = handleOverlappingReports(logs);
+    const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
+
+    const logElements = processedLogs.map(log => {
+        const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+        const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+        const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
+        let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
+        const color = getColorForLogType(log.type);
+        const width = (100 / (maxOverlap + 1)) * 0.9; // Reduce width further for mobile
+        const left = (log.overlap * width); // Start logs from the left
+
+        // Set a minimum height for visibility
+        const minHeight = 5; // 5% of the timeline height
+        if (height < minHeight) {
+            height = minHeight;
+        }
+
+        let content = `
+            <strong>${getHebrewType(log.type)}</strong><br>
+            ${log['start-time']} - ${log['end-time']}<br>
+            ${log.client} (${log.location})
+        `;
+
+        // For very short durations, show a compact version
+        if (height <= 8) {
+            content = `<strong>${getHebrewType(log.type)}</strong> ${log['start-time']} - ${log['end-time']}`;
+        }
+
+        return `
+        <div class="absolute p-1 text-xs text-white rounded-sm overflow-hidden hover:overflow-visible hover:z-10" 
+             style="top: ${top}%; height: ${height}%; min-height: ${minHeight}%; background-color: ${color}; width: ${width}%; left: ${left}%; z-index: 1; border: 1px dashed white;">
+            <div class="h-full w-full overflow-y-auto">
+                ${content}
+                <div class="mt-1">
+                    <button onclick="editLog('${log.id}')" class="text-white underline mr-2" aria-label="ערוך דיווח">ערוך</button>
+                    <button onclick="deleteLog('${log.id}')" class="text-white underline" aria-label="מחק דיווח">מחק</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    });
+
+    return `
+        <div class="relative h-full overflow-x-auto"> <!-- Added overflow-x-auto for horizontal scrolling on mobile -->
+            <div class="absolute inset-0 pr-12"> <!-- Add right padding for time markers -->
+                ${logElements.join('')}
+            </div>
+            ${timeSlots.join('')}
+        </div>
+    `;
+}
+
+function handleOverlappingReports(logs) {
+    logs.sort((a, b) => a['start-time'].localeCompare(b['start-time']));
+    const overlaps = new Array(logs.length).fill(0);
+
+    for (let i = 0; i < logs.length; i++) {
+        for (let j = 0; j < i; j++) {
+            if (logs[i]['start-time'] < logs[j]['end-time']) {
+                overlaps[i] = Math.max(overlaps[i], overlaps[j] + 1);
+            }
+        }
+    }
+
+    return logs.map((log, index) => ({ ...log, overlap: overlaps[index] }));
+}
+
+function getColorForLogType(type) {
+    const colors = {
+        'work': '#4299e1',
+        'sick': '#f56565',
+        'vacation': '#48bb78',
+        'reserve': '#ed8936',
+        'bereavement': '#9f7aea',
+        'study': '#ecc94b'
+    };
+    return colors[type] || '#a0aec0';
+}
+
+function getHebrewType(type) {
+    const types = {
+        'work': 'עבודה רגילה',
+        'sick': 'מחלה',
+        'family_sick': 'מחלה משפחתית',
+        'parent_sick': 'מחלת הורה',
+        'spouse_sick': 'מחלת בן/בת זוג',
+        'spouse_absence': 'היעדרות בגין בת זוג',
+        'child_sick': 'מחלת ילד',
+        'vacation': 'חופשה',
+        'reserve': 'מילואים',
+        'bereavement': 'אבל',
+        'study': 'ימי השתלמות'
+    };
+    return types[type] || type;
+}
+
+function handleDayFormSubmit(e) {
+    e.preventDefault();
+    if (!validateForm('day-work-log-form')) return;
+
+    const formData = new FormData(e.target);
+    const newLog = Object.fromEntries(formData.entries());
+    newLog.id = Date.now().toString();
+
+    // Handle file attachment
+    const attachmentInput = document.getElementById('attachment');
+    if (attachmentInput && attachmentInput.files.length > 0) {
+        newLog.attachmentName = attachmentInput.files[0].name;
+        // In a real application, you would upload the file to a server here
+        // and store the file reference or URL instead of the file name
+    }
+
+    workLogs.push(newLog);
+    saveWorkLogs();
+    displayDayView(currentDate.toISO());
+
+    // Show success message
+    showSuccessMessage('הדיווח נשמר בהצלחה');
+}
+
+
+function editLog(id) {
+    const log = workLogs.find(log => log.id === id);
+    if (log) {
+        document.getElementById('edit-id').value = log.id;
+        
+        // Auto-populate the date field
+        const dateInput = document.getElementById('edit-date');
+        if (dateInput) {
+            dateInput.value = log.date;
+            dateInput._flatpickr.setDate(log.date);
+        }
+
+        document.getElementById('edit-type').value = log.type;
+        document.getElementById('edit-location').value = log.location;
+        document.getElementById('edit-client').value = log.client;
+        document.getElementById('edit-start-time').value = log['start-time'];
+        document.getElementById('edit-end-time').value = log['end-time'];
+
+        // Show/hide attachment input based on log type
+        const attachmentContainer = document.getElementById('edit-attachment-container');
+        if (leaveTypesRequiringAttachment.includes(log.type)) {
+            attachmentContainer.classList.remove('hidden');
+        } else {
+            attachmentContainer.classList.add('hidden');
+        }
+        
+        // Show the modal
+        openModal('edit-modal');
+
+        // Add event listener for the type select to show/hide attachment input
+        const typeSelect = document.getElementById('edit-type');
+        typeSelect.addEventListener('change', () => {
+            if (leaveTypesRequiringAttachment.includes(typeSelect.value)) {
+                attachmentContainer.classList.remove('hidden');
+            } else {
+                attachmentContainer.classList.add('hidden');
+            }
+        });
+    }
+}
+
+function deleteLog(id) {
+    const confirmDelete = confirm('האם אתה בטוח שברצונך למחוק רשומה זו?');
+    if (confirmDelete) {
+        workLogs = workLogs.filter(log => log.id !== id);
+        saveWorkLogs();
+        updateReport();
+        showSuccessMessage('הדיווח נמחק בהצלחה');
+    }
+}
+
+function showSuccessMessage(message) {
+    const successMessage = document.createElement('div');
+    successMessage.textContent = message;
+    successMessage.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4';
+    successMessage.setAttribute('role', 'alert');
+    document.getElementById('report-container').insertAdjacentElement('afterbegin', successMessage);
+    setTimeout(() => successMessage.remove(), 3000);
+}
+
+function changeMonth(delta) {
+    currentDate = currentDate.plus({ months: delta });
+    displayMonthCalendar();
+}
+
+function changeDay(delta) {
+    currentDate = currentDate.plus({ days: delta });
+    displayDayView(currentDate.toISO());
+}
+
+function calculateTotalHours(logs) {
+    return logs.reduce((total, log) => {
+        if (log.type === 'work') {
+            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+            const duration = endTime.diff(startTime, 'hours');
+            return total + duration.hours;
+        }
+        return total;
+    }, 0);
+}
+
+function exportToCSV() {
+    const headers = ['תאריך', 'סוג דיווח', 'מיקום עבודה', 'לקוח לחיוב', 'שעת התחלה', 'שעת סיום'];
+    const rows = workLogs.map(log => [
+        log.date,
+        getHebrewType(log.type),
+        log.location,
+        log.client,
+        log['start-time'],
+        log['end-time']
+    ]);
+
+    // Prepare CSV content
+    let csvContent = [headers, ...rows].map(row => 
+        row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(',')
+    ).join('\r\n');
+
+    // Add BOM and convert to UTF-16LE
+    const bom = '\uFEFF';
+    const utf16le = new TextEncoder().encode(bom + csvContent);
+
+    // Create Blob and download
+    const blob = new Blob([utf16le], { type: 'text/csv;charset=UTF-16LE;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "work_logs.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+}
+
+function handleEditFormSubmit(e) {
+    e.preventDefault();
+    if (!validateForm('edit-form')) return;
+
+    const formData = new FormData(e.target);
+    const updatedLog = Object.fromEntries(formData.entries());
+    const id = document.getElementById('edit-id').value;
+    
+    // Handle file attachment
+    const attachmentInput = document.getElementById('edit-attachment');
+    if (attachmentInput && attachmentInput.files.length > 0) {
+        updatedLog.attachmentName = attachmentInput.files[0].name;
+        // In a real application, you would upload the file to a server here
+        // and store the file reference or URL instead of the file name
+    }
+
+    const index = workLogs.findIndex(log => log.id === id);
+    if (index !== -1) {
+        workLogs[index] = { ...workLogs[index], ...updatedLog };
+        saveWorkLogs();
+        updateReport();
+        closeModal('edit-modal');
+        showSuccessMessage('הדיווח עודכן בהצלחה');
+    }
+}
+
+function handleCalendarKeyboardNavigation(e) {
+    if (document.getElementById('view-selector').value === 'month') {
+        const focusedDay = document.activeElement;
+        if (focusedDay.getAttribute('role') === 'gridcell') {
+            const currentDate = DateTime.fromISO(focusedDay.getAttribute('data-date'));
+            let newDate;
+
+            switch (e.key) {
+                case 'ArrowRight':
+                    newDate = currentDate.minus({ days: 1 });
+                    break;
+                case 'ArrowLeft':
+                    newDate = currentDate.plus({ days: 1 });
+                    break;
+                case 'ArrowUp':
+                    newDate = currentDate.minus({ weeks: 1 });
+                    break;
+                case 'ArrowDown':
+                    newDate = currentDate.plus({ weeks: 1 });
+                    break;
+                default:
+                    return;
+            }
+
+            e.preventDefault();
+            const newFocusedDay = document.querySelector(`[data-date="${newDate.toISODate()}"]`);
+            if (newFocusedDay) {
+                newFocusedDay.focus();
+            }
+        }
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    lazyLoadWorkLogs();
+    updateReport();
+
+    document.getElementById('view-selector').addEventListener('change', updateReport);
+    document.getElementById('edit-form').addEventListener('submit', handleEditFormSubmit);
+    document.getElementById('export-csv').addEventListener('click', exportToCSV);
+
+    // Keyboard navigation for calendar
+    document.addEventListener('keydown', handleCalendarKeyboardNavigation);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+
+    // Close modal when clicking on close button
+    const closeButtons = document.querySelectorAll('.modal .close');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modal = button.closest('.modal');
+            if (modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+});
+// Modal functions
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const overlay = document.getElementById('modal-overlay');
+    if (modal && overlay) {
+        document.body.classList.add('modal-open');
+        overlay.classList.remove('hidden');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.add('opacity-50');
+            modal.classList.add('active');
+        }, 10);
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const overlay = document.getElementById('modal-overlay');
+    if (modal && overlay) {
+        document.body.classList.remove('modal-open');
+        modal.classList.remove('active');
+        overlay.classList.remove('opacity-50');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            overlay.classList.add('hidden');
+        }, 0);
+    }
+}
+// Event listener for closing the modal when clicking outside
+document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('modal')) {
+        closeModal(event.target.id);
+    }
+});
+
+// Initialize the report
+updateReport();
+
+// Add these new features to work-log-app.js
+
+// Template Management
+const workTemplates = {
+    templates: [],
+
+    addTemplate(name, data) {
+        this.templates.push({
+            id: Date.now(),
+            name,
+            data: {
+                type: data.type,
+                location: data.location,
+                client: data.client,
+                'start-time': data['start-time'],
+                'end-time': data['end-time']
+            }
+        });
+        this.saveTemplates();
+    },
+
+    getTemplates() {
+        return this.templates;
+    },
+
+    saveTemplates() {
+        localStorage.setItem('workTemplates', JSON.stringify(this.templates));
+    },
+
+    loadTemplates() {
+        const saved = localStorage.getItem('workTemplates');
+        if (saved) {
+            this.templates = JSON.parse(saved);
+        }
+    }
+};
+
+// Quick Actions for Common Work Hours
+const quickTimePresets = [
+    { label: 'יום עבודה רגיל', start: '09:00', end: '17:00' },
+    { label: 'חצי יום - בוקר', start: '09:00', end: '13:00' },
+    { label: 'חצי יום - אחה"צ', start: '13:00', end: '17:00' },
+    { label: 'משמרת ערב', start: '16:00', end: '00:00' },
+    // Add commonly used time slots
+    { label: 'יום קצר', start: '08:00', end: '15:00' },
+    { label: 'יום ארוך', start: '09:00', end: '19:00' }
+];
+
+// Add Quick Actions UI to the form
+function addQuickActionsToForm() {
+    const startTimeInput = document.getElementById('day-start-time');
+    if (!startTimeInput) return;
+
+    const quickActionsContainer = document.createElement('div');
+    quickActionsContainer.className = 'mt-2 flex flex-wrap gap-2';
+    
+    quickTimePresets.forEach(preset => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded-full transition-colors';
+        button.textContent = preset.label;
+        button.onclick = () => {
+            document.getElementById('day-start-time')._flatpickr.setDate(preset.start);
+            document.getElementById('day-end-time')._flatpickr.setDate(preset.end);
+        };
+        quickActionsContainer.appendChild(button);
+    });
+
+    startTimeInput.parentNode.appendChild(quickActionsContainer);
+}
+
+// Copy Previous Day's Entries
+function addCopyPreviousButton() {
+    const formContainer = document.querySelector('#day-work-log-form');
+    if (!formContainer) return;
+
+    const copyButton = document.createElement('button');
+    copyButton.type = 'button';
+    copyButton.className = 'mb-4 text-indigo-600 hover:text-indigo-800 text-sm flex items-center gap-2';
+    copyButton.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        העתק דיווחי יום קודם
+    `;
+
+    copyButton.onclick = async () => {
+        const previousDay = currentDate.minus({ days: 1 });
+        const previousLogs = workLogs.filter(log => 
+            DateTime.fromISO(log.date).hasSame(previousDay, 'day')
+        );
+
+        if (previousLogs.length === 0) {
+            showNotification('לא נמצאו דיווחים מהיום הקודם', 'warning');
+            return;
+        }
+
+        const confirmed = await showConfirmDialog(
+            'העתקת דיווחים',
+            `נמצאו ${previousLogs.length} דיווחים מיום ${previousDay.toFormat('dd/MM/yyyy')}. האם להעתיק אותם ליום הנוכחי?`
+        );
+
+        if (confirmed) {
+            previousLogs.forEach(log => {
+                const newLog = { ...log };
+                newLog.date = currentDate.toFormat('yyyy-MM-dd');
+                newLog.id = Date.now().toString();
+                workLogs.push(newLog);
+            });
+            saveWorkLogs();
+            updateReport();
+            showNotification('הדיווחים הועתקו בהצלחה', 'success');
+        }
+    };
+
+    formContainer.insertBefore(copyButton, formContainer.firstChild);
+}
+
+// Enhanced Notifications System
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-500 ${
+        type === 'success' ? 'bg-green-500' :
+        type === 'warning' ? 'bg-yellow-500' :
+        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+    } text-white`;
+    
+    notification.innerHTML = `
+        <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                ${type === 'success' ? 
+                    '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>' :
+                    '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>'
+                }
+            </svg>
+            <span>${message}</span>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
+}
+
+// Confirmation Dialog
+function showConfirmDialog(title, message) {
+    return new Promise((resolve) => {
+        const dialog = document.createElement('div');
+        dialog.className = 'fixed inset-0 flex items-center justify-center z-50';
+        dialog.innerHTML = `
+            <div class="fixed inset-0 bg-black opacity-50"></div>
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 relative z-10">
+                <h3 class="text-lg font-semibold mb-2">${title}</h3>
+                <p class="text-gray-600 mb-6">${message}</p>
+                <div class="flex justify-end gap-4">
+                    <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg cancel-btn">ביטול</button>
+                    <button class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded-lg confirm-btn">אישור</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(dialog);
+
+        dialog.querySelector('.confirm-btn').onclick = () => {
+            dialog.remove();
+            resolve(true);
+        };
+
+        dialog.querySelector('.cancel-btn').onclick = () => {
+            dialog.remove();
+            resolve(false);
+        };
+    });
+}
+
+// Initialize enhancements
+document.addEventListener('DOMContentLoaded', () => {
+    // Load existing enhancements
+    workTemplates.loadTemplates();
+    
+    // Add new UI elements when displaying day view
+    const originalDisplayDayView = displayDayView;
+    displayDayView = function(dateString) {
+        originalDisplayDayView(dateString);
+        addQuickActionsToForm();
+        addCopyPreviousButton();
+    };
+});
+    </script>
+</body>
+</html>
