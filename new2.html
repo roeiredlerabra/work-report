@@ -537,7 +537,6 @@ function initializeDarkMode() {
 
 // Function to identify and process non-working holidays
 function processNonWorkingHolidays(holidaysData) {
-    // Define holidays where work is prohibited with their Hebrew names
     const nonWorkingHolidays = [
         { title: 'Pesach I', hebrew: 'ראשון של פסח' },
         { title: 'Pesach VII', hebrew: 'שביעי של פסח' },
@@ -548,8 +547,7 @@ function processNonWorkingHolidays(holidaysData) {
         { title: 'Shmini Atzeret', hebrew: 'שמיני עצרת' }
     ];
 
-    // Filter and map holidays
-    const processedHolidays = holidaysData.items
+    return holidaysData.items
         .filter(item => 
             nonWorkingHolidays.some(h => h.title === item.title) &&
             item.category === 'holiday' &&
@@ -560,15 +558,12 @@ function processNonWorkingHolidays(holidaysData) {
             return {
                 date: holiday.date,
                 title: matchedHoliday.hebrew,
-                type: 'vacation',
-                client: matchedHoliday.hebrew, // Use Hebrew name in client field
-                location: 'חג',
+                type: 'holiday',  // Changed from 'vacation' to 'holiday'
+                description: matchedHoliday.hebrew,  // Store holiday name in description
                 'start-time': '00:00',
                 'end-time': '23:59'
             };
         });
-
-    return processedHolidays;
 }
 
 // Function to add holidays to work logs
@@ -701,7 +696,7 @@ function saveWorkLogs() {
 }
 
 // Helper Functions
-function getHebrewType(type, client) {
+function getHebrewType(type) {
     const types = {
         'work': 'עבודה רגילה',
         'sick': 'מחלה',
@@ -710,7 +705,8 @@ function getHebrewType(type, client) {
         'spouse_sick': 'מחלת בן/בת זוג',
         'spouse_absence': 'היעדרות בגין בת זוג',
         'child_sick': 'מחלת ילד',
-        'vacation': client && client.includes('חג') ? client : 'חופשה',
+        'vacation': 'חופשה',
+        'holiday': 'חג',  // Add specific type for holidays
         'reserve': 'מילואים',
         'bereavement': 'אבל',
         'study': 'ימי השתלמות'
@@ -1170,63 +1166,75 @@ function displayDayView(dateString, updateView = true) {
     });
 }
 function generateTimelineHtml(logs) {
-    const timeSlots = new Array(24).fill().map((_, i) => {
-        const time = i.toString().padStart(2, '0') + ':00';
-        return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" 
-                     style="top: ${i * (100 / 24)}%">${time}</div>`;
-    });
+   const timeSlots = new Array(24).fill().map((_, i) => {
+       const time = i.toString().padStart(2, '0') + ':00';
+       return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" 
+                    style="top: ${i * (100 / 24)}%">${time}</div>`;
+   });
 
-    const processedLogs = handleOverlappingReports(logs);
-    const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
+   const processedLogs = handleOverlappingReports(logs);
+   const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
 
-    const logElements = processedLogs.map(log => {
-        const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-        const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-        const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
-        let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
-        const minHeight = 5;
-        height = Math.max(height, minHeight);
+   const logElements = processedLogs.map(log => {
+       const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+       const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+       const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
+       let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
+       const minHeight = 5;
+       height = Math.max(height, minHeight);
 
-        const color = getColorForLogType(log.type);
-        const width = (100 / (maxOverlap + 1)) * 0.9;
-        const left = (log.overlap * width);
+       const color = getColorForLogType(log.type);
+       const width = (100 / (maxOverlap + 1)) * 0.9;
+       const left = (log.overlap * width);
 
-        let content = `
-            <strong>${getHebrewType(log.type, log.client)}</strong><br>
-            ${log['start-time']} - ${log['end-time']}<br>
-            ${log.type === 'vacation' && log.client.includes('חג') ? '' : `${log.client} (${log.location})`}
-        `;
+       let content = '';
+       if (log.type === 'holiday') {
+           content = `
+               <strong>חג</strong><br>
+               ${log.client}<br>
+               ${log['start-time']} - ${log['end-time']}
+           `;
+       } else {
+           content = `
+               <strong>${getHebrewType(log.type)}</strong><br>
+               ${log['start-time']} - ${log['end-time']}<br>
+               ${log.type === 'work' ? `${log.client} (${log.location})` : log.client}
+           `;
+       }
 
-        if (height <= 8) {
-            content = `<strong>${getHebrewType(log.type)}</strong> ${log['start-time']} - ${log['end-time']}`;
-        }
+       if (height <= 8) {
+           content = `<strong>${getHebrewType(log.type)}</strong> ${log['start-time']} - ${log['end-time']}`;
+       }
 
-        return `
-            <div class="absolute p-1 text-xs text-white rounded-sm overflow-hidden hover:overflow-visible hover:z-10" 
-                 style="top: ${top}%; height: ${height}%; min-height: ${minHeight}%; 
-                        background-color: ${color}; width: ${width}%; left: ${left}%; 
-                        z-index: 1; border: 1px dashed white;">
-                <div class="h-full w-full overflow-y-auto">
-                    ${content}
-                    <div class="mt-1">
-                        <button onclick="editLog('${log.id}')" class="text-white underline mr-2">ערוך</button>
-                        <button onclick="deleteLog('${log.id}')" class="text-white underline">מחק</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
+       const actions = log.type === 'holiday' 
+           ? '<div class="mt-1"><span class="text-xs opacity-75">חג - נקבע אוטומטית</span></div>'
+           : `<div class="mt-1">
+               <button onclick="editLog('${log.id}')" class="text-white underline mr-2">ערוך</button>
+               <button onclick="deleteLog('${log.id}')" class="text-white underline">מחק</button>
+              </div>`;
 
-    return `
-        <div class="relative h-full overflow-x-auto">
-            <div class="absolute inset-0 pr-12">
-                ${logElements.join('')}
-            </div>
-            ${timeSlots.join('')}
-        </div>
-    `;
+       return `
+           <div class="absolute p-1 text-xs text-white rounded-sm overflow-hidden hover:overflow-visible hover:z-10" 
+                style="top: ${top}%; height: ${height}%; min-height: ${minHeight}%; 
+                       background-color: ${color}; width: ${width}%; left: ${left}%; 
+                       z-index: 1; border: 1px dashed white;">
+               <div class="h-full w-full overflow-y-auto">
+                   ${content}
+                   ${actions}
+               </div>
+           </div>
+       `;
+   });
+
+   return `
+       <div class="relative h-full overflow-x-auto">
+           <div class="absolute inset-0 pr-12">
+               ${logElements.join('')}
+           </div>
+           ${timeSlots.join('')}
+       </div>
+   `;
 }
-
 function handleOverlappingReports(logs) {
     logs.sort((a, b) => a['start-time'].localeCompare(b['start-time']));
     const overlaps = new Array(logs.length).fill(0);
@@ -1469,6 +1477,40 @@ function editLog(id) {
 function populateEditModal(log) {
     const modal = document.getElementById('edit-modal');
     
+    // If it's a holiday entry, show read-only view
+    if (log.type === 'holiday') {
+        modal.querySelector('.relative').innerHTML = `
+            <button type="button" class="close absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <span class="sr-only">סגור חלון</span>
+            </button>
+            
+            <div class="px-6 py-6 lg:px-8">
+                <h3 class="mb-4 text-xl font-medium text-gray-900">פרטי חג</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">תאריך:</label>
+                        <p class="mt-1 text-sm text-gray-900">${log.date}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">חג:</label>
+                        <p class="mt-1 text-sm text-gray-900">${log.client}</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-md">
+                        <p class="text-sm text-blue-700">ימי חג נקבעים אוטומטית ולא ניתנים לעריכה</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add event listener to close button for holiday view
+        modal.querySelector('.close').addEventListener('click', () => closeModal('edit-modal'));
+        return;
+    }
+
+    // Regular entries - show edit form
     const generateFormFields = () => `
         <input type="hidden" id="edit-id" value="${log.id}">
         
@@ -1532,11 +1574,17 @@ function populateEditModal(log) {
         </div>
     `;
 
+    // Initialize handlers and date/time pickers for regular entries
     initializeEditFormHandlers();
     initializeFlatpickr();
 }
 
 function generateTypeOptions(selectedType) {
+    // Don't allow editing if it's a holiday
+    if (selectedType === 'holiday') {
+        return '<option value="holiday">חג</option>';
+    }
+
     const types = {
         'work': 'עבודה רגילה',
         'sick': 'מחלה',
