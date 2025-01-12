@@ -40,7 +40,11 @@
             transform: translateY(-10px);
             transition: opacity 0.2s ease, transform 0.2s ease;
         }
-        
+        .location-option input[type="radio"]:checked + div {
+        border-color: rgb(99 102 241);
+        background-color: rgb(238 242 255);
+        color: rgb(99 102 241);
+    }
         .profile-dropdown:focus-within .profile-menu {
             display: block;
             opacity: 1;
@@ -717,6 +721,7 @@ function displayDayView(dateString) {
     reportContent.innerHTML = html;
     initializeFlatpickr();
     initializeDayFormHandlers();
+    addRecurrenceFields('day-work-log-form');
 }
 
 function generateTimelineHtml(logs) {
@@ -814,10 +819,44 @@ function generateDayForm(date) {
                         <option value="study">ימי השתלמות</option>
                     </select>
                 </div>
-                <div id="day-location-container">
-                    <label for="day-location" class="block mb-2 text-sm font-medium text-gray-900">מיקום עבודה:</label>
-                    <input type="text" id="day-location" name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                 <div id="day-location-container">
+        <label class="block mb-2 text-sm font-medium text-gray-900">מיקום עבודה:</label>
+        <div class="grid grid-cols-3 gap-2">
+            <label class="location-option cursor-pointer">
+                <input type="radio" name="location" value="משרד" class="sr-only" checked>
+                <div class="flex flex-col items-center justify-center p-3 bg-white border-2 rounded-lg gap-2 hover:bg-gray-50 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition-all">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 21h18M3 7v14M21 7v14M6 7H4m14 0h2M6 4h12c1.1 0 2 .9 2 2v1H4v-1c0-1.1.9-2 2-2Z"/>
+                        <path d="M8 12h2m-2 4h2m4-4h2m-2 4h2"/>
+                    </svg>
+                    <span class="text-sm font-medium">משרד</span>
                 </div>
+            </label>
+
+            <label class="location-option cursor-pointer">
+                <input type="radio" name="location" value="בית" class="sr-only">
+                <div class="flex flex-col items-center justify-center p-3 bg-white border-2 rounded-lg gap-2 hover:bg-gray-50 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition-all">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 12 9-9 9 9M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/>
+                        <path d="M9 21v-6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6"/>
+                    </svg>
+                    <span class="text-sm font-medium">בית</span>
+                </div>
+            </label>
+
+            <label class="location-option cursor-pointer">
+                <input type="radio" name="location" value="לקוח" class="sr-only">
+                <div class="flex flex-col items-center justify-center p-3 bg-white border-2 rounded-lg gap-2 hover:bg-gray-50 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition-all">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span class="text-sm font-medium">לקוח</span>
+                </div>
+            </label>
+        </div>
+    </div>
                 <div id="day-client-container">
                     <label for="day-client" class="block mb-2 text-sm font-medium text-gray-900">לקוח לחיוב:</label>
                     <input type="text" id="day-client" name="client" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
@@ -892,21 +931,65 @@ function handleDayFormSubmit(e) {
     if (!validateForm('day-work-log-form')) return;
 
     const formData = new FormData(e.target);
-    const newLog = Object.fromEntries(formData.entries());
-    newLog.id = Date.now().toString();
+    const baseLog = Object.fromEntries(formData.entries());
 
     // Handle file attachment
     const attachmentInput = document.getElementById('attachment');
     if (attachmentInput && attachmentInput.files.length > 0) {
-        newLog.attachmentName = attachmentInput.files[0].name;
+        baseLog.attachmentName = attachmentInput.files[0].name;
     }
 
-    workLogs.push(newLog);
-    saveWorkLogs();
-    displayDayView(currentDate.toISO());
-    showSuccessMessage('הדיווח נשמר בהצלחה');
-}
+    const enableRecurrence = document.getElementById('day-work-log-form-enable-recurrence');
+    
+    if (enableRecurrence && enableRecurrence.checked) {
+        // Get recurrence parameters
+        const endDate = document.getElementById('day-work-log-form-end-date').value;
+        const selectedDays = Array.from(document.querySelectorAll('input[name="weekdays"]:checked'))
+            .map(cb => parseInt(cb.value));
 
+        if (!endDate) {
+            showNotification('יש להזין תאריך סיום', 'error');
+            return;
+        }
+
+        if (selectedDays.length === 0) {
+            showNotification('יש לבחור לפחות יום אחד בשבוע', 'error');
+            return;
+        }
+
+        // Generate recurring logs
+        const startDateTime = DateTime.fromISO(baseLog.date);
+        const endDateTime = DateTime.fromISO(endDate);
+        const logsToAdd = [];
+
+        let currentDate = startDateTime;
+        while (currentDate <= endDateTime) {
+            if (selectedDays.includes(currentDate.weekday)) {
+                const newLog = {
+                    ...baseLog,
+                    id: Date.now().toString() + Math.random().toString(36).slice(2),
+                    date: currentDate.toFormat('yyyy-MM-dd')
+                };
+                logsToAdd.push(newLog);
+            }
+            currentDate = currentDate.plus({ days: 1 });
+        }
+
+        // Add all logs
+        workLogs.push(...logsToAdd);
+        saveWorkLogs();
+        
+        showNotification(`נוספו ${logsToAdd.length} דיווחים חוזרים בהצלחה`, 'success');
+    } else {
+        // Regular single log
+        baseLog.id = Date.now().toString();
+        workLogs.push(baseLog);
+        saveWorkLogs();
+        showNotification('הדיווח נשמר בהצלחה', 'success');
+    }
+
+    updateReport();
+}
 function handleEditFormSubmit(e) {
     e.preventDefault();
     if (!validateForm('edit-form')) return;
@@ -963,7 +1046,11 @@ function populateEditModal(log) {
         
         <div>
             <label for="edit-location" class="block mb-2 text-sm font-medium text-gray-900">מיקום עבודה:</label>
-            <input type="text" id="edit-location" name="location" value="${log.location}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+            <select id="edit-location" name="location" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
+                <option value="משרד" ${log.location === 'משרד' ? 'selected' : ''}>משרד</option>
+                <option value="בית" ${log.location === 'בית' ? 'selected' : ''}>בית</option>
+                <option value="לקוח" ${log.location === 'לקוח' ? 'selected' : ''}>לקוח</option>
+            </select>
         </div>
         
         <div>
@@ -1046,14 +1133,35 @@ function updateAttachmentVisibility(typeSelect) {
     }
 }
 
+// Find and delete a specific log
 function deleteLog(id) {
     showConfirmDialog('מחיקת דיווח', 'האם אתה בטוח שברצונך למחוק רשומה זו?')
         .then(confirmed => {
             if (confirmed) {
-                workLogs = workLogs.filter(log => log.id !== id);
-                saveWorkLogs();
-                updateReport();
-                showSuccessMessage('הדיווח נמחק בהצלחה');
+                // Find the index of the specific log
+                const logIndex = workLogs.findIndex(log => log.id === id);
+                
+                if (logIndex !== -1) {
+                    // Remove only the specific log
+                    workLogs.splice(logIndex, 1);
+                    
+                    // Save the updated logs
+                    saveWorkLogs();
+                    
+                    // Get the current view
+                    const currentView = document.getElementById('view-selector').value;
+                    
+                    // Update the display based on current view
+                    if (currentView === 'month') {
+                        displayMonthCalendar();
+                    } else {
+                        displayDayView(currentDate.toISO());
+                    }
+                    
+                    showNotification('הדיווח נמחק בהצלחה', 'success');
+                } else {
+                    showNotification('לא נמצא הדיווח למחיקה', 'error');
+                }
             }
         });
 }
@@ -1180,9 +1288,12 @@ function updateFormFieldsBasedOnType() {
     if (selectedType === 'work') {
         locationContainer.querySelector('label').textContent = 'מיקום עבודה:';
         clientContainer.querySelector('label').textContent = 'לקוח לחיוב:';
+        locationContainer.querySelector('select, input').disabled = false;
     } else if (selectedType) {
         locationContainer.querySelector('label').textContent = 'סיבת היעדרות:';
         clientContainer.querySelector('label').textContent = 'פרטים נוספים:';
+        // Disable location select for non-work types
+        locationContainer.querySelector('select, input').disabled = true;
     }
 
     // Show/hide containers
@@ -1233,12 +1344,12 @@ function initializeFlatpickr() {
 document.addEventListener('DOMContentLoaded', initializeApp);
 // Enhanced Features - Templates and Quick Actions
 const quickTimePresets = [
-    { label: 'יום עבודה רגיל', start: '09:00', end: '17:00' },
+    { label: 'יום עבודה רגיל', start: '09:00', end: '18:00' },
     { label: 'חצי יום - בוקר', start: '09:00', end: '13:00' },
     { label: 'חצי יום - אחה"צ', start: '13:00', end: '17:00' },
     { label: 'משמרת ערב', start: '16:00', end: '00:00' },
     { label: 'יום קצר', start: '08:00', end: '15:00' },
-    { label: 'יום ארוך', start: '09:00', end: '19:00' }
+    { label: 'יום ארוך', start: '08:00', end: '19:00' }
 ];
 
 function addQuickActionsToForm() {
@@ -1289,27 +1400,189 @@ function addCopyPreviousButton() {
             return;
         }
 
-        const confirmed = await showConfirmDialog(
-            'העתקת דיווחים',
-            `נמצאו ${previousLogs.length} דיווחים מיום ${previousDay.toFormat('dd/MM/yyyy')}. האם להעתיק אותם ליום הנוכחי?`
-        );
-
-        if (confirmed) {
-            previousLogs.forEach(log => {
-                const newLog = { ...log };
-                newLog.date = currentDate.toFormat('yyyy-MM-dd');
-                newLog.id = Date.now().toString();
-                workLogs.push(newLog);
-            });
-            saveWorkLogs();
-            updateReport();
-            showNotification('הדיווחים הועתקו בהצלחה', 'success');
-        }
+        showCopySelectionModal(previousLogs, previousDay);
     };
 
     formContainer.insertBefore(button, formContainer.firstChild);
 }
 
+function showCopySelectionModal(logs, previousDay) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+    modal.id = 'copy-selection-modal';
+
+    modal.innerHTML = `
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    העתקת דיווחים מיום ${previousDay.toFormat('dd/MM/yyyy')}
+                </h3>
+                
+                <div class="mt-2 mb-4">
+                    <div class="flex items-center mb-4">
+                        <input type="radio" id="copy-all" name="copy-type" value="all" class="ml-2" checked>
+                        <label for="copy-all">העתק את כל הדיווחים</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="radio" id="copy-selected" name="copy-type" value="selected" class="ml-2">
+                        <label for="copy-selected">העתק דיווחים נבחרים</label>
+                    </div>
+                </div>
+
+                <div id="logs-selection" class="mt-4 space-y-2 hidden">
+                    ${logs.map(log => `
+                        <div class="flex items-center p-2 border rounded hover:bg-gray-50">
+                            <input type="checkbox" id="log-${log.id}" value="${log.id}" class="ml-2">
+                            <label for="log-${log.id}" class="flex-grow">
+                                <div class="font-medium">${getHebrewType(log.type)}</div>
+                                <div class="text-sm text-gray-600">
+                                    ${log['start-time']} - ${log['end-time']}
+                                    ${log.type === 'work' ? `<br>${log.location} - ${log.client}` : ''}
+                                </div>
+                            </label>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="flex justify-end mt-6 gap-3">
+                    <button id="cancel-copy" class="px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md hover:bg-gray-300">
+                        ביטול
+                    </button>
+                    <button id="confirm-copy" class="px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md hover:bg-indigo-700">
+                        העתק
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Event Listeners
+    const copyTypeRadios = modal.querySelectorAll('input[name="copy-type"]');
+    const logsSelection = modal.querySelector('#logs-selection');
+
+    copyTypeRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (radio.value === 'selected') {
+                logsSelection.classList.remove('hidden');
+            } else {
+                logsSelection.classList.add('hidden');
+            }
+        });
+    });
+
+    modal.querySelector('#cancel-copy').addEventListener('click', () => {
+        modal.remove();
+    });
+
+    modal.querySelector('#confirm-copy').addEventListener('click', () => {
+        const copyType = modal.querySelector('input[name="copy-type"]:checked').value;
+        let logsToCopy = [];
+
+        if (copyType === 'all') {
+            logsToCopy = logs;
+        } else {
+            const selectedLogIds = Array.from(modal.querySelectorAll('#logs-selection input[type="checkbox"]:checked'))
+                .map(checkbox => checkbox.value);
+            logsToCopy = logs.filter(log => selectedLogIds.includes(log.id));
+        }
+
+        if (logsToCopy.length === 0) {
+            showNotification('יש לבחור לפחות דיווח אחד להעתקה', 'warning');
+            return;
+        }
+
+        // Copy selected logs
+        logsToCopy.forEach(log => {
+            const newLog = { ...log };
+            newLog.date = currentDate.toFormat('yyyy-MM-dd');
+            newLog.id = Date.now().toString() + Math.random().toString(36).slice(2);
+            workLogs.push(newLog);
+        });
+
+        saveWorkLogs();
+        updateReport();
+        showNotification(`${logsToCopy.length} דיווחים הועתקו בהצלחה`, 'success');
+        modal.remove();
+    });
+}
+
+function addRecurrenceFields(formId) {
+    const form = document.getElementById(formId);
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    const recurrenceSection = document.createElement('div');
+    recurrenceSection.className = 'space-y-4 mt-6 p-4 bg-gray-50 rounded-lg';
+    recurrenceSection.innerHTML = `
+        <div class="flex items-center mb-4">
+            <input type="checkbox" id="${formId}-enable-recurrence" class="ml-2">
+            <label for="${formId}-enable-recurrence" class="text-sm font-medium text-gray-900">
+                דיווח חוזר למספר ימים
+            </label>
+        </div>
+
+        <div id="${formId}-recurrence-options" class="space-y-4 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">תאריך סיום:</label>
+                    <input type="text" id="${formId}-end-date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                </div>
+                
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900">ימים בשבוע:</label>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="weekdays" value="7" class="ml-1"> א'
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="weekdays" value="1" class="ml-1"> ב'
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="weekdays" value="2" class="ml-1"> ג'
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="weekdays" value="3" class="ml-1"> ד'
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="weekdays" value="4" class="ml-1"> ה'
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="weekdays" value="5" class="ml-1"> ו'
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="weekdays" value="6" class="ml-1"> ש'
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-sm text-gray-600 bg-blue-50 p-3 rounded">
+                <p>הדיווח יתווסף לכל הימים שנבחרו עד לתאריך הסיום.</p>
+            </div>
+        </div>
+    `;
+
+    // Insert before submit button
+    submitButton.parentNode.insertBefore(recurrenceSection, submitButton);
+
+    // Initialize end date picker
+    flatpickr(`#${formId}-end-date`, {
+        dateFormat: "Y-m-d",
+        allowInput: true,
+        altInput: true,
+        altFormat: "d/m/Y",
+        minDate: 'today'
+    });
+
+    // Toggle recurrence options visibility
+    const enableRecurrence = document.getElementById(`${formId}-enable-recurrence`);
+    const recurrenceOptions = document.getElementById(`${formId}-recurrence-options`);
+    
+    enableRecurrence.addEventListener('change', () => {
+        recurrenceOptions.classList.toggle('hidden', !enableRecurrence.checked);
+    });
+}
 function addKeyboardShortcutsHelp() {
     const helpButton = document.createElement('button');
     helpButton.className = 'fixed bottom-4 left-4 bg-gray-800 text-white p-2 rounded-full';
