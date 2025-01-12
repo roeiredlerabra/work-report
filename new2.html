@@ -533,6 +533,91 @@ function initializeDarkMode() {
         }
     });
 }
+
+// Function to identify and process non-working holidays
+function processNonWorkingHolidays(holidaysData) {
+    // Define holidays where work is prohibited with their Hebrew names
+    const nonWorkingHolidays = [
+        { title: 'Pesach I', hebrew: 'ראשון של פסח' },
+        { title: 'Pesach VII', hebrew: 'שביעי של פסח' },
+        { title: 'Shavuot I', hebrew: 'חג שבועות' },
+        { title: 'Rosh Hashana I', hebrew: 'ראש השנה' },
+        { title: 'Yom Kippur', hebrew: 'יום כיפור' },
+        { title: 'Sukkot I', hebrew: 'ראשון של סוכות' },
+        { title: 'Shmini Atzeret', hebrew: 'שמיני עצרת' }
+    ];
+
+    // Filter and map holidays
+    const processedHolidays = holidaysData.items
+        .filter(item => 
+            nonWorkingHolidays.some(h => h.title === item.title) &&
+            item.category === 'holiday' &&
+            item.subcat === 'major'
+        )
+        .map(holiday => {
+            const matchedHoliday = nonWorkingHolidays.find(h => h.title === holiday.title);
+            return {
+                date: holiday.date,
+                title: matchedHoliday.hebrew,
+                type: 'vacation',
+                client: matchedHoliday.hebrew, // Use Hebrew name in client field
+                location: 'חג',
+                'start-time': '00:00',
+                'end-time': '23:59'
+            };
+        });
+
+    return processedHolidays;
+}
+
+// Function to add holidays to work logs
+function addHolidaysToWorkLogs(workLogs, holidays) {
+    const updatedWorkLogs = [...workLogs];
+    
+    holidays.forEach(holiday => {
+        // Check if holiday already exists in logs
+        const holidayExists = workLogs.some(log => 
+            log.date === holiday.date && 
+            log.type === 'vacation' &&
+            log.client === holiday.title  // Check for specific holiday name
+        );
+
+        if (!holidayExists) {
+            updatedWorkLogs.push({
+                id: Date.now().toString() + Math.random().toString(36).slice(2),
+                ...holiday
+            });
+        }
+    });
+
+    return updatedWorkLogs;
+}
+
+// Usage example:
+async function populateHolidays() {
+    try {
+        const response = await fetch('https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=now');
+        const holidaysData = await response.json();
+        const holidays = processNonWorkingHolidays(holidaysData);
+        const updatedWorkLogs = addHolidaysToWorkLogs(workLogs, holidays);
+        
+        workLogs = updatedWorkLogs;
+        saveWorkLogs();
+        updateReport();
+        
+        showNotification('החגים נוספו בהצלחה ללוח השנה', 'success');
+    } catch (error) {
+        console.error('Error fetching or processing holidays:', error);
+        showNotification('שגיאה בטעינת נתוני החגים', 'error');
+    }
+}
+
+
+
+// Initialize holiday feature
+document.addEventListener('DOMContentLoaded', () => {
+    populateHolidays();
+});
 // Initialize the view selector functionality
 
 function initializeViewSelector() {
@@ -615,7 +700,7 @@ function saveWorkLogs() {
 }
 
 // Helper Functions
-function getHebrewType(type) {
+function getHebrewType(type, client) {
     const types = {
         'work': 'עבודה רגילה',
         'sick': 'מחלה',
@@ -624,7 +709,7 @@ function getHebrewType(type) {
         'spouse_sick': 'מחלת בן/בת זוג',
         'spouse_absence': 'היעדרות בגין בת זוג',
         'child_sick': 'מחלת ילד',
-        'vacation': 'חופשה',
+        'vacation': client && client.includes('חג') ? client : 'חופשה',
         'reserve': 'מילואים',
         'bereavement': 'אבל',
         'study': 'ימי השתלמות'
@@ -1106,9 +1191,9 @@ function generateTimelineHtml(logs) {
         const left = (log.overlap * width);
 
         let content = `
-            <strong>${getHebrewType(log.type)}</strong><br>
+            <strong>${getHebrewType(log.type, log.client)}</strong><br>
             ${log['start-time']} - ${log['end-time']}<br>
-            ${log.client} (${log.location})
+            ${log.type === 'vacation' && log.client.includes('חג') ? '' : `${log.client} (${log.location})`}
         `;
 
         if (height <= 8) {
