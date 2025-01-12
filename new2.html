@@ -1494,11 +1494,11 @@ function addCopyPreviousButton() {
 
 function showCopySelectionModal(logs, previousDay) {
     const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+    modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center';
     modal.id = 'copy-selection-modal';
 
     modal.innerHTML = `
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="relative w-[90%] max-w-[360px] p-5 border shadow-lg rounded-md bg-white mx-auto">
             <div class="mt-3">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
                     העתקת דיווחים מיום ${previousDay.toFormat('dd/MM/yyyy')}
