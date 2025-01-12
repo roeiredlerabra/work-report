@@ -21,7 +21,9 @@
         .z-10 { z-index: 10 !important; }
         body.modal-open { overflow: hidden; }
         #edit-modal.active { opacity: 1; pointer-events: auto; }
-
+        h3 {
+            color: #4F46E5; /* Indigo color */
+        }
         /* Profile Menu Styles */
         .profile-dropdown { position: relative; }
         .profile-menu {
@@ -69,7 +71,196 @@
         .day-header {
             line-height: 1.5;
         }
+/* Add these styles to your existing CSS */
 
+/* Base dark mode setup */
+:root {
+    color-scheme: light dark;
+}
+
+/* Dark mode styles */
+.dark {
+    color-scheme: dark;
+}
+
+/* Background colors */
+.dark body {
+    background-color: rgb(17 24 39);
+    color: rgb(229 231 235);
+}
+
+.dark .bg-white {
+    background-color: rgb(31 41 55);
+}
+
+.dark .bg-gray-100 {
+    background-color: rgb(17 24 39);
+}
+
+.dark .bg-gray-50 {
+    background-color: rgb(31 41 55);
+}
+
+/* Text colors */
+.dark .text-gray-900 {
+    color: rgb(229 231 235);
+}
+
+.dark .text-gray-800 {
+    color: rgb(229 231 235);
+}
+
+.dark .text-gray-600 {
+    color: rgb(156 163 175);
+}
+
+.dark .text-gray-500 {
+    color: rgb(156 163 175);
+}
+
+/* Border colors */
+.dark .border-gray-200 {
+    border-color: rgb(55 65 81);
+}
+.dark .bg-gray-200 {
+    background-color: rgb(93 94 97);
+}
+.dark .border {
+    border-color: rgb(55 65 81);
+}
+
+/* Form elements */
+.dark input, 
+.dark select, 
+.dark textarea {
+    background-color: rgb(31 41 55);
+    border-color: rgb(55 65 81);
+    color: rgb(229 231 235);
+}
+
+.dark input::placeholder {
+    color: rgb(156 163 175);
+}
+
+/* Location buttons */
+.dark .location-option div {
+    background-color: rgb(31 41 55);
+    border-color: rgb(55 65 81);
+}
+
+.dark .location-option:hover div {
+    background-color: rgb(55 65 81);
+}
+
+.dark .location-option input[type="radio"]:checked + div {
+    background-color: rgb(55 65 81);
+    border-color: rgb(99 102 241);
+}
+
+/* Profile dropdown */
+.dark .profile-menu {
+    background-color: rgb(31 41 55);
+    border-color: rgb(55 65 81);
+}
+
+.dark .profile-menu a:hover {
+    background-color: rgb(55 65 81);
+}
+
+/* Navigation */
+.dark nav a:hover {
+    background-color: rgb(55 65 81);
+}
+
+/* Timeline elements */
+.dark .border-gray-300 {
+    border-color: rgb(55 65 81);
+}
+.dark .text-gray-700  {
+    border-color: rgb(90, 100, 117);
+    color: rgb(180 180 180);
+}
+.dark .text-gray-500 {
+    color: rgb(156 163 175);
+}
+
+/* Quick action buttons */
+.dark .bg-gray-100 {
+    background-color: rgb(31 41 55);
+}
+
+.dark .hover\:bg-gray-200:hover {
+    background-color: rgb(29 67 129)
+}
+.dark .text-indigo-600 {
+    color: rgb(148 143 227);
+    border-color: #2e55c2;
+}
+.dark .md\:p-2 { 
+   
+    border-color: #2e55c2;
+}
+/* Text colors */
+.dark text {
+    color: rgb(181, 178, 178);
+}
+
+text {
+    color: black;
+}
+
+/* Calendar */
+.dark .bg-opacity-50 {
+    background-color: rgb(31 41 55);
+}
+
+.dark .hover\:bg-gray-50:hover {
+    background-color: rgb(55 65 81);
+}
+
+/* Shadow modifications */
+.dark .shadow-md,
+.dark .shadow-lg {
+    --tw-shadow-color: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 6px -1px var(--tw-shadow-color), 
+                0 2px 4px -1px var(--tw-shadow-color);
+}
+
+/* Modal backgrounds */
+.dark .bg-opacity-50 {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Buttons */
+.dark .bg-blue-700 {
+    background-color: rgb(37 99 235);
+}
+
+.dark .hover\:bg-blue-800:hover {
+    background-color: rgb(30 64 175);
+}
+
+.dark .bg-green-500 {
+    background-color: rgb(34 197 94);
+}
+
+.dark .hover\:bg-green-600:hover {
+    background-color: rgb(22 163 74);
+}
+
+/* Toggle button specific styles */
+#theme-toggle {
+    transition: background-color 0.2s ease;
+}
+
+#theme-toggle-light-icon,
+#theme-toggle-dark-icon {
+    transition: opacity 0.2s ease;
+}
+
+.dark #theme-toggle:hover {
+    background-color: rgb(55 65 81);
+}
         
     </style>
 </head>
@@ -92,7 +283,19 @@
                 <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">לקוחות</a>
             </nav>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-4">
+                <!-- Dark Mode Toggle -->
+                <button id="theme-toggle" type="button" class="text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <!-- Sun icon -->
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+                    </svg>
+                    <!-- Moon icon -->
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                    </svg>
+                </button>
+
                 <!-- Profile Dropdown -->
                 <div class="relative profile-dropdown">
                     <button type="button" class="bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="user-menu-button">
@@ -303,8 +506,35 @@ const viewSelectorStyles = `
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 `;
+function initializeDarkMode() {
+    // Check for saved theme preference or use system preference
+    if (localStorage.getItem('color-theme') === 'dark' || 
+        (!('color-theme' in localStorage) && 
+         window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-toggle-dark-icon').classList.remove('hidden');
+    } else {
+        document.getElementById('theme-toggle-light-icon').classList.remove('hidden');
+    }
 
+    // Add toggle button event listener
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+        // Toggle icons
+        document.getElementById('theme-toggle-dark-icon').classList.toggle('hidden');
+        document.getElementById('theme-toggle-light-icon').classList.toggle('hidden');
+
+        // Toggle dark mode class
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
+}
 // Initialize the view selector functionality
+
 function initializeViewSelector() {
     // Add styles
     const styleSheet = document.createElement("style");
@@ -321,26 +551,42 @@ function initializeViewSelector() {
     const buttons = document.querySelectorAll('.view-option');
     const hiddenSelect = document.getElementById('view-selector');
 
+    // Function to update button states
+    function updateButtonStates(selectedView) {
+        buttons.forEach(button => {
+            if (button.dataset.view === selectedView) {
+                button.classList.add('selected');
+                button.setAttribute('aria-pressed', 'true');
+            } else {
+                button.classList.remove('selected');
+                button.setAttribute('aria-pressed', 'false');
+            }
+        });
+    }
+
+    // Update buttons when clicked
     buttons.forEach(button => {
         button.addEventListener('click', () => {
-            // Update visual state
-            buttons.forEach(b => {
-                b.classList.remove('selected');
-                b.setAttribute('aria-pressed', 'false');
-            });
-            button.classList.add('selected');
-            button.setAttribute('aria-pressed', 'true');
-
-            // Update hidden select and trigger change event
             const view = button.dataset.view;
+            updateButtonStates(view);
+            
             if (hiddenSelect) {
                 hiddenSelect.value = view;
                 hiddenSelect.dispatchEvent(new Event('change'));
             }
         });
     });
-}
-// Data Management Functions
+
+    // Listen for changes to the hidden select
+    if (hiddenSelect) {
+        hiddenSelect.addEventListener('change', () => {
+            updateButtonStates(hiddenSelect.value);
+        });
+        
+        // Set initial state based on current value
+        updateButtonStates(hiddenSelect.value);
+    }
+}// Data Management Functions
 function lazyLoadWorkLogs() {
     try {
         const storedLogs = localStorage.getItem('workLogs');
@@ -766,10 +1012,28 @@ function handleCalendarKeyboardNavigation(e) {
     }
 }
 // Day View Functions
-function displayDayView(dateString) {
+function displayDayView(dateString, updateView = true) {
     const date = DateTime.fromISO(dateString);
     currentDate = date;
-    document.getElementById('view-selector').value = 'day';
+    
+    // Only update the view selector if explicitly requested
+    if (updateView) {
+        // Update hidden select without triggering change event
+        const viewSelector = document.getElementById('view-selector');
+        viewSelector.value = 'day';
+        
+        // Update buttons directly
+        const buttons = document.querySelectorAll('.view-option');
+        buttons.forEach(button => {
+            if (button.dataset.view === 'day') {
+                button.classList.add('selected');
+                button.setAttribute('aria-pressed', 'true');
+            } else {
+                button.classList.remove('selected');
+                button.setAttribute('aria-pressed', 'false');
+            }
+        });
+    }
 
     const reportContent = document.getElementById('report-content');
     const dayLogs = workLogs.filter(log => {
@@ -808,8 +1072,17 @@ function displayDayView(dateString) {
     initializeFlatpickr();
     initializeDayFormHandlers();
     addRecurrenceFields('day-work-log-form');
+}function initializeCalendarDayClicks() {
+    const calendarDays = document.querySelectorAll('[data-date]');
+    calendarDays.forEach(day => {
+        day.addEventListener('click', () => {
+            const date = day.getAttribute('data-date');
+            const viewSelector = document.getElementById('view-selector');
+            viewSelector.value = 'day';
+            displayDayView(date, true);
+        });
+    });
 }
-
 function generateTimelineHtml(logs) {
     const timeSlots = new Array(24).fill().map((_, i) => {
         const time = i.toString().padStart(2, '0') + ':00';
@@ -1392,12 +1665,24 @@ function updateReport() {
     const reportContent = document.getElementById('report-content');
     reportContent.innerHTML = '';
 
+    // Update view selector buttons without triggering events
+    const buttons = document.querySelectorAll('.view-option');
+    buttons.forEach(button => {
+        if (button.dataset.view === view) {
+            button.classList.add('selected');
+            button.setAttribute('aria-pressed', 'true');
+        } else {
+            button.classList.remove('selected');
+            button.setAttribute('aria-pressed', 'false');
+        }
+    });
+
     switch (view) {
         case 'month':
             displayMonthCalendar();
             break;
         case 'day':
-            displayDayView(currentDate.toISO());
+            displayDayView(currentDate.toISO(), false); // Add flag to prevent recursion
             break;
     }
 }
@@ -1425,7 +1710,7 @@ function initializeFlatpickr() {
     flatpickr("#day-start-time", timeConfig);
     flatpickr("#day-end-time", timeConfig);
 }
-
+document.addEventListener('DOMContentLoaded', initializeDarkMode);
 // Initialize application when DOM is loaded
 document.addEventListener('DOMContentLoaded', initializeApp);
 // Enhanced Features - Templates and Quick Actions
