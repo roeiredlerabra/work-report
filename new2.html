@@ -129,20 +129,22 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-        <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">דיווח שעות עבודה</h1>
-    
+       
         <!-- View Selector -->
         <div class="mb-6">
-            <label for="view-selector" class="block mb-2 text-sm font-medium text-gray-900">בחר תצוגה:</label>
-            <select id="view-selector" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+            <!-- Hidden select for maintaining existing functionality -->
+            <select id="view-selector" class="hidden">
                 <option value="month">חודשי</option>
                 <option value="day">יומי</option>
             </select>
+            
+            <!-- New view selector container -->
+            <div class="view-selector-container"></div>
         </div>
     
         <!-- Report Container -->
         <div id="report-container" class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-            <h2 class="text-lg sm:text-xl font-semibold mb-4">דו"ח זמני עבודה</h2>
+         
             <div id="report-content" class="overflow-x-auto"></div>
         </div>
     
@@ -253,7 +255,91 @@ function safelyParseJSON(json) {
         return null;
     }
 }
+const viewSelectorHtml = `
+<div class="flex justify-center mb-6">
+    <div class="inline-flex items-center p-1 bg-gray-100 rounded-lg" role="group">
+        <button type="button" 
+                data-view="month" 
+                class="view-option px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 selected"
+                aria-pressed="true">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                <span>תצוגת חודש</span>
+            </div>
+        </button>
+        <button type="button"
+                data-view="day"
+                class="view-option px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+                aria-pressed="false">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <path d="M16 2v4M8 2v4M3 10h18M8 14h8M8 18h5"/>
+                </svg>
+                <span>תצוגת יום</span>
+            </div>
+        </button>
+    </div>
+</div>
+`;
 
+// Add the styles
+const viewSelectorStyles = `
+    .view-option {
+        color: #6B7280;
+        background: transparent;
+    }
+
+    .view-option:hover:not(.selected) {
+        background: rgba(107, 114, 128, 0.1);
+    }
+
+    .view-option.selected {
+        background: white;
+        color: #4F46E5;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+`;
+
+// Initialize the view selector functionality
+function initializeViewSelector() {
+    // Add styles
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = viewSelectorStyles;
+    document.head.appendChild(styleSheet);
+
+    // Replace existing selector
+    const viewSelectorContainer = document.querySelector('.view-selector-container');
+    if (viewSelectorContainer) {
+        viewSelectorContainer.innerHTML = viewSelectorHtml;
+    }
+
+    // Add event listeners
+    const buttons = document.querySelectorAll('.view-option');
+    const hiddenSelect = document.getElementById('view-selector');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Update visual state
+            buttons.forEach(b => {
+                b.classList.remove('selected');
+                b.setAttribute('aria-pressed', 'false');
+            });
+            button.classList.add('selected');
+            button.setAttribute('aria-pressed', 'true');
+
+            // Update hidden select and trigger change event
+            const view = button.dataset.view;
+            if (hiddenSelect) {
+                hiddenSelect.value = view;
+                hiddenSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+}
 // Data Management Functions
 function lazyLoadWorkLogs() {
     try {
@@ -1171,7 +1257,7 @@ function initializeApp() {
     lazyLoadWorkLogs();
     workTemplates.loadTemplates();
     recentLocations.load();
-
+    initializeViewSelector();
     // Initialize view
     updateReport();
 
