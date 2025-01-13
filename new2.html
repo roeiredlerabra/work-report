@@ -1594,42 +1594,42 @@ tr:hover {
         }
         // Day View Functions
         function displayDayView(dateString, updateView = true) {
-            const date = DateTime.fromISO(dateString);
-            currentDate = date;
+    const date = DateTime.fromISO(dateString);
+    currentDate = date;
 
-            // Only update the view selector if explicitly requested
-            if (updateView) {
-                // Update hidden select without triggering change event
-                const viewSelector = document.getElementById('view-selector');
-                viewSelector.value = 'day';
+    // Only update the view selector if explicitly requested
+    if (updateView) {
+        // Update hidden select without triggering change event
+        const viewSelector = document.getElementById('view-selector');
+        viewSelector.value = 'day';
 
-                // Update buttons directly
-                const buttons = document.querySelectorAll('.view-option');
-                buttons.forEach(button => {
-                    if (button.dataset.view === 'day') {
-                        button.classList.add('selected');
-                        button.setAttribute('aria-pressed', 'true');
-                    } else {
-                        button.classList.remove('selected');
-                        button.setAttribute('aria-pressed', 'false');
-                    }
-                });
+        // Update buttons directly
+        const buttons = document.querySelectorAll('.view-option');
+        buttons.forEach(button => {
+            if (button.dataset.view === 'day') {
+                button.classList.add('selected');
+                button.setAttribute('aria-pressed', 'true');
+            } else {
+                button.classList.remove('selected');
+                button.setAttribute('aria-pressed', 'false');
             }
+        });
+    }
 
-            const reportContent = document.getElementById('report-content');
-            const dayLogs = workLogs.filter(log => {
-                const logDate = DateTime.fromISO(log.date);
-                return logDate && logDate.hasSame(date, 'day');
-            });
+    const reportContent = document.getElementById('report-content');
+    const dayLogs = workLogs.filter(log => {
+        const logDate = DateTime.fromISO(log.date);
+        return logDate && logDate.hasSame(date, 'day');
+    });
 
-            dayLogs.sort((a, b) => {
-                if (!a['start-time'] && !b['start-time']) return 0;
-                if (!a['start-time']) return 1;
-                if (!b['start-time']) return -1;
-                return a['start-time'].localeCompare(b['start-time']);
-            });
+    dayLogs.sort((a, b) => {
+        if (!a['start-time'] && !b['start-time']) return 0;
+        if (!a['start-time']) return 1;
+        if (!b['start-time']) return -1;
+        return a['start-time'].localeCompare(b['start-time']);
+    });
 
-            let html = `
+    let html = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
             <button onclick="changeDay(-1)" class="w-full sm:w-auto mb-2 sm:mb-0 text-blue-600 hover:text-blue-800">&lt; יום קודם</button>
             <h3 class="text-lg font-semibold">${date.toFormat('dd/MM/yyyy')}</h3>
@@ -1638,7 +1638,7 @@ tr:hover {
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="space-y-4">
                 <h4 class="text-lg font-semibold">דיווחי היום</h4>
-                <div class="relative h-[400px] sm:h-[600px] border border-gray-300 rounded">
+                <div class="timeline-container relative h-[400px] sm:h-[600px] border border-gray-300 rounded">
                     ${generateTimelineHtml(dayLogs)}
                 </div>
             </div>
@@ -1649,92 +1649,111 @@ tr:hover {
         </div>
     `;
 
-            reportContent.innerHTML = html;
-            initializeFlatpickr();
-            initializeDayFormHandlers();
-            addRecurrenceFields('day-work-log-form');
-        } function initializeCalendarDayClicks() {
-            const calendarDays = document.querySelectorAll('[data-date]');
-            calendarDays.forEach(day => {
-                day.addEventListener('click', () => {
-                    const date = day.getAttribute('data-date');
-                    const viewSelector = document.getElementById('view-selector');
-                    viewSelector.value = 'day';
-                    displayDayView(date, true);
-                });
-            });
-        }
-        function generateTimelineHtml(logs) {
-            const timeSlots = new Array(24).fill().map((_, i) => {
-                const time = i.toString().padStart(2, '0') + ':00';
-                return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" 
-                    style="top: ${i * (100 / 24)}%">${time}</div>`;
-            });
+    reportContent.innerHTML = html;
 
-            const processedLogs = handleOverlappingReports(logs);
-            const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
+    // Initialize timeline interactions after adding the HTML
+    const timelineContainer = document.querySelector('.timeline-container');
+    if (timelineContainer) {
+        initializeTimelineInteractions(timelineContainer);
+    }
 
-            const logElements = processedLogs.map(log => {
-                const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-                const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-                const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
-                let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
-                const minHeight = 5;
-                height = Math.max(height, minHeight);
+    // Initialize other components
+    initializeFlatpickr();
+    initializeDayFormHandlers();
+    addRecurrenceFields('day-work-log-form');
+}
 
-                const color = getColorForLogType(log.type);
-                const width = (100 / (maxOverlap + 1)) * 0.9;
-                const left = (log.overlap * width);
+function generateTimelineHtml(logs) {
+    // Create time slots (hours) markers
+    const timeSlots = new Array(24).fill().map((_, i) => {
+        const time = i.toString().padStart(2, '0') + ':00';
+        return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" 
+            style="top: ${i * (100 / 24)}%">${time}</div>`;
+    });
 
-                let content = '';
-                if (log.type === 'holiday') {
-                    content = `
-               <div class="font-bold mb-1">חג</div>
-               <div>${log.client}</div>
-               <div class="text-xs mt-1">${log['start-time']} - ${log['end-time']}</div>
-           `;
-                } else {
-                    content = `
-               <strong>${getHebrewType(log.type)}</strong><br>
-               ${log['start-time']} - ${log['end-time']}<br>
-               ${log.type === 'work' ? `${log.client} (${log.location})` : log.client}
-           `;
-                }
+    const processedLogs = handleOverlappingReports(logs);
+    const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
 
-                if (height <= 8) {
-                    content = `<strong>${getHebrewType(log.type)}</strong> ${log['start-time']} - ${log['end-time']}`;
-                }
+    const logElements = processedLogs.map(log => {
+        const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+        const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+        const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
+        let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
+        const minHeight = 5;
+        height = Math.max(height, minHeight);
 
-                const actions = log.type === 'holiday'
-                    ? '<div class="mt-1 text-xs opacity-75">חג - נקבע אוטומטית</div>'
-                    : `<div class="mt-1">
-               <button onclick="editLog('${log.id}')" class="text-white underline mr-2">ערוך</button>
-               <button onclick="deleteLog('${log.id}')" class="text-white underline">מחק</button>
-              </div>`;
+        const color = getColorForLogType(log.type);
+        const width = (100 / (maxOverlap + 1)) * 0.9;
+        const left = (log.overlap * width);
 
-                return `
-           <div class="absolute p-1 text-xs text-white rounded-sm overflow-hidden hover:overflow-visible hover:z-10" 
-                style="top: ${top}%; height: ${height}%; min-height: ${minHeight}%; 
-                       background-color: ${color}; width: ${width}%; left: ${left}%; 
-                       z-index: 1; border: 1px dashed white;">
-               <div class="h-full w-full overflow-y-auto">
-                   ${content}
-                   ${actions}
-               </div>
-           </div>
-       `;
-            });
-
-            return `
-       <div class="relative h-full overflow-x-auto">
-           <div class="absolute inset-0 pr-12">
-               ${logElements.join('')}
-           </div>
-           ${timeSlots.join('')}
-       </div>
-   `;
+        // Generate the content based on log type and available space
+        let content = '';
+        if (log.type === 'holiday') {
+            content = `
+                <div class="time-display font-bold mb-1">חג</div>
+                <div>${log.client}</div>
+                <div class="text-xs mt-1">${log['start-time']} - ${log['end-time']}</div>
+            `;
+        } else {
+            content = `
+                <div class="time-display">
+                    <strong>${getHebrewType(log.type)}</strong><br>
+                    ${log['start-time']} - ${log['end-time']}<br>
+                    ${log.type === 'work' ? `${log.client} (${log.location})` : log.client}
+                </div>
+            `;
         }
 
+        // Simplified content for small height items
+        if (height <= 8) {
+            content = `
+                <div class="time-display">
+                    <strong>${getHebrewType(log.type)}</strong> 
+                    ${log['start-time']} - ${log['end-time']}
+                </div>
+            `;
+        }
+
+        // Generate action buttons based on log type
+        const actions = log.type === 'holiday'
+            ? '<div class="mt-1 text-xs opacity-75">חג - נקבע אוטומטית</div>'
+            : `<div class="timeline-actions mt-1">
+                <button onclick="editLog('${log.id}')" class="text-white underline mr-2">ערוך</button>
+                <button onclick="deleteLog('${log.id}')" class="text-white underline">מחק</button>
+               </div>`;
+
+        // Return the complete timeline item element
+        return `
+            <div class="timeline-item absolute p-1 text-xs text-white rounded-sm overflow-hidden hover:overflow-visible hover:z-10"
+                 data-log-id="${log.id}"
+                 data-type="${log.type}"
+                 style="top: ${top}%; height: ${height}%; min-height: ${minHeight}%; 
+                        background-color: ${color}; width: ${width}%; left: ${left}%; 
+                        z-index: 1; border: 1px dashed white;">
+                <div class="relative h-full w-full overflow-y-auto">
+                    ${content}
+                    ${actions}
+                </div>
+                ${log.type !== 'holiday' ? `
+                    <div class="resize-handle resize-top absolute top-0 left-0 right-0 h-1.5 cursor-n-resize 
+                              bg-white bg-opacity-20 hover:bg-opacity-40 transition-colors"></div>
+                    <div class="resize-handle resize-bottom absolute bottom-0 left-0 right-0 h-1.5 cursor-s-resize 
+                              bg-white bg-opacity-20 hover:bg-opacity-40 transition-colors"></div>
+                ` : ''}
+            </div>
+        `;
+    });
+
+    // Return the complete timeline HTML
+    return `
+        <div class="relative h-full overflow-x-auto">
+            <div class="absolute inset-0 pr-12">
+                ${logElements.join('')}
+            </div>
+            ${timeSlots.join('')}
+        </div>
+    `;
+}
         function handleOverlappingReports(logs) {
             logs.sort((a, b) => a['start-time'].localeCompare(b['start-time']));
             const overlaps = new Array(logs.length).fill(0);
@@ -2241,7 +2260,182 @@ tr:hover {
                 }
             });
         }
+// Timeline Interaction Enhancement
+function initializeTimelineInteractions(timelineContainer) {
+    let isDragging = false;
+    let isResizing = false;
+    let resizeDirection = null;
+    let activeElement = null;
+    let initialY = 0;
+    let initialHeight = 0;
+    let initialTop = 0;
 
+    // Convert timeline position to time
+    function positionToTime(position) {
+        const containerHeight = timelineContainer.clientHeight;
+        const hours = (position / containerHeight) * 24;
+        return DateTime.fromObject({ hour: Math.floor(hours), minute: Math.round((hours % 1) * 60) })
+            .toFormat('HH:mm');
+    }
+
+    // Convert time to timeline position
+    function timeToPosition(time) {
+        const [hours, minutes] = time.split(':').map(Number);
+        const totalHours = hours + (minutes / 60);
+        return (totalHours / 24) * timelineContainer.clientHeight;
+    }
+
+    // Add resize handles to timeline items
+    function addResizeHandles(element) {
+        // Add resize zones at top and bottom
+        const topHandle = document.createElement('div');
+        topHandle.className = 'resize-handle resize-top';
+        topHandle.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            cursor: n-resize;
+        `;
+
+        const bottomHandle = document.createElement('div');
+        bottomHandle.className = 'resize-handle resize-bottom';
+        bottomHandle.style.cssText = `
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            cursor: s-resize;
+        `;
+
+        element.appendChild(topHandle);
+        element.appendChild(bottomHandle);
+    }
+
+    // Initialize draggable elements
+    function initializeDraggable() {
+        const timelineItems = timelineContainer.querySelectorAll('.timeline-item');
+        timelineItems.forEach(item => {
+            item.style.cursor = 'move';
+            item.style.position = 'absolute';
+            addResizeHandles(item);
+        });
+    }
+
+    // Handle mouse down event
+    timelineContainer.addEventListener('mousedown', (e) => {
+        const timelineItem = e.target.closest('.timeline-item');
+        if (!timelineItem) return;
+
+        if (e.target.classList.contains('resize-handle')) {
+            // Start resizing
+            isResizing = true;
+            resizeDirection = e.target.classList.contains('resize-top') ? 'top' : 'bottom';
+            activeElement = timelineItem;
+            initialY = e.clientY;
+            initialHeight = timelineItem.offsetHeight;
+            initialTop = timelineItem.offsetTop;
+        } else {
+            // Start dragging
+            isDragging = true;
+            activeElement = timelineItem;
+            initialY = e.clientY;
+            initialTop = timelineItem.offsetTop;
+        }
+
+        // Prevent text selection while dragging
+        e.preventDefault();
+    });
+
+    // Handle mouse move event
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging && !isResizing) return;
+
+        const deltaY = e.clientY - initialY;
+        const containerHeight = timelineContainer.clientHeight;
+
+        if (isDragging) {
+            let newTop = initialTop + deltaY;
+            // Constrain to timeline bounds
+            newTop = Math.max(0, Math.min(containerHeight - activeElement.offsetHeight, newTop));
+            activeElement.style.top = `${newTop}px`;
+
+            // Update time display
+            const startTime = positionToTime(newTop);
+            const endTime = positionToTime(newTop + activeElement.offsetHeight);
+            updateTimeDisplay(activeElement, startTime, endTime);
+        }
+
+        if (isResizing) {
+            if (resizeDirection === 'top') {
+                let newTop = initialTop + deltaY;
+                let newHeight = initialHeight - deltaY;
+                
+                // Constrain resize
+                if (newHeight < 20) {
+                    newHeight = 20;
+                    newTop = initialTop + initialHeight - newHeight;
+                }
+                
+                activeElement.style.top = `${newTop}px`;
+                activeElement.style.height = `${newHeight}px`;
+            } else {
+                let newHeight = initialHeight + deltaY;
+                // Minimum height constraint
+                newHeight = Math.max(20, newHeight);
+                // Maximum height constraint
+                newHeight = Math.min(newHeight, containerHeight - activeElement.offsetTop);
+                activeElement.style.height = `${newHeight}px`;
+            }
+
+            // Update time display
+            const startTime = positionToTime(activeElement.offsetTop);
+            const endTime = positionToTime(activeElement.offsetTop + activeElement.offsetHeight);
+            updateTimeDisplay(activeElement, startTime, endTime);
+        }
+    });
+
+    // Handle mouse up event
+    document.addEventListener('mouseup', () => {
+        if (isDragging || isResizing) {
+            // Save the new times to the work log
+            if (activeElement) {
+                const logId = activeElement.dataset.logId;
+                const startTime = positionToTime(activeElement.offsetTop);
+                const endTime = positionToTime(activeElement.offsetTop + activeElement.offsetHeight);
+                
+                updateWorkLog(logId, startTime, endTime);
+            }
+        }
+        
+        isDragging = false;
+        isResizing = false;
+        activeElement = null;
+    });
+
+    // Update work log data
+    function updateWorkLog(logId, startTime, endTime) {
+        const logIndex = workLogs.findIndex(log => log.id === logId);
+        if (logIndex !== -1) {
+            workLogs[logIndex]['start-time'] = startTime;
+            workLogs[logIndex]['end-time'] = endTime;
+            saveWorkLogs();
+        }
+    }
+
+    // Update time display in the timeline item
+    function updateTimeDisplay(element, startTime, endTime) {
+        const timeDisplay = element.querySelector('.time-display');
+        if (timeDisplay) {
+            timeDisplay.textContent = `${startTime} - ${endTime}`;
+        }
+    }
+
+    // Initialize draggable elements
+    initializeDraggable();
+}
         function handleKeyboardShortcuts(e) {
             // Alt + N: New entry for today
             if (e.altKey && e.key === 'n') {
@@ -2658,7 +2852,8 @@ tr:hover {
                 addQuickActionsToForm();
                 addCopyPreviousButton();
             };
-
+            const timelineContainer = document.querySelector('.relative.h-[400px]');
+            initializeTimelineInteractions(timelineContainer);
             addKeyboardShortcutsHelp();
         });
     </script>
