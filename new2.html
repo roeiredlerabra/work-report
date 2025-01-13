@@ -24,6 +24,19 @@
         h3 {
             color: #4F46E5; /* Indigo color */
         }
+        .w-6 {
+            color: black;
+        }
+        .text-sm {
+            color: black;
+        }
+
+        .dark .text-sm {
+            color: rgb(224, 220, 220);
+        }
+        .dark         .w-6 {
+            color: rgb(224, 220, 220);
+        }
         /* Profile Menu Styles */
         .profile-dropdown { position: relative; }
         .profile-menu {
@@ -534,7 +547,14 @@ function initializeDarkMode() {
         }
     });
 }
-
+// Function to check if a holiday already exists
+function holidayExists(workLogs, holiday) {
+    return workLogs.some(log => 
+        log.date === holiday.date && 
+        log.type === 'holiday' &&
+        log.client === holiday.client  // Changed from description to client
+    );
+}
 // Function to identify and process non-working holidays
 function processNonWorkingHolidays(holidaysData) {
     const nonWorkingHolidays = [
@@ -557,36 +577,32 @@ function processNonWorkingHolidays(holidaysData) {
             const matchedHoliday = nonWorkingHolidays.find(h => h.title === holiday.title);
             return {
                 date: holiday.date,
-                title: matchedHoliday.hebrew,
-                type: 'holiday',  // Changed from 'vacation' to 'holiday'
-                description: matchedHoliday.hebrew,  // Store holiday name in description
+                client: matchedHoliday.hebrew,  // Set client instead of title for display
+                type: 'holiday',
+                description: matchedHoliday.hebrew,
                 'start-time': '00:00',
-                'end-time': '23:59'
+                'end-time': '23:59',
+                location: 'חג'  // Add location for consistency
             };
         });
 }
 
 // Function to add holidays to work logs
 function addHolidaysToWorkLogs(workLogs, holidays) {
+    let holidaysAdded = 0;
     const updatedWorkLogs = [...workLogs];
     
     holidays.forEach(holiday => {
-        // Check if holiday already exists in logs
-        const holidayExists = workLogs.some(log => 
-            log.date === holiday.date && 
-            log.type === 'vacation' &&
-            log.client === holiday.title  // Check for specific holiday name
-        );
-
-        if (!holidayExists) {
+        if (!holidayExists(updatedWorkLogs, holiday)) {
             updatedWorkLogs.push({
-                id: Date.now().toString() + Math.random().toString(36).slice(2),
+                id: `holiday-${Date.now()}-${Math.random().toString(36).slice(2)}`,
                 ...holiday
             });
+            holidaysAdded++;
         }
     });
 
-    return updatedWorkLogs;
+    return { updatedWorkLogs, holidaysAdded };
 }
 
 // Usage example:
@@ -595,13 +611,14 @@ async function populateHolidays() {
         const response = await fetch('https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=now');
         const holidaysData = await response.json();
         const holidays = processNonWorkingHolidays(holidaysData);
-        const updatedWorkLogs = addHolidaysToWorkLogs(workLogs, holidays);
+        const { updatedWorkLogs, holidaysAdded } = addHolidaysToWorkLogs(workLogs, holidays);
         
-        workLogs = updatedWorkLogs;
-        saveWorkLogs();
-        updateReport();
-        
-        showNotification('החגים נוספו בהצלחה ללוח השנה', 'success');
+        if (holidaysAdded > 0) {
+            workLogs = updatedWorkLogs;
+            saveWorkLogs();
+            updateReport();
+            showNotification(`נוספו ${holidaysAdded} חגים חדשים ללוח השנה`, 'success');
+        }
     } catch (error) {
         console.error('Error fetching or processing holidays:', error);
         showNotification('שגיאה בטעינת נתוני החגים', 'error');
@@ -1190,9 +1207,9 @@ function generateTimelineHtml(logs) {
        let content = '';
        if (log.type === 'holiday') {
            content = `
-               <strong>חג</strong><br>
-               ${log.client}<br>
-               ${log['start-time']} - ${log['end-time']}
+               <div class="font-bold mb-1">חג</div>
+               <div>${log.client}</div>
+               <div class="text-xs mt-1">${log['start-time']} - ${log['end-time']}</div>
            `;
        } else {
            content = `
@@ -1207,7 +1224,7 @@ function generateTimelineHtml(logs) {
        }
 
        const actions = log.type === 'holiday' 
-           ? '<div class="mt-1"><span class="text-xs opacity-75">חג - נקבע אוטומטית</span></div>'
+           ? '<div class="mt-1 text-xs opacity-75">חג - נקבע אוטומטית</div>'
            : `<div class="mt-1">
                <button onclick="editLog('${log.id}')" class="text-white underline mr-2">ערוך</button>
                <button onclick="deleteLog('${log.id}')" class="text-white underline">מחק</button>
@@ -1235,6 +1252,7 @@ function generateTimelineHtml(logs) {
        </div>
    `;
 }
+
 function handleOverlappingReports(logs) {
     logs.sort((a, b) => a['start-time'].localeCompare(b['start-time']));
     const overlaps = new Array(logs.length).fill(0);
