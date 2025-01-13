@@ -1,32 +1,201 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכת מורחבת לניהול שעות עבודה</title>
-    
+
     <!-- External CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
+
     <!-- External JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.3.0/luxon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/he.js"></script>
-    
+
     <!-- Custom Styles -->
     <style>
-        .overflow-visible { overflow: visible !important; }
-        .z-10 { z-index: 10 !important; }
-        body.modal-open { overflow: hidden; }
-        #edit-modal.active { opacity: 1; pointer-events: auto; }
-        h3 {
-            color: #4F46E5; /* Indigo color */
+        .overflow-visible {
+            overflow: visible !important;
         }
+/* Form elements and inputs */
+.dark input[type="text"],
+.dark input[type="search"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="tel"],
+.dark input[type="url"],
+.dark input[type="date"],
+.dark input[type="datetime-local"],
+.dark input[type="month"],
+.dark input[type="week"],
+.dark input[type="time"],
+.dark select,
+.dark textarea {
+    background-color: rgb(31 41 55);
+    border-color: rgb(55 65 81);
+    color: rgb(229 231 235);
+}
+
+.dark input::placeholder {
+    color: rgb(156 163 175);
+}
+
+
+
+/* Calendar and timeline specific styles */
+.dark .day-header {
+    color: rgb(229 231 235);
+}
+
+.dark .timeline-event {
+    border-color: rgb(55 65 81);
+}
+
+.dark .quick-action-button {
+    background-color: rgb(31 41 55);
+    border-color: rgb(55 65 81);
+}
+
+.dark .quick-action-button:hover {
+    background-color: rgb(55 65 81);
+}
+
+/* Modal and overlay styles */
+.dark .modal-content {
+    background-color: rgb(31 41 55);
+    border-color: rgb(55 65 81);
+}
+
+.dark .modal-header {
+    border-bottom-color: rgb(55 65 81);
+}
+
+.dark .modal-footer {
+    border-top-color: rgb(55 65 81);
+}
+
+/* Card and container styles */
+.dark .bg-opacity-50 {
+    background-color: rgba(17, 24, 39, 0.5);
+}
+
+.dark .bg-white\/50 {
+    background-color: rgba(31, 41, 55, 0.5);
+}
+
+/* Quick action presets */
+.dark .text-xs.bg-gray-100 {
+    background-color: rgb(31 41 55);
+    color: rgb(209 213 219);
+}
+
+.dark .text-xs.bg-gray-100:hover {
+    background-color: rgb(55 65 81);
+}
+
+/* Recurrence section */
+.dark .space-y-4.mt-6.p-4.bg-gray-50 {
+    background-color: rgb(31 41 55);
+}
+
+/* Calendar donut chart */
+.dark .donut-chart circle:first-child {
+    stroke: rgb(55 65 81);
+}
+
+/* Info messages and notifications */
+.dark .bg-blue-50 {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: rgb(219 234 254);
+}
+
+.dark .text-blue-700 {
+    color: rgb(147 197 253);
+}
+
+/* Form validation and error states */
+.dark .text-red-600 {
+    color: rgb(252 165 165);
+}
+
+.dark .border-red-500 {
+    border-color: rgb(239 68 68);
+}
+
+/* Success states */
+.dark .text-green-600 {
+    color: rgb(110 231 183);
+}
+
+/* Hover states for interactive elements */
+.dark .hover\:bg-gray-700:hover {
+    background-color: rgb(55 65 81);
+}
+
+.dark .hover\:text-gray-300:hover {
+    color: rgb(209 213 219);
+}
+/* Default text color for light mode */
+.inline-flex.items-center {
+    color: rgb(55 65 81); /* gray-700 */
+}
+
+/* Preserve correct text color in dark mode */
+.dark .inline-flex.items-center {
+    color: rgb(229 231 235); /* gray-200 */
+}
+
+/* Fix for any labels inside inline-flex items-center */
+.inline-flex.items-center label {
+    color: inherit;
+}
+
+/* Fix for any spans inside inline-flex items-center */
+.inline-flex.items-center span {
+    color: inherit;
+}
+/* Additional timeline styles */
+.dark .timeline-hour-marker {
+    border-color: rgb(55 65 81);
+    color: rgb(156 163 175);
+}
+
+.dark .timeline-event-content {
+    background-color: rgb(31 41 55);
+}
+
+/* Selection styles */
+.dark ::selection {
+    background-color: rgb(37 99 235);
+    color: rgb(255 255 255);
+}
+        .z-10 {
+            z-index: 10 !important;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        #edit-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        h3 {
+            color: #4F46E5;
+            /* Indigo color */
+        }
+
         .w-6 {
             color: black;
         }
+
         .text-sm {
             color: black;
         }
@@ -34,11 +203,16 @@
         .dark .text-sm {
             color: rgb(224, 220, 220);
         }
-        .dark         .w-6 {
+
+        .dark .w-6 {
             color: rgb(224, 220, 220);
         }
+
         /* Profile Menu Styles */
-        .profile-dropdown { position: relative; }
+        .profile-dropdown {
+            position: relative;
+        }
+
         .profile-menu {
             display: none;
             position: absolute;
@@ -55,11 +229,13 @@
             transform: translateY(-10px);
             transition: opacity 0.2s ease, transform 0.2s ease;
         }
-        .location-option input[type="radio"]:checked + div {
-        border-color: rgb(99 102 241);
-        background-color: rgb(238 242 255);
-        color: rgb(99 102 241);
-    }
+
+        .location-option input[type="radio"]:checked+div {
+            border-color: rgb(99 102 241);
+            background-color: rgb(238 242 255);
+            color: rgb(99 102 241);
+        }
+
         .profile-dropdown:focus-within .profile-menu {
             display: block;
             opacity: 1;
@@ -79,274 +255,330 @@
             border: 1px solid transparent;
             transition: border-color 0.3s;
         }
+
         button:hover {
             border-color: rgba(99, 102, 241, 0.5);
         }
+
         .day-header {
             line-height: 1.5;
         }
-/* Add these styles to your existing CSS */
 
-/* Base dark mode setup */
-:root {
-    color-scheme: light dark;
-}
+        /* Add these styles to your existing CSS */
+        #mobile-menu {
+            transition: max-height 0.3s ease-in-out;
+            overflow: hidden;
+        }
 
-/* Dark mode styles */
-.dark {
-    color-scheme: dark;
-}
+        #mobile-menu.hidden {
+            display: none;
+        }
 
-/* Background colors */
-.dark body {
-    background-color: rgb(17 24 39);
-    color: rgb(229 231 235);
-}
+        /* Dark mode styles for mobile menu */
+        .dark #mobile-menu {
+            border-color: rgb(55 65 81);
+            background-color: rgb(31 41 55);
+        }
 
-.dark .bg-white {
-    background-color: rgb(31 41 55);
-}
+        .dark #mobile-menu a:hover {
+            background-color: rgb(55 65 81);
+        }
 
-.dark .bg-gray-100 {
-    background-color: rgb(17 24 39);
-}
+        .dark #mobile-menu-button:hover {
+            background-color: rgb(55 65 81);
+        }
 
-.dark .bg-gray-50 {
-    background-color: rgb(31 41 55);
-}
+        /* Base dark mode setup */
+        :root {
+            color-scheme: light dark;
+        }
 
-/* Text colors */
-.dark .text-gray-900 {
-    color: rgb(229 231 235);
-}
+        /* Dark mode styles */
+        .dark {
+            color-scheme: dark;
+        }
 
-.dark .text-gray-800 {
-    color: rgb(229 231 235);
-}
+        /* Background colors */
+        .dark body {
+            background-color: rgb(17 24 39);
+            color: rgb(229 231 235);
+        }
 
-.dark .text-gray-600 {
-    color: rgb(156 163 175);
-}
+        .dark .bg-white {
+            background-color: rgb(31 41 55);
+        }
 
-.dark .text-gray-500 {
-    color: rgb(156 163 175);
-}
+        .dark .bg-gray-100 {
+            background-color: rgb(17 24 39);
+        }
 
-/* Border colors */
-.dark .border-gray-200 {
-    border-color: rgb(55 65 81);
-}
-.dark .bg-gray-200 {
-    background-color: rgb(93 94 97);
-}
-.dark .border {
-    border-color: rgb(55 65 81);
-}
+        .dark .bg-gray-50 {
+            background-color: rgb(31 41 55);
+        }
 
-/* Form elements */
-.dark input, 
-.dark select, 
-.dark textarea {
-    background-color: rgb(31 41 55);
-    border-color: rgb(55 65 81);
-    color: rgb(229 231 235);
-}
+        /* Text colors */
+        .dark .text-gray-900 {
+            color: rgb(229 231 235);
+        }
 
-.dark input::placeholder {
-    color: rgb(156 163 175);
-}
+        .dark .text-gray-800 {
+            color: rgb(229 231 235);
+        }
 
-/* Location buttons */
-.dark .location-option div {
-    background-color: rgb(31 41 55);
-    border-color: rgb(55 65 81);
-}
+        .dark .text-gray-600 {
+            color: rgb(156 163 175);
+        }
 
-.dark .location-option:hover div {
-    background-color: rgb(55 65 81);
-}
+        .dark .text-gray-500 {
+            color: rgb(156 163 175);
+            border-radius: 5px;
+        }
+        .text-gray-500 {
+            color: rgb(156 163 175);
+            border-radius: 5px;
+            
+        }
+        /* Border colors */
+        .dark .border-gray-200 {
+            border-color: rgb(55 65 81);
+        }
 
-.dark .location-option input[type="radio"]:checked + div {
-    background-color: rgb(55 65 81);
-    border-color: rgb(99 102 241);
-}
+        .dark .bg-gray-200 {
+            background-color: rgb(93 94 97);
+        }
 
-/* Profile dropdown */
-.dark .profile-menu {
-    background-color: rgb(31 41 55);
-    border-color: rgb(55 65 81);
-}
+        .dark .border {
+            border-color: rgb(55 65 81);
+        }
 
-.dark .profile-menu a:hover {
-    background-color: rgb(55 65 81);
-}
+        /* Form elements */
+        .dark input,
+        .dark select,
+        .dark textarea {
+            background-color: rgb(31 41 55);
+            border-color: rgb(55 65 81);
+            color: rgb(229 231 235);
+        }
 
-/* Navigation */
-.dark nav a:hover {
-    background-color: rgb(55 65 81);
-}
+        .dark input::placeholder {
+            color: rgb(156 163 175);
+        }
 
-/* Timeline elements */
-.dark .border-gray-300 {
-    border-color: rgb(55 65 81);
-}
-.dark .text-gray-700  {
-    border-color: rgb(90, 100, 117);
-    color: rgb(180 180 180);
-}
-.dark .text-gray-500 {
-    color: rgb(156 163 175);
-}
+        /* Location buttons */
+        .dark .location-option div {
+            background-color: rgb(31 41 55);
+            border-color: rgb(55 65 81);
+        }
 
-/* Quick action buttons */
-.dark .bg-gray-100 {
-    background-color: rgb(31 41 55);
-}
+        .dark .location-option:hover div {
+            background-color: rgb(55 65 81);
+        }
 
-.dark .hover\:bg-gray-200:hover {
-    background-color: rgb(29 67 129)
-}
-.dark .text-indigo-600 {
-    color: rgb(148 143 227);
-    border-color: #2e55c2;
-}
-.dark .md\:p-2 { 
-   
-    border-color: #2e55c2;
-}
-/* Text colors */
-.dark text {
-    color: rgb(181, 178, 178);
-}
+        .dark .location-option input[type="radio"]:checked+div {
+            background-color: rgb(55 65 81);
+            border-color: rgb(99 102 241);
+        }
 
-text {
-    color: black;
-}
+        /* Profile dropdown */
+        .dark .profile-menu {
+            background-color: rgb(31 41 55);
+            border-color: rgb(55 65 81);
+        }
 
-/* Calendar */
-.dark .bg-opacity-50 {
-    background-color: rgb(31 41 55);
-}
+        .dark .profile-menu a:hover {
+            background-color: rgb(55 65 81);
+        }
 
-.dark .hover\:bg-gray-50:hover {
-    background-color: rgb(55 65 81);
-}
+        /* Navigation */
+        .dark nav a:hover {
+            background-color: rgb(55 65 81);
+        }
 
-/* Shadow modifications */
-.dark .shadow-md,
-.dark .shadow-lg {
-    --tw-shadow-color: rgba(0, 0, 0, 0.25);
-    box-shadow: 0 4px 6px -1px var(--tw-shadow-color), 
+        /* Timeline elements */
+        .dark .border-gray-300 {
+            border-color: rgb(55 65 81);
+        }
+
+        .dark .text-gray-700 {
+            border-color: rgb(90, 100, 117);
+            color: rgb(180 180 180);
+        }
+
+        .dark .text-gray-500 {
+            color: rgb(156 163 175);
+        }
+
+        /* Quick action buttons */
+        .dark .bg-gray-100 {
+            background-color: rgb(31 41 55);
+        }
+
+        .dark .hover\:bg-gray-200:hover {
+            background-color: rgb(29 67 129)
+        }
+
+        .dark .text-indigo-600 {
+            color: rgb(148 143 227);
+            border-color: #2e55c2;
+        }
+
+        .dark .md\:p-2 {
+
+            border-color: #2e55c2;
+        }
+
+        /* Text colors */
+        .dark text {
+            color: rgb(181, 178, 178);
+        }
+
+        text {
+            color: black;
+        }
+
+        /* Calendar */
+        .dark .bg-opacity-50 {
+            background-color: rgb(31 41 55);
+        }
+
+        .dark .hover\:bg-gray-50:hover {
+            background-color: rgb(55 65 81);
+        }
+
+        /* Shadow modifications */
+        .dark .shadow-md,
+        .dark .shadow-lg {
+            --tw-shadow-color: rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 6px -1px var(--tw-shadow-color),
                 0 2px 4px -1px var(--tw-shadow-color);
-}
+        }
 
-/* Modal backgrounds */
-.dark .bg-opacity-50 {
-    background-color: rgba(0, 0, 0, 0.75);
-}
+        /* Modal backgrounds */
+        .dark .bg-opacity-50 {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
 
-/* Buttons */
-.dark .bg-blue-700 {
-    background-color: rgb(37 99 235);
-}
+        /* Buttons */
+        .dark .bg-blue-700 {
+            background-color: rgb(37 99 235);
+        }
 
-.dark .hover\:bg-blue-800:hover {
-    background-color: rgb(30 64 175);
-}
+        .dark .hover\:bg-blue-800:hover {
+            background-color: rgb(30 64 175);
+        }
 
-.dark .bg-green-500 {
-    background-color: rgb(34 197 94);
-}
+        .dark .bg-green-500 {
+            background-color: rgb(34 197 94);
+        }
 
-.dark .hover\:bg-green-600:hover {
-    background-color: rgb(22 163 74);
-}
+        .dark .hover\:bg-green-600:hover {
+            background-color: rgb(22 163 74);
+        }
 
-/* Toggle button specific styles */
-#theme-toggle {
-    transition: background-color 0.2s ease;
-}
+        /* Toggle button specific styles */
+        #theme-toggle {
+            transition: background-color 0.2s ease;
+        }
 
-#theme-toggle-light-icon,
-#theme-toggle-dark-icon {
-    transition: opacity 0.2s ease;
-}
+        #theme-toggle-light-icon,
+        #theme-toggle-dark-icon {
+            transition: opacity 0.2s ease;
+        }
 
-.dark #theme-toggle:hover {
-    background-color: rgb(55 65 81);
-}
-        
+        .dark #theme-toggle:hover {
+            background-color: rgb(55 65 81);
+        }
     </style>
 </head>
+
 <body class="bg-gray-100 font-sans">
     <!-- Header -->
-<!-- Replace your current header with this -->
-<header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-4 md:py-6">
-            <!-- Logo -->
-            <div class="flex-shrink-0">
-                <img class="h-6 w-auto sm:h-8" src="https://upload.wikimedia.org/wikipedia/en/thumb/1/19/Company%27s_logo.svg/1280px-Company%27s_logo.svg.png" alt="לוגו">
-            </div>
-
-            <!-- Desktop Navigation -->
-            <nav class="hidden md:grid md:grid-cols-4 md:gap-4 lg:gap-8">
-                <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">בית</a>
-                <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">דוחות</a>
-                <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">פרויקטים</a>
-                <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">לקוחות</a>
-            </nav>
-
-            <div class="flex items-center gap-4">
-                <!-- Dark Mode Toggle -->
-                <button id="theme-toggle" type="button" class="text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <!-- Sun icon -->
-                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
-                    </svg>
-                    <!-- Moon icon -->
-                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
-                    </svg>
-                </button>
-
-                <!-- Profile Dropdown -->
-                <div class="relative profile-dropdown">
-                    <button type="button" class="bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="user-menu-button">
-                        <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full" src="https://cdn3d.iconscout.com/3d/premium/thumb/man-with-katana-3d-icon-download-in-png-blend-fbx-gltf-file-formats--game-avatar-vr-virtual-reality-metaverse-pack-avatars-icons-8426221.png?f=webp" alt="תמונת פרופיל">
-                    </button>
-                    <div class="profile-menu hidden">
-                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">הפרופיל שלך</a>
-                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">הגדרות</a>
-                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">התנתקות</a>
-                    </div>
+    <!-- Replace your current header with this -->
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4 md:py-6">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <img class="h-6 w-auto sm:h-8"
+                        src="https://upload.wikimedia.org/wikipedia/en/thumb/1/19/Company%27s_logo.svg/1280px-Company%27s_logo.svg.png"
+                        alt="לוגו">
                 </div>
 
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-button" type="button" class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
-                    <span class="sr-only">פתח תפריט</span>
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:grid md:grid-cols-4 md:gap-4 lg:gap-8">
+                    <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">בית</a>
+                    <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">דוחות</a>
+                    <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">פרויקטים</a>
+                    <a href="#" class="text-sm lg:text-base text-gray-500 hover:text-gray-900 text-center">לקוחות</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" type="button"
+                        class="text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <!-- Sun icon -->
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
+                        </svg>
+                        <!-- Moon icon -->
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                        </svg>
+                    </button>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative profile-dropdown">
+                        <button type="button"
+                            class="bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            id="user-menu-button">
+                            <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full"
+                                src="https://cdn3d.iconscout.com/3d/premium/thumb/man-with-katana-3d-icon-download-in-png-blend-fbx-gltf-file-formats--game-avatar-vr-virtual-reality-metaverse-pack-avatars-icons-8426221.png?f=webp"
+                                alt="תמונת פרופיל">
+                        </button>
+                        <div class="profile-menu hidden">
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">הפרופיל שלך</a>
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">הגדרות</a>
+                            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">התנתקות</a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-button" type="button"
+                        class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                        aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">פתח תפריט</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
+                    <!-- Replace or update the mobile menu in your HTML -->
+
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden">
+                <nav class="py-3 space-y-2 border-t border-gray-200">
+                    <a href="#"
+                        class="block px-3 py-2 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-md">בית</a>
+                    <a href="#"
+                        class="block px-3 py-2 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-md">דוחות</a>
+                    <a href="#"
+                        class="block px-3 py-2 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-md">פרויקטים</a>
+                    <a href="#"
+                        class="block px-3 py-2 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-md">לקוחות</a>
+                </nav>
             </div>
         </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden">
-            <nav class="py-3 space-y-2 border-t border-gray-200">
-                <a href="#" class="block px-3 py-2 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-md">בית</a>
-                <a href="#" class="block px-3 py-2 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-md">דוחות</a>
-                <a href="#" class="block px-3 py-2 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-md">פרויקטים</a>
-                <a href="#" class="block px-3 py-2 text-base text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-md">לקוחות</a>
-            </nav>
-        </div>
-    </div>
-</header>
+    </header>
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
-       
+
         <!-- View Selector -->
         <div class="mb-6">
             <!-- Hidden select for maintaining existing functionality -->
@@ -354,19 +586,20 @@ text {
                 <option value="month">חודשי</option>
                 <option value="day">יומי</option>
             </select>
-            
+
             <!-- New view selector container -->
             <div class="view-selector-container"></div>
         </div>
-    
+
         <!-- Report Container -->
         <div id="report-container" class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-         
+
             <div id="report-content" class="overflow-x-auto"></div>
         </div>
-    
+
         <!-- Export Button -->
-        <button id="export-csv" class="mt-4 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+        <button id="export-csv"
+            class="mt-4 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
             ייצא לקובץ CSV
         </button>
     </main>
@@ -384,95 +617,95 @@ text {
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
     <script>
-    // Constants and Initial Setup
-const DateTime = luxon.DateTime;
-let workLogs = [];
-let currentDate = DateTime.now();
-// Add this at the beginning of your JavaScript, with the other constants
-const workTemplates = {
-    templates: [],
+        // Constants and Initial Setup
+        const DateTime = luxon.DateTime;
+        let workLogs = [];
+        let currentDate = DateTime.now();
+        // Add this at the beginning of your JavaScript, with the other constants
+        const workTemplates = {
+            templates: [],
 
-    addTemplate(name, data) {
-        this.templates.push({
-            id: Date.now(),
-            name,
-            data: {
-                type: data.type,
-                location: data.location,
-                client: data.client,
-                'start-time': data['start-time'],
-                'end-time': data['end-time']
+            addTemplate(name, data) {
+                this.templates.push({
+                    id: Date.now(),
+                    name,
+                    data: {
+                        type: data.type,
+                        location: data.location,
+                        client: data.client,
+                        'start-time': data['start-time'],
+                        'end-time': data['end-time']
+                    }
+                });
+                this.saveTemplates();
+            },
+
+            getTemplates() {
+                return this.templates;
+            },
+
+            saveTemplates() {
+                localStorage.setItem('workTemplates', JSON.stringify(this.templates));
+            },
+
+            loadTemplates() {
+                const saved = localStorage.getItem('workTemplates');
+                if (saved) {
+                    this.templates = JSON.parse(saved);
+                }
             }
+        };
+
+        // Also add the recentLocations object
+        const recentLocations = {
+            locations: [],
+            maxItems: 5,
+
+            add(location) {
+                this.locations = [location, ...this.locations.filter(l => l !== location)]
+                    .slice(0, this.maxItems);
+                localStorage.setItem('recentLocations', JSON.stringify(this.locations));
+            },
+
+            load() {
+                const saved = localStorage.getItem('recentLocations');
+                if (saved) this.locations = JSON.parse(saved);
+            }
+        };
+        const leaveTypesRequiringAttachment = [
+            'sick', 'family_sick', 'parent_sick',
+            'spouse_sick', 'spouse_absence', 'child_sick'
+        ];
+
+        // Initialize Flatpickr with Hebrew localization
+        flatpickr.localize(flatpickr.l10ns.he);
+
+        // Initialize date pickers
+        flatpickr("#edit-date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            altInput: true,
+            altFormat: "d/m/Y",
         });
-        this.saveTemplates();
-    },
 
-    getTemplates() {
-        return this.templates;
-    },
+        flatpickr("#edit-start-time, #edit-end-time", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            minuteIncrement: 15,
+        });
 
-    saveTemplates() {
-        localStorage.setItem('workTemplates', JSON.stringify(this.templates));
-    },
-
-    loadTemplates() {
-        const saved = localStorage.getItem('workTemplates');
-        if (saved) {
-            this.templates = JSON.parse(saved);
+        // Utility Functions
+        function safelyParseJSON(json) {
+            try {
+                return JSON.parse(json);
+            } catch (e) {
+                console.error('Error parsing JSON from localStorage:', e);
+                return null;
+            }
         }
-    }
-};
-
-// Also add the recentLocations object
-const recentLocations = {
-    locations: [],
-    maxItems: 5,
-
-    add(location) {
-        this.locations = [location, ...this.locations.filter(l => l !== location)]
-            .slice(0, this.maxItems);
-        localStorage.setItem('recentLocations', JSON.stringify(this.locations));
-    },
-
-    load() {
-        const saved = localStorage.getItem('recentLocations');
-        if (saved) this.locations = JSON.parse(saved);
-    }
-};
-const leaveTypesRequiringAttachment = [
-    'sick', 'family_sick', 'parent_sick', 
-    'spouse_sick', 'spouse_absence', 'child_sick'
-];
-
-// Initialize Flatpickr with Hebrew localization
-flatpickr.localize(flatpickr.l10ns.he);
-
-// Initialize date pickers
-flatpickr("#edit-date", {
-    dateFormat: "Y-m-d",
-    allowInput: true,
-    altInput: true,
-    altFormat: "d/m/Y",
-});
-
-flatpickr("#edit-start-time, #edit-end-time", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-    minuteIncrement: 15,
-});
-
-// Utility Functions
-function safelyParseJSON(json) {
-    try {
-        return JSON.parse(json);
-    } catch (e) {
-        console.error('Error parsing JSON from localStorage:', e);
-        return null;
-    }
-}
-const viewSelectorHtml = `
+        const viewSelectorHtml = `
 <div class="flex justify-center mb-6">
     <div class="inline-flex items-center p-1 bg-gray-100 rounded-lg" role="group">
         <button type="button" 
@@ -503,8 +736,8 @@ const viewSelectorHtml = `
 </div>
 `;
 
-// Add the styles
-const viewSelectorStyles = `
+        // Add the styles
+        const viewSelectorStyles = `
     .view-option {
         color: #6B7280;
         background: transparent;
@@ -520,343 +753,342 @@ const viewSelectorStyles = `
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 `;
-function initializeDarkMode() {
-    // Check for saved theme preference or use system preference
-    if (localStorage.getItem('color-theme') === 'dark' || 
-        (!('color-theme' in localStorage) && 
-         window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        document.getElementById('theme-toggle-dark-icon').classList.remove('hidden');
-    } else {
-        document.getElementById('theme-toggle-light-icon').classList.remove('hidden');
-    }
+        function initializeDarkMode() {
+            // Check for saved theme preference or use system preference
+            if (localStorage.getItem('color-theme') === 'dark' ||
+                (!('color-theme' in localStorage) &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-toggle-dark-icon').classList.remove('hidden');
+            } else {
+                document.getElementById('theme-toggle-light-icon').classList.remove('hidden');
+            }
 
-    // Add toggle button event listener
-    document.getElementById('theme-toggle').addEventListener('click', function() {
-        // Toggle icons
-        document.getElementById('theme-toggle-dark-icon').classList.toggle('hidden');
-        document.getElementById('theme-toggle-light-icon').classList.toggle('hidden');
+            // Add toggle button event listener
+            document.getElementById('theme-toggle').addEventListener('click', function () {
+                // Toggle icons
+                document.getElementById('theme-toggle-dark-icon').classList.toggle('hidden');
+                document.getElementById('theme-toggle-light-icon').classList.toggle('hidden');
 
-        // Toggle dark mode class
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-        }
-    });
-}
-// Function to check if a holiday already exists
-function holidayExists(workLogs, holiday) {
-    return workLogs.some(log => 
-        log.date === holiday.date && 
-        log.type === 'holiday' &&
-        log.client === holiday.client  // Changed from description to client
-    );
-}
-// Function to identify and process non-working holidays
-function processNonWorkingHolidays(holidaysData) {
-    const nonWorkingHolidays = [
-        { title: 'Pesach I', hebrew: 'ראשון של פסח' },
-        { title: 'Pesach VII', hebrew: 'שביעי של פסח' },
-        { title: 'Shavuot I', hebrew: 'חג שבועות' },
-        { title: 'Rosh Hashana I', hebrew: 'ראש השנה' },
-        { title: 'Yom Kippur', hebrew: 'יום כיפור' },
-        { title: 'Sukkot I', hebrew: 'ראשון של סוכות' },
-        { title: 'Shmini Atzeret', hebrew: 'שמיני עצרת' }
-    ];
-
-    return holidaysData.items
-        .filter(item => 
-            nonWorkingHolidays.some(h => h.title === item.title) &&
-            item.category === 'holiday' &&
-            item.subcat === 'major'
-        )
-        .map(holiday => {
-            const matchedHoliday = nonWorkingHolidays.find(h => h.title === holiday.title);
-            return {
-                date: holiday.date,
-                client: matchedHoliday.hebrew,  // Set client instead of title for display
-                type: 'holiday',
-                description: matchedHoliday.hebrew,
-                'start-time': '00:00',
-                'end-time': '23:59',
-                location: 'חג'  // Add location for consistency
-            };
-        });
-}
-
-// Function to add holidays to work logs
-function addHolidaysToWorkLogs(workLogs, holidays) {
-    let holidaysAdded = 0;
-    const updatedWorkLogs = [...workLogs];
-    
-    holidays.forEach(holiday => {
-        if (!holidayExists(updatedWorkLogs, holiday)) {
-            updatedWorkLogs.push({
-                id: `holiday-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-                ...holiday
+                // Toggle dark mode class
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
             });
-            holidaysAdded++;
         }
-    });
-
-    return { updatedWorkLogs, holidaysAdded };
-}
-
-// Usage example:
-async function populateHolidays() {
-    try {
-        const response = await fetch('https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=now');
-        const holidaysData = await response.json();
-        const holidays = processNonWorkingHolidays(holidaysData);
-        const { updatedWorkLogs, holidaysAdded } = addHolidaysToWorkLogs(workLogs, holidays);
-        
-        if (holidaysAdded > 0) {
-            workLogs = updatedWorkLogs;
-            saveWorkLogs();
-            updateReport();
-            showNotification(`נוספו ${holidaysAdded} חגים חדשים ללוח השנה`, 'success');
+        // Function to check if a holiday already exists
+        function holidayExists(workLogs, holiday) {
+            return workLogs.some(log =>
+                log.date === holiday.date &&
+                log.type === 'holiday' &&
+                log.client === holiday.client  // Changed from description to client
+            );
         }
-    } catch (error) {
-        console.error('Error fetching or processing holidays:', error);
-        showNotification('שגיאה בטעינת נתוני החגים', 'error');
-    }
-}
+        // Function to identify and process non-working holidays
+        function processNonWorkingHolidays(holidaysData) {
+            const nonWorkingHolidays = [
+                { title: 'Pesach I', hebrew: 'ראשון של פסח' },
+                { title: 'Pesach VII', hebrew: 'שביעי של פסח' },
+                { title: 'Shavuot I', hebrew: 'חג שבועות' },
+                { title: 'Rosh Hashana I', hebrew: 'ראש השנה' },
+                { title: 'Yom Kippur', hebrew: 'יום כיפור' },
+                { title: 'Sukkot I', hebrew: 'ראשון של סוכות' },
+                { title: 'Shmini Atzeret', hebrew: 'שמיני עצרת' }
+            ];
 
+            return holidaysData.items
+                .filter(item =>
+                    nonWorkingHolidays.some(h => h.title === item.title) &&
+                    item.category === 'holiday' &&
+                    item.subcat === 'major'
+                )
+                .map(holiday => {
+                    const matchedHoliday = nonWorkingHolidays.find(h => h.title === holiday.title);
+                    return {
+                        date: holiday.date,
+                        client: matchedHoliday.hebrew,  // Set client instead of title for display
+                        type: 'holiday',
+                        description: matchedHoliday.hebrew,
+                        'start-time': '00:00',
+                        'end-time': '23:59',
+                        location: 'חג'  // Add location for consistency
+                    };
+                });
+        }
 
+        // Function to add holidays to work logs
+        function addHolidaysToWorkLogs(workLogs, holidays) {
+            let holidaysAdded = 0;
+            const updatedWorkLogs = [...workLogs];
 
-// Initialize holiday feature
-document.addEventListener('DOMContentLoaded', () => {
-    populateHolidays();
-});
-// Initialize the view selector functionality
+            holidays.forEach(holiday => {
+                if (!holidayExists(updatedWorkLogs, holiday)) {
+                    updatedWorkLogs.push({
+                        id: `holiday-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                        ...holiday
+                    });
+                    holidaysAdded++;
+                }
+            });
 
-function initializeViewSelector() {
-    // Add styles
-    const styleSheet = document.createElement("style");
-    styleSheet.textContent = viewSelectorStyles;
-    document.head.appendChild(styleSheet);
+            return { updatedWorkLogs, holidaysAdded };
+        }
 
-    // Replace existing selector
-    const viewSelectorContainer = document.querySelector('.view-selector-container');
-    if (viewSelectorContainer) {
-        viewSelectorContainer.innerHTML = viewSelectorHtml;
-    }
+        // Usage example:
+        async function populateHolidays() {
+            try {
+                const response = await fetch('https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=now');
+                const holidaysData = await response.json();
+                const holidays = processNonWorkingHolidays(holidaysData);
+                const { updatedWorkLogs, holidaysAdded } = addHolidaysToWorkLogs(workLogs, holidays);
 
-    // Add event listeners
-    const buttons = document.querySelectorAll('.view-option');
-    const hiddenSelect = document.getElementById('view-selector');
-
-    // Function to update button states
-    function updateButtonStates(selectedView) {
-        buttons.forEach(button => {
-            if (button.dataset.view === selectedView) {
-                button.classList.add('selected');
-                button.setAttribute('aria-pressed', 'true');
-            } else {
-                button.classList.remove('selected');
-                button.setAttribute('aria-pressed', 'false');
+                if (holidaysAdded > 0) {
+                    workLogs = updatedWorkLogs;
+                    saveWorkLogs();
+                    updateReport();
+                    showNotification(`נוספו ${holidaysAdded} חגים חדשים ללוח השנה`, 'success');
+                }
+            } catch (error) {
+                console.error('Error fetching or processing holidays:', error);
+                showNotification('שגיאה בטעינת נתוני החגים', 'error');
             }
-        });
-    }
+        }
 
-    // Update buttons when clicked
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            const view = button.dataset.view;
-            updateButtonStates(view);
-            
+
+
+        // Initialize holiday feature
+        document.addEventListener('DOMContentLoaded', () => {
+            populateHolidays();
+        });
+        // Initialize the view selector functionality
+
+        function initializeViewSelector() {
+            // Add styles
+            const styleSheet = document.createElement("style");
+            styleSheet.textContent = viewSelectorStyles;
+            document.head.appendChild(styleSheet);
+
+            // Replace existing selector
+            const viewSelectorContainer = document.querySelector('.view-selector-container');
+            if (viewSelectorContainer) {
+                viewSelectorContainer.innerHTML = viewSelectorHtml;
+            }
+
+            // Add event listeners
+            const buttons = document.querySelectorAll('.view-option');
+            const hiddenSelect = document.getElementById('view-selector');
+
+            // Function to update button states
+            function updateButtonStates(selectedView) {
+                buttons.forEach(button => {
+                    if (button.dataset.view === selectedView) {
+                        button.classList.add('selected');
+                        button.setAttribute('aria-pressed', 'true');
+                    } else {
+                        button.classList.remove('selected');
+                        button.setAttribute('aria-pressed', 'false');
+                    }
+                });
+            }
+
+            // Update buttons when clicked
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const view = button.dataset.view;
+                    updateButtonStates(view);
+
+                    if (hiddenSelect) {
+                        hiddenSelect.value = view;
+                        hiddenSelect.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
+
+            // Listen for changes to the hidden select
             if (hiddenSelect) {
-                hiddenSelect.value = view;
-                hiddenSelect.dispatchEvent(new Event('change'));
-            }
-        });
-    });
+                hiddenSelect.addEventListener('change', () => {
+                    updateButtonStates(hiddenSelect.value);
+                });
 
-    // Listen for changes to the hidden select
-    if (hiddenSelect) {
-        hiddenSelect.addEventListener('change', () => {
-            updateButtonStates(hiddenSelect.value);
-        });
-        
-        // Set initial state based on current value
-        updateButtonStates(hiddenSelect.value);
-    }
-}// Data Management Functions
-function lazyLoadWorkLogs() {
-    try {
-        const storedLogs = localStorage.getItem('workLogs');
-        if (storedLogs) {
-            const parsedLogs = safelyParseJSON(storedLogs);
-            if (parsedLogs && Array.isArray(parsedLogs)) {
-                workLogs = parsedLogs;
-            } else {
-                console.error('Invalid data in localStorage');
+                // Set initial state based on current value
+                updateButtonStates(hiddenSelect.value);
+            }
+        }// Data Management Functions
+        function lazyLoadWorkLogs() {
+            try {
+                const storedLogs = localStorage.getItem('workLogs');
+                if (storedLogs) {
+                    const parsedLogs = safelyParseJSON(storedLogs);
+                    if (parsedLogs && Array.isArray(parsedLogs)) {
+                        workLogs = parsedLogs;
+                    } else {
+                        console.error('Invalid data in localStorage');
+                        workLogs = [];
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading work logs:', error);
                 workLogs = [];
             }
         }
-    } catch (error) {
-        console.error('Error loading work logs:', error);
-        workLogs = [];
-    }
-}
 
-function saveWorkLogs() {
-    try {
-        localStorage.setItem('workLogs', JSON.stringify(workLogs));
-    } catch (error) {
-        console.error('Error saving work logs:', error);
-        alert('אירעה שגיאה בשמירת הנתונים. אנא נסה שנית מאוחר יותר.');
-    }
-}
-
-// Helper Functions
-function getHebrewType(type) {
-    const types = {
-        'work': 'עבודה רגילה',
-        'sick': 'מחלה',
-        'family_sick': 'מחלה משפחתית',
-        'parent_sick': 'מחלת הורה',
-        'spouse_sick': 'מחלת בן/בת זוג',
-        'spouse_absence': 'היעדרות בגין בת זוג',
-        'child_sick': 'מחלת ילד',
-        'vacation': 'חופשה',
-        'holiday': 'חג',  // Add specific type for holidays
-        'reserve': 'מילואים',
-        'bereavement': 'אבל',
-        'study': 'ימי השתלמות'
-    };
-    return types[type] || type;
-}
-
-function getColorForLogType(type) {
-    const colors = {
-        'work': '#4299e1',
-        'sick': '#f56565',
-        'vacation': '#48bb78',
-        'reserve': '#ed8936',
-        'bereavement': '#9f7aea',
-        'study': '#ecc94b'
-    };
-    return colors[type] || '#a0aec0';
-}
-
-function calculateTotalHours(logs) {
-    return logs.reduce((total, log) => {
-        if (log.type === 'work') {
-            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-            const duration = endTime.diff(startTime, 'hours');
-            return total + duration.hours;
+        function saveWorkLogs() {
+            try {
+                localStorage.setItem('workLogs', JSON.stringify(workLogs));
+            } catch (error) {
+                console.error('Error saving work logs:', error);
+                alert('אירעה שגיאה בשמירת הנתונים. אנא נסה שנית מאוחר יותר.');
+            }
         }
-        return total;
-    }, 0);
-}
-// Form Validation Functions
-function showError(elementId, message) {
-    let errorElement = document.getElementById(elementId);
-    if (!errorElement) {
-        errorElement = document.createElement('p');
-        errorElement.id = elementId;
-        errorElement.className = 'mt-2 text-sm text-red-600';
-        const inputElement = document.getElementById(elementId.replace('-error', ''));
-        if (inputElement && inputElement.parentNode) {
-            inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
+
+        // Helper Functions
+        function getHebrewType(type) {
+            const types = {
+                'work': 'עבודה רגילה',
+                'sick': 'מחלה',
+                'family_sick': 'מחלה משפחתית',
+                'parent_sick': 'מחלת הורה',
+                'spouse_sick': 'מחלת בן/בת זוג',
+                'spouse_absence': 'היעדרות בגין בת זוג',
+                'child_sick': 'מחלת ילד',
+                'vacation': 'חופשה',
+                'holiday': 'חג',  // Add specific type for holidays
+                'reserve': 'מילואים',
+                'bereavement': 'אבל',
+                'study': 'ימי השתלמות'
+            };
+            return types[type] || type;
         }
-    }
-    errorElement.textContent = message;
-    errorElement.classList.remove('hidden');
-    const inputElement = document.getElementById(elementId.replace('-error', ''));
-    if (inputElement) {
-        inputElement.setAttribute('aria-invalid', 'true');
-    }
-}
 
-function hideError(elementId) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
-        errorElement.textContent = '';
-        errorElement.classList.add('hidden');
-    }
-    const inputElement = document.getElementById(elementId.replace('-error', ''));
-    if (inputElement) {
-        inputElement.setAttribute('aria-invalid', 'false');
-    }
-}
-
-function validateForm(formId) {
-    const form = document.getElementById(formId);
-    let isValid = true;
-
-    // Validate required fields and length constraints
-    form.querySelectorAll('input, select').forEach(element => {
-        const errorId = `${element.id}-error`;
-        if (element.hasAttribute('required') && !element.value.trim()) {
-            showError(errorId, 'שדה זה הוא חובה');
-            isValid = false;
-        } else if (element.hasAttribute('minlength') && 
-                   element.value.trim().length < parseInt(element.getAttribute('minlength'))) {
-            showError(errorId, `אורך מינימלי הוא ${element.getAttribute('minlength')} תווים`);
-            isValid = false;
-        } else if (element.hasAttribute('maxlength') && 
-                   element.value.trim().length > parseInt(element.getAttribute('maxlength'))) {
-            showError(errorId, `אורך מקסימלי הוא ${element.getAttribute('maxlength')} תווים`);
-            isValid = false;
-        } else {
-            hideError(errorId);
+        function getColorForLogType(type) {
+            const colors = {
+                'work': '#4299e1',
+                'sick': '#f56565',
+                'vacation': '#48bb78',
+                'reserve': '#ed8936',
+                'bereavement': '#9f7aea',
+                'study': '#ecc94b'
+            };
+            return colors[type] || '#a0aec0';
         }
-    });
 
-    // Validate time range
-    const startTime = form.querySelector('[name="start-time"]');
-    const endTime = form.querySelector('[name="end-time"]');
-    if (startTime && endTime && startTime.value && endTime.value && startTime.value >= endTime.value) {
-        showError(
-            `${formId === 'work-log-form' ? '' : formId === 'edit-form' ? 'edit-' : 'day-'}end-time-error`, 
-            'שעת הסיום חייבת להיות אחרי שעת ההתחלה'
-        );
-        isValid = false;
-    }
+        function calculateTotalHours(logs) {
+            return logs.reduce((total, log) => {
+                if (log.type === 'work') {
+                    const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+                    const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+                    const duration = endTime.diff(startTime, 'hours');
+                    return total + duration.hours;
+                }
+                return total;
+            }, 0);
+        }
+        // Form Validation Functions
+        function showError(elementId, message) {
+            let errorElement = document.getElementById(elementId);
+            if (!errorElement) {
+                errorElement = document.createElement('p');
+                errorElement.id = elementId;
+                errorElement.className = 'mt-2 text-sm text-red-600';
+                const inputElement = document.getElementById(elementId.replace('-error', ''));
+                if (inputElement && inputElement.parentNode) {
+                    inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
+                }
+            }
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            const inputElement = document.getElementById(elementId.replace('-error', ''));
+            if (inputElement) {
+                inputElement.setAttribute('aria-invalid', 'true');
+            }
+        }
 
-    // Validate attachments for specific leave types
-    const typeSelect = form.querySelector('[name="type"]');
-    const attachmentInput = form.querySelector('[name="attachment"]');
-    if (leaveTypesRequiringAttachment.includes(typeSelect.value) && 
-        (!attachmentInput || !attachmentInput.files.length)) {
-        showError(
-            `${formId === 'edit-form' ? 'edit-' : ''}attachment-error`, 
-            'חובה לצרף מסמך לסוג דיווח זה'
-        );
-        isValid = false;
-    }
+        function hideError(elementId) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.textContent = '';
+                errorElement.classList.add('hidden');
+            }
+            const inputElement = document.getElementById(elementId.replace('-error', ''));
+            if (inputElement) {
+                inputElement.setAttribute('aria-invalid', 'false');
+            }
+        }
 
-    return isValid;
-}
+        function validateForm(formId) {
+            const form = document.getElementById(formId);
+            let isValid = true;
 
-// Notification System
-function showSuccessMessage(message) {
-    const successMessage = document.createElement('div');
-    successMessage.textContent = message;
-    successMessage.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4';
-    successMessage.setAttribute('role', 'alert');
-    document.getElementById('report-container').insertAdjacentElement('afterbegin', successMessage);
-    setTimeout(() => successMessage.remove(), 3000);
-}
+            // Validate required fields and length constraints
+            form.querySelectorAll('input, select').forEach(element => {
+                const errorId = `${element.id}-error`;
+                if (element.hasAttribute('required') && !element.value.trim()) {
+                    showError(errorId, 'שדה זה הוא חובה');
+                    isValid = false;
+                } else if (element.hasAttribute('minlength') &&
+                    element.value.trim().length < parseInt(element.getAttribute('minlength'))) {
+                    showError(errorId, `אורך מינימלי הוא ${element.getAttribute('minlength')} תווים`);
+                    isValid = false;
+                } else if (element.hasAttribute('maxlength') &&
+                    element.value.trim().length > parseInt(element.getAttribute('maxlength'))) {
+                    showError(errorId, `אורך מקסימלי הוא ${element.getAttribute('maxlength')} תווים`);
+                    isValid = false;
+                } else {
+                    hideError(errorId);
+                }
+            });
 
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-500 ${
-        type === 'success' ? 'bg-green-500' :
-        type === 'warning' ? 'bg-yellow-500' :
-        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-    } text-white`;
-    
-    notification.innerHTML = `
+            // Validate time range
+            const startTime = form.querySelector('[name="start-time"]');
+            const endTime = form.querySelector('[name="end-time"]');
+            if (startTime && endTime && startTime.value && endTime.value && startTime.value >= endTime.value) {
+                showError(
+                    `${formId === 'work-log-form' ? '' : formId === 'edit-form' ? 'edit-' : 'day-'}end-time-error`,
+                    'שעת הסיום חייבת להיות אחרי שעת ההתחלה'
+                );
+                isValid = false;
+            }
+
+            // Validate attachments for specific leave types
+            const typeSelect = form.querySelector('[name="type"]');
+            const attachmentInput = form.querySelector('[name="attachment"]');
+            if (leaveTypesRequiringAttachment.includes(typeSelect.value) &&
+                (!attachmentInput || !attachmentInput.files.length)) {
+                showError(
+                    `${formId === 'edit-form' ? 'edit-' : ''}attachment-error`,
+                    'חובה לצרף מסמך לסוג דיווח זה'
+                );
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Notification System
+        function showSuccessMessage(message) {
+            const successMessage = document.createElement('div');
+            successMessage.textContent = message;
+            successMessage.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4';
+            successMessage.setAttribute('role', 'alert');
+            document.getElementById('report-container').insertAdjacentElement('afterbegin', successMessage);
+            setTimeout(() => successMessage.remove(), 3000);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-500 ${type === 'success' ? 'bg-green-500' :
+                    type === 'warning' ? 'bg-yellow-500' :
+                        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                } text-white`;
+
+            notification.innerHTML = `
         <div class="flex items-center gap-2">
             <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                ${type === 'success' ? 
+                ${type === 'success' ?
                     '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>' :
                     '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>'
                 }
@@ -865,19 +1097,19 @@ function showNotification(message, type = 'info') {
         </div>
     `;
 
-    document.body.appendChild(notification);
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 500);
-    }, 3000);
-}
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
 
-// Confirmation Dialog
-function showConfirmDialog(title, message) {
-    return new Promise((resolve) => {
-        const dialog = document.createElement('div');
-        dialog.className = 'fixed inset-0 flex items-center justify-center z-50';
-        dialog.innerHTML = `
+        // Confirmation Dialog
+        function showConfirmDialog(title, message) {
+            return new Promise((resolve) => {
+                const dialog = document.createElement('div');
+                dialog.className = 'fixed inset-0 flex items-center justify-center z-50';
+                dialog.innerHTML = `
             <div class="fixed inset-0 bg-black opacity-50"></div>
             <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 relative z-10">
                 <h3 class="text-lg font-semibold mb-2">${title}</h3>
@@ -889,57 +1121,57 @@ function showConfirmDialog(title, message) {
             </div>
         `;
 
-        document.body.appendChild(dialog);
+                document.body.appendChild(dialog);
 
-        dialog.querySelector('.confirm-btn').onclick = () => {
-            dialog.remove();
-            resolve(true);
-        };
+                dialog.querySelector('.confirm-btn').onclick = () => {
+                    dialog.remove();
+                    resolve(true);
+                };
 
-        dialog.querySelector('.cancel-btn').onclick = () => {
-            dialog.remove();
-            resolve(false);
-        };
-    });
-}
-function generateDonutChart(dayLogs, size = 40) {
-    const FULL_DAY_MINUTES = 9 * 60; // 9 hours in minutes
-    const radius = size / 2;
-    const strokeWidth = size / 8;
-    const center = size / 2;
-    
-    // Calculate total worked minutes
-    const totalMinutes = dayLogs.reduce((sum, log) => {
-        if (log.type === 'work') {
-            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-            return sum + endTime.diff(startTime, 'minutes').minutes;
+                dialog.querySelector('.cancel-btn').onclick = () => {
+                    dialog.remove();
+                    resolve(false);
+                };
+            });
         }
-        return sum;
-    }, 0);
+        function generateDonutChart(dayLogs, size = 40) {
+            const FULL_DAY_MINUTES = 9 * 60; // 9 hours in minutes
+            const radius = size / 2;
+            const strokeWidth = size / 8;
+            const center = size / 2;
 
-    // Calculate actual percentage without limiting to 100
-    const actualPercentage = (totalMinutes / FULL_DAY_MINUTES) * 100;
-    
-    // For visual representation, limit the circle fill to 100%
-    // but show the actual percentage in text
-    const circlePercentage = Math.min(actualPercentage, 100);
-    const circumference = 2 * Math.PI * (radius - strokeWidth / 2);
-    const dashArray = (circlePercentage * circumference) / 100;
-    const dashOffset = circumference - dashArray;
+            // Calculate total worked minutes
+            const totalMinutes = dayLogs.reduce((sum, log) => {
+                if (log.type === 'work') {
+                    const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+                    const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+                    return sum + endTime.diff(startTime, 'minutes').minutes;
+                }
+                return sum;
+            }, 0);
 
-    // Enhanced color scheme including overtime
-    const color = actualPercentage > 100 ? '#9333ea' :  // Purple for overtime
-                 actualPercentage >= 100 ? '#22c55e' :  // Green for complete days
-                 actualPercentage >= 75 ? '#3b82f6' :   // Blue for mostly complete
-                 actualPercentage >= 50 ? '#eab308' :   // Yellow for half days
-                 actualPercentage > 0 ? '#ef4444' :     // Red for partial days
-                 '#e5e7eb';                             // Gray for no hours
+            // Calculate actual percentage without limiting to 100
+            const actualPercentage = (totalMinutes / FULL_DAY_MINUTES) * 100;
 
-    // Adjust text size for larger numbers
-    const textSize = actualPercentage >= 100 ? size/3.5 : size/3;
+            // For visual representation, limit the circle fill to 100%
+            // but show the actual percentage in text
+            const circlePercentage = Math.min(actualPercentage, 100);
+            const circumference = 2 * Math.PI * (radius - strokeWidth / 2);
+            const dashArray = (circlePercentage * circumference) / 100;
+            const dashOffset = circumference - dashArray;
 
-    return `
+            // Enhanced color scheme including overtime
+            const color = actualPercentage > 100 ? '#9333ea' :  // Purple for overtime
+                actualPercentage >= 100 ? '#22c55e' :  // Green for complete days
+                    actualPercentage >= 75 ? '#3b82f6' :   // Blue for mostly complete
+                        actualPercentage >= 50 ? '#eab308' :   // Yellow for half days
+                            actualPercentage > 0 ? '#ef4444' :     // Red for partial days
+                                '#e5e7eb';                             // Gray for no hours
+
+            // Adjust text size for larger numbers
+            const textSize = actualPercentage >= 100 ? size / 3.5 : size / 3;
+
+            return `
         <svg width="${size}" height="${size}" class="inline-block">
             <!-- Background circle -->
             <circle
@@ -974,16 +1206,16 @@ function generateDonutChart(dayLogs, size = 40) {
             >${Math.round(actualPercentage)}%</text>
         </svg>
     `;
-}
+        }
 
-function displayMonthCalendar() {
-    const reportContent = document.getElementById('report-content');
-    const startOfMonth = currentDate.startOf('month');
-    const endOfMonth = currentDate.endOf('month');
-    const totalDays = endOfMonth.day;
-    const isMobile = window.innerWidth <= 768;
+        function displayMonthCalendar() {
+            const reportContent = document.getElementById('report-content');
+            const startOfMonth = currentDate.startOf('month');
+            const endOfMonth = currentDate.endOf('month');
+            const totalDays = endOfMonth.day;
+            const isMobile = window.innerWidth <= 768;
 
-    let html = `
+            let html = `
         <div class="flex flex-col md:flex-row justify-between items-center mb-2 md:mb-4 p-2 md:p-4 bg-white shadow-lg rounded-lg border border-gray-200">
             <!-- Simplified mobile header -->
             <button onclick="changeMonth(-1)" class="text-indigo-600 hover:text-indigo-800 p-1 md:p-2 rounded-lg transition duration-200">&lt;</button>
@@ -1013,20 +1245,20 @@ function displayMonthCalendar() {
             `).join('')}
     `;
 
-    // Empty cells
-    for (let i = 0; i < startOfMonth.weekday % 7; i++) {
-        html += '<div class="bg-gray-200 p-1 md:p-2 h-14 md:h-32 m-[2px]" role="gridcell"></div>';
-    }
+            // Empty cells
+            for (let i = 0; i < startOfMonth.weekday % 7; i++) {
+                html += '<div class="bg-gray-200 p-1 md:p-2 h-14 md:h-32 m-[2px]" role="gridcell"></div>';
+            }
 
-    // Day cells
-    for (let day = 1; day <= totalDays; day++) {
-        const date = startOfMonth.set({ day });
-        const isToday = date.hasSame(DateTime.now(), 'day');
-        const dayLogs = workLogs.filter(log => DateTime.fromISO(log.date).hasSame(date, 'day'));
-        const totalHours = calculateTotalHours(dayLogs);
-        const hasEntries = dayLogs.length > 0;
+            // Day cells
+            for (let day = 1; day <= totalDays; day++) {
+                const date = startOfMonth.set({ day });
+                const isToday = date.hasSame(DateTime.now(), 'day');
+                const dayLogs = workLogs.filter(log => DateTime.fromISO(log.date).hasSame(date, 'day'));
+                const totalHours = calculateTotalHours(dayLogs);
+                const hasEntries = dayLogs.length > 0;
 
-        html += `
+                html += `
             <div class="bg-white p-1 md:p-2 h-14 md:h-32 border rounded-lg cursor-pointer flex flex-col justify-between m-[2px]
                         ${isToday ? 'ring-1 ring-indigo-500' : ''}
                         ${hasEntries ? 'bg-opacity-90' : 'bg-opacity-50'}" 
@@ -1059,95 +1291,95 @@ function displayMonthCalendar() {
                 </div>
             </div>
         `;
-    }
-
-    html += '</div>';
-    reportContent.innerHTML = html;
-
-    // Update total hours counter (desktop only)
-    if (!isMobile) {
-        const totalMonthHours = calculateTotalHours(workLogs.filter(log => 
-            DateTime.fromISO(log.date).hasSame(currentDate, 'month')
-        ));
-        document.getElementById('total-hours').textContent = totalMonthHours.toFixed(1);
-    }
-}
-
-function changeMonth(delta) {
-    currentDate = currentDate.plus({ months: delta });
-    displayMonthCalendar();
-}
-
-function handleCalendarKeyboardNavigation(e) {
-    if (document.getElementById('view-selector').value === 'month') {
-        const focusedDay = document.activeElement;
-        if (focusedDay.getAttribute('role') === 'gridcell') {
-            const currentDate = DateTime.fromISO(focusedDay.getAttribute('data-date'));
-            let newDate;
-
-            switch (e.key) {
-                case 'ArrowRight':
-                    newDate = currentDate.minus({ days: 1 });
-                    break;
-                case 'ArrowLeft':
-                    newDate = currentDate.plus({ days: 1 });
-                    break;
-                case 'ArrowUp':
-                    newDate = currentDate.minus({ weeks: 1 });
-                    break;
-                case 'ArrowDown':
-                    newDate = currentDate.plus({ weeks: 1 });
-                    break;
-                default:
-                    return;
             }
 
-            e.preventDefault();
-            const newFocusedDay = document.querySelector(`[data-date="${newDate.toISODate()}"]`);
-            if (newFocusedDay) {
-                newFocusedDay.focus();
+            html += '</div>';
+            reportContent.innerHTML = html;
+
+            // Update total hours counter (desktop only)
+            if (!isMobile) {
+                const totalMonthHours = calculateTotalHours(workLogs.filter(log =>
+                    DateTime.fromISO(log.date).hasSame(currentDate, 'month')
+                ));
+                document.getElementById('total-hours').textContent = totalMonthHours.toFixed(1);
             }
         }
-    }
-}
-// Day View Functions
-function displayDayView(dateString, updateView = true) {
-    const date = DateTime.fromISO(dateString);
-    currentDate = date;
-    
-    // Only update the view selector if explicitly requested
-    if (updateView) {
-        // Update hidden select without triggering change event
-        const viewSelector = document.getElementById('view-selector');
-        viewSelector.value = 'day';
-        
-        // Update buttons directly
-        const buttons = document.querySelectorAll('.view-option');
-        buttons.forEach(button => {
-            if (button.dataset.view === 'day') {
-                button.classList.add('selected');
-                button.setAttribute('aria-pressed', 'true');
-            } else {
-                button.classList.remove('selected');
-                button.setAttribute('aria-pressed', 'false');
+
+        function changeMonth(delta) {
+            currentDate = currentDate.plus({ months: delta });
+            displayMonthCalendar();
+        }
+
+        function handleCalendarKeyboardNavigation(e) {
+            if (document.getElementById('view-selector').value === 'month') {
+                const focusedDay = document.activeElement;
+                if (focusedDay.getAttribute('role') === 'gridcell') {
+                    const currentDate = DateTime.fromISO(focusedDay.getAttribute('data-date'));
+                    let newDate;
+
+                    switch (e.key) {
+                        case 'ArrowRight':
+                            newDate = currentDate.minus({ days: 1 });
+                            break;
+                        case 'ArrowLeft':
+                            newDate = currentDate.plus({ days: 1 });
+                            break;
+                        case 'ArrowUp':
+                            newDate = currentDate.minus({ weeks: 1 });
+                            break;
+                        case 'ArrowDown':
+                            newDate = currentDate.plus({ weeks: 1 });
+                            break;
+                        default:
+                            return;
+                    }
+
+                    e.preventDefault();
+                    const newFocusedDay = document.querySelector(`[data-date="${newDate.toISODate()}"]`);
+                    if (newFocusedDay) {
+                        newFocusedDay.focus();
+                    }
+                }
             }
-        });
-    }
+        }
+        // Day View Functions
+        function displayDayView(dateString, updateView = true) {
+            const date = DateTime.fromISO(dateString);
+            currentDate = date;
 
-    const reportContent = document.getElementById('report-content');
-    const dayLogs = workLogs.filter(log => {
-        const logDate = DateTime.fromISO(log.date);
-        return logDate && logDate.hasSame(date, 'day');
-    });
+            // Only update the view selector if explicitly requested
+            if (updateView) {
+                // Update hidden select without triggering change event
+                const viewSelector = document.getElementById('view-selector');
+                viewSelector.value = 'day';
 
-    dayLogs.sort((a, b) => {
-        if (!a['start-time'] && !b['start-time']) return 0;
-        if (!a['start-time']) return 1;
-        if (!b['start-time']) return -1;
-        return a['start-time'].localeCompare(b['start-time']);
-    });
+                // Update buttons directly
+                const buttons = document.querySelectorAll('.view-option');
+                buttons.forEach(button => {
+                    if (button.dataset.view === 'day') {
+                        button.classList.add('selected');
+                        button.setAttribute('aria-pressed', 'true');
+                    } else {
+                        button.classList.remove('selected');
+                        button.setAttribute('aria-pressed', 'false');
+                    }
+                });
+            }
 
-    let html = `
+            const reportContent = document.getElementById('report-content');
+            const dayLogs = workLogs.filter(log => {
+                const logDate = DateTime.fromISO(log.date);
+                return logDate && logDate.hasSame(date, 'day');
+            });
+
+            dayLogs.sort((a, b) => {
+                if (!a['start-time'] && !b['start-time']) return 0;
+                if (!a['start-time']) return 1;
+                if (!b['start-time']) return -1;
+                return a['start-time'].localeCompare(b['start-time']);
+            });
+
+            let html = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
             <button onclick="changeDay(-1)" class="w-full sm:w-auto mb-2 sm:mb-0 text-blue-600 hover:text-blue-800">&lt; יום קודם</button>
             <h3 class="text-lg font-semibold">${date.toFormat('dd/MM/yyyy')}</h3>
@@ -1167,70 +1399,70 @@ function displayDayView(dateString, updateView = true) {
         </div>
     `;
 
-    reportContent.innerHTML = html;
-    initializeFlatpickr();
-    initializeDayFormHandlers();
-    addRecurrenceFields('day-work-log-form');
-}function initializeCalendarDayClicks() {
-    const calendarDays = document.querySelectorAll('[data-date]');
-    calendarDays.forEach(day => {
-        day.addEventListener('click', () => {
-            const date = day.getAttribute('data-date');
-            const viewSelector = document.getElementById('view-selector');
-            viewSelector.value = 'day';
-            displayDayView(date, true);
-        });
-    });
-}
-function generateTimelineHtml(logs) {
-   const timeSlots = new Array(24).fill().map((_, i) => {
-       const time = i.toString().padStart(2, '0') + ':00';
-       return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" 
+            reportContent.innerHTML = html;
+            initializeFlatpickr();
+            initializeDayFormHandlers();
+            addRecurrenceFields('day-work-log-form');
+        } function initializeCalendarDayClicks() {
+            const calendarDays = document.querySelectorAll('[data-date]');
+            calendarDays.forEach(day => {
+                day.addEventListener('click', () => {
+                    const date = day.getAttribute('data-date');
+                    const viewSelector = document.getElementById('view-selector');
+                    viewSelector.value = 'day';
+                    displayDayView(date, true);
+                });
+            });
+        }
+        function generateTimelineHtml(logs) {
+            const timeSlots = new Array(24).fill().map((_, i) => {
+                const time = i.toString().padStart(2, '0') + ':00';
+                return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" 
                     style="top: ${i * (100 / 24)}%">${time}</div>`;
-   });
+            });
 
-   const processedLogs = handleOverlappingReports(logs);
-   const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
+            const processedLogs = handleOverlappingReports(logs);
+            const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
 
-   const logElements = processedLogs.map(log => {
-       const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-       const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-       const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
-       let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
-       const minHeight = 5;
-       height = Math.max(height, minHeight);
+            const logElements = processedLogs.map(log => {
+                const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+                const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+                const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
+                let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
+                const minHeight = 5;
+                height = Math.max(height, minHeight);
 
-       const color = getColorForLogType(log.type);
-       const width = (100 / (maxOverlap + 1)) * 0.9;
-       const left = (log.overlap * width);
+                const color = getColorForLogType(log.type);
+                const width = (100 / (maxOverlap + 1)) * 0.9;
+                const left = (log.overlap * width);
 
-       let content = '';
-       if (log.type === 'holiday') {
-           content = `
+                let content = '';
+                if (log.type === 'holiday') {
+                    content = `
                <div class="font-bold mb-1">חג</div>
                <div>${log.client}</div>
                <div class="text-xs mt-1">${log['start-time']} - ${log['end-time']}</div>
            `;
-       } else {
-           content = `
+                } else {
+                    content = `
                <strong>${getHebrewType(log.type)}</strong><br>
                ${log['start-time']} - ${log['end-time']}<br>
                ${log.type === 'work' ? `${log.client} (${log.location})` : log.client}
            `;
-       }
+                }
 
-       if (height <= 8) {
-           content = `<strong>${getHebrewType(log.type)}</strong> ${log['start-time']} - ${log['end-time']}`;
-       }
+                if (height <= 8) {
+                    content = `<strong>${getHebrewType(log.type)}</strong> ${log['start-time']} - ${log['end-time']}`;
+                }
 
-       const actions = log.type === 'holiday' 
-           ? '<div class="mt-1 text-xs opacity-75">חג - נקבע אוטומטית</div>'
-           : `<div class="mt-1">
+                const actions = log.type === 'holiday'
+                    ? '<div class="mt-1 text-xs opacity-75">חג - נקבע אוטומטית</div>'
+                    : `<div class="mt-1">
                <button onclick="editLog('${log.id}')" class="text-white underline mr-2">ערוך</button>
                <button onclick="deleteLog('${log.id}')" class="text-white underline">מחק</button>
               </div>`;
 
-       return `
+                return `
            <div class="absolute p-1 text-xs text-white rounded-sm overflow-hidden hover:overflow-visible hover:z-10" 
                 style="top: ${top}%; height: ${height}%; min-height: ${minHeight}%; 
                        background-color: ${color}; width: ${width}%; left: ${left}%; 
@@ -1241,9 +1473,9 @@ function generateTimelineHtml(logs) {
                </div>
            </div>
        `;
-   });
+            });
 
-   return `
+            return `
        <div class="relative h-full overflow-x-auto">
            <div class="absolute inset-0 pr-12">
                ${logElements.join('')}
@@ -1251,25 +1483,25 @@ function generateTimelineHtml(logs) {
            ${timeSlots.join('')}
        </div>
    `;
-}
-
-function handleOverlappingReports(logs) {
-    logs.sort((a, b) => a['start-time'].localeCompare(b['start-time']));
-    const overlaps = new Array(logs.length).fill(0);
-
-    for (let i = 0; i < logs.length; i++) {
-        for (let j = 0; j < i; j++) {
-            if (logs[i]['start-time'] < logs[j]['end-time']) {
-                overlaps[i] = Math.max(overlaps[i], overlaps[j] + 1);
-            }
         }
-    }
 
-    return logs.map((log, index) => ({ ...log, overlap: overlaps[index] }));
-}
+        function handleOverlappingReports(logs) {
+            logs.sort((a, b) => a['start-time'].localeCompare(b['start-time']));
+            const overlaps = new Array(logs.length).fill(0);
 
-function generateDayForm(date) {
-    return `
+            for (let i = 0; i < logs.length; i++) {
+                for (let j = 0; j < i; j++) {
+                    if (logs[i]['start-time'] < logs[j]['end-time']) {
+                        overlaps[i] = Math.max(overlaps[i], overlaps[j] + 1);
+                    }
+                }
+            }
+
+            return logs.map((log, index) => ({ ...log, overlap: overlaps[index] }));
+        }
+
+        function generateDayForm(date) {
+            return `
         <form id="day-work-log-form" novalidate>
             <input type="hidden" id="day-date" name="date" value="${date.toFormat('yyyy-MM-dd')}">
             <div class="space-y-4">
@@ -1350,154 +1582,204 @@ function generateDayForm(date) {
             </div>
         </form>
     `;
-}
-
-function changeDay(delta) {
-    currentDate = currentDate.plus({ days: delta });
-    displayDayView(currentDate.toISO());
-}
-
-function initializeDayFormHandlers() {
-    const form = document.getElementById('day-work-log-form');
-    const typeSelect = document.getElementById('day-type');
-    
-    form.addEventListener('submit', handleDayFormSubmit);
-    typeSelect.addEventListener('change', updateFormFieldsBasedOnType);
-    
-    // Initialize fields visibility
-    updateFormFieldsBasedOnType();
-}
-// Modal Management Functions
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    const overlay = document.getElementById('modal-overlay');
-    if (modal && overlay) {
-        document.body.classList.add('modal-open');
-        overlay.classList.remove('hidden');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            overlay.classList.add('opacity-50');
-            modal.classList.add('active');
-        }, 10);
-    }
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    const overlay = document.getElementById('modal-overlay');
-    if (modal && overlay) {
-        document.body.classList.remove('modal-open');
-        modal.classList.remove('active');
-        overlay.classList.remove('opacity-50');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            overlay.classList.add('hidden');
-        }, 0);
-    }
-}
-
-// Form Handling Functions
-function handleDayFormSubmit(e) {
-    e.preventDefault();
-    if (!validateForm('day-work-log-form')) return;
-
-    const formData = new FormData(e.target);
-    const baseLog = Object.fromEntries(formData.entries());
-
-    // Handle file attachment
-    const attachmentInput = document.getElementById('attachment');
-    if (attachmentInput && attachmentInput.files.length > 0) {
-        baseLog.attachmentName = attachmentInput.files[0].name;
-    }
-
-    const enableRecurrence = document.getElementById('day-work-log-form-enable-recurrence');
-    
-    if (enableRecurrence && enableRecurrence.checked) {
-        // Get recurrence parameters
-        const endDate = document.getElementById('day-work-log-form-end-date').value;
-        const selectedDays = Array.from(document.querySelectorAll('input[name="weekdays"]:checked'))
-            .map(cb => parseInt(cb.value));
-
-        if (!endDate) {
-            showNotification('יש להזין תאריך סיום', 'error');
-            return;
         }
+        // Add this to your existing JavaScript
+        function initializeMobileNav() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
 
-        if (selectedDays.length === 0) {
-            showNotification('יש לבחור לפחות יום אחד בשבוע', 'error');
-            return;
-        }
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    // Toggle the menu visibility
+                    if (mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.remove('hidden');
+                        // Add slide-down animation
+                        mobileMenu.style.maxHeight = '0';
+                        requestAnimationFrame(() => {
+                            mobileMenu.style.transition = 'max-height 0.3s ease-in-out';
+                            mobileMenu.style.maxHeight = mobileMenu.scrollHeight + 'px';
+                        });
+                    } else {
+                        // Add slide-up animation
+                        mobileMenu.style.maxHeight = '0';
+                        mobileMenu.addEventListener('transitionend', () => {
+                            mobileMenu.classList.add('hidden');
+                        }, { once: true });
+                    }
 
-        // Generate recurring logs
-        const startDateTime = DateTime.fromISO(baseLog.date);
-        const endDateTime = DateTime.fromISO(endDate);
-        const logsToAdd = [];
+                    // Toggle aria-expanded attribute
+                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                    mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                });
 
-        let currentDate = startDateTime;
-        while (currentDate <= endDateTime) {
-            if (selectedDays.includes(currentDate.weekday)) {
-                const newLog = {
-                    ...baseLog,
-                    id: Date.now().toString() + Math.random().toString(36).slice(2),
-                    date: currentDate.toFormat('yyyy-MM-dd')
-                };
-                logsToAdd.push(newLog);
+                // Close menu when clicking outside
+                document.addEventListener('click', (event) => {
+                    if (!mobileMenuButton.contains(event.target) &&
+                        !mobileMenu.contains(event.target) &&
+                        !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                // Close menu when window is resized to desktop size
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth >= 768) { // md breakpoint
+                        mobileMenu.classList.add('hidden');
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                    }
+                });
             }
-            currentDate = currentDate.plus({ days: 1 });
         }
 
-        // Add all logs
-        workLogs.push(...logsToAdd);
-        saveWorkLogs();
-        
-        showNotification(`נוספו ${logsToAdd.length} דיווחים חוזרים בהצלחה`, 'success');
-    } else {
-        // Regular single log
-        baseLog.id = Date.now().toString();
-        workLogs.push(baseLog);
-        saveWorkLogs();
-        showNotification('הדיווח נשמר בהצלחה', 'success');
-    }
+        // Initialize mobile navigation when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeMobileNav);
+        function changeDay(delta) {
+            currentDate = currentDate.plus({ days: delta });
+            displayDayView(currentDate.toISO());
+        }
 
-    updateReport();
-}
-function handleEditFormSubmit(e) {
-    e.preventDefault();
-    if (!validateForm('edit-form')) return;
+        function initializeDayFormHandlers() {
+            const form = document.getElementById('day-work-log-form');
+            const typeSelect = document.getElementById('day-type');
 
-    const formData = new FormData(e.target);
-    const updatedLog = Object.fromEntries(formData.entries());
-    const id = document.getElementById('edit-id').value;
-    
-    const attachmentInput = document.getElementById('edit-attachment');
-    if (attachmentInput && attachmentInput.files.length > 0) {
-        updatedLog.attachmentName = attachmentInput.files[0].name;
-    }
+            form.addEventListener('submit', handleDayFormSubmit);
+            typeSelect.addEventListener('change', updateFormFieldsBasedOnType);
 
-    const index = workLogs.findIndex(log => log.id === id);
-    if (index !== -1) {
-        workLogs[index] = { ...workLogs[index], ...updatedLog };
-        saveWorkLogs();
-        updateReport();
-        closeModal('edit-modal');
-        showSuccessMessage('הדיווח עודכן בהצלחה');
-    }
-}
+            // Initialize fields visibility
+            updateFormFieldsBasedOnType();
+        }
+        // Modal Management Functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const overlay = document.getElementById('modal-overlay');
+            if (modal && overlay) {
+                document.body.classList.add('modal-open');
+                overlay.classList.remove('hidden');
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.add('opacity-50');
+                    modal.classList.add('active');
+                }, 10);
+            }
+        }
 
-function editLog(id) {
-    const log = workLogs.find(log => log.id === id);
-    if (!log) return;
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const overlay = document.getElementById('modal-overlay');
+            if (modal && overlay) {
+                document.body.classList.remove('modal-open');
+                modal.classList.remove('active');
+                overlay.classList.remove('opacity-50');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    overlay.classList.add('hidden');
+                }, 0);
+            }
+        }
 
-    populateEditModal(log);
-    openModal('edit-modal');
-}
+        // Form Handling Functions
+        function handleDayFormSubmit(e) {
+            e.preventDefault();
+            if (!validateForm('day-work-log-form')) return;
 
-function populateEditModal(log) {
-    const modal = document.getElementById('edit-modal');
-    
-    // If it's a holiday entry, show read-only view
-    if (log.type === 'holiday') {
-        modal.querySelector('.relative').innerHTML = `
+            const formData = new FormData(e.target);
+            const baseLog = Object.fromEntries(formData.entries());
+
+            // Handle file attachment
+            const attachmentInput = document.getElementById('attachment');
+            if (attachmentInput && attachmentInput.files.length > 0) {
+                baseLog.attachmentName = attachmentInput.files[0].name;
+            }
+
+            const enableRecurrence = document.getElementById('day-work-log-form-enable-recurrence');
+
+            if (enableRecurrence && enableRecurrence.checked) {
+                // Get recurrence parameters
+                const endDate = document.getElementById('day-work-log-form-end-date').value;
+                const selectedDays = Array.from(document.querySelectorAll('input[name="weekdays"]:checked'))
+                    .map(cb => parseInt(cb.value));
+
+                if (!endDate) {
+                    showNotification('יש להזין תאריך סיום', 'error');
+                    return;
+                }
+
+                if (selectedDays.length === 0) {
+                    showNotification('יש לבחור לפחות יום אחד בשבוע', 'error');
+                    return;
+                }
+
+                // Generate recurring logs
+                const startDateTime = DateTime.fromISO(baseLog.date);
+                const endDateTime = DateTime.fromISO(endDate);
+                const logsToAdd = [];
+
+                let currentDate = startDateTime;
+                while (currentDate <= endDateTime) {
+                    if (selectedDays.includes(currentDate.weekday)) {
+                        const newLog = {
+                            ...baseLog,
+                            id: Date.now().toString() + Math.random().toString(36).slice(2),
+                            date: currentDate.toFormat('yyyy-MM-dd')
+                        };
+                        logsToAdd.push(newLog);
+                    }
+                    currentDate = currentDate.plus({ days: 1 });
+                }
+
+                // Add all logs
+                workLogs.push(...logsToAdd);
+                saveWorkLogs();
+
+                showNotification(`נוספו ${logsToAdd.length} דיווחים חוזרים בהצלחה`, 'success');
+            } else {
+                // Regular single log
+                baseLog.id = Date.now().toString();
+                workLogs.push(baseLog);
+                saveWorkLogs();
+                showNotification('הדיווח נשמר בהצלחה', 'success');
+            }
+
+            updateReport();
+        }
+        function handleEditFormSubmit(e) {
+            e.preventDefault();
+            if (!validateForm('edit-form')) return;
+
+            const formData = new FormData(e.target);
+            const updatedLog = Object.fromEntries(formData.entries());
+            const id = document.getElementById('edit-id').value;
+
+            const attachmentInput = document.getElementById('edit-attachment');
+            if (attachmentInput && attachmentInput.files.length > 0) {
+                updatedLog.attachmentName = attachmentInput.files[0].name;
+            }
+
+            const index = workLogs.findIndex(log => log.id === id);
+            if (index !== -1) {
+                workLogs[index] = { ...workLogs[index], ...updatedLog };
+                saveWorkLogs();
+                updateReport();
+                closeModal('edit-modal');
+                showSuccessMessage('הדיווח עודכן בהצלחה');
+            }
+        }
+
+        function editLog(id) {
+            const log = workLogs.find(log => log.id === id);
+            if (!log) return;
+
+            populateEditModal(log);
+            openModal('edit-modal');
+        }
+
+        function populateEditModal(log) {
+            const modal = document.getElementById('edit-modal');
+
+            // If it's a holiday entry, show read-only view
+            if (log.type === 'holiday') {
+                modal.querySelector('.relative').innerHTML = `
             <button type="button" class="close absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8">
                 <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
@@ -1523,13 +1805,13 @@ function populateEditModal(log) {
             </div>
         `;
 
-        // Add event listener to close button for holiday view
-        modal.querySelector('.close').addEventListener('click', () => closeModal('edit-modal'));
-        return;
-    }
+                // Add event listener to close button for holiday view
+                modal.querySelector('.close').addEventListener('click', () => closeModal('edit-modal'));
+                return;
+            }
 
-    // Regular entries - show edit form
-    const generateFormFields = () => `
+            // Regular entries - show edit form
+            const generateFormFields = () => `
         <input type="hidden" id="edit-id" value="${log.id}">
         
         <div>
@@ -1576,7 +1858,7 @@ function populateEditModal(log) {
         <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">עדכן רשומה</button>
     `;
 
-    modal.querySelector('.relative').innerHTML = `
+            modal.querySelector('.relative').innerHTML = `
         <button type="button" class="close absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8">
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
@@ -1592,319 +1874,319 @@ function populateEditModal(log) {
         </div>
     `;
 
-    // Initialize handlers and date/time pickers for regular entries
-    initializeEditFormHandlers();
-    initializeFlatpickr();
-}
+            // Initialize handlers and date/time pickers for regular entries
+            initializeEditFormHandlers();
+            initializeFlatpickr();
+        }
 
-function generateTypeOptions(selectedType) {
-    // Don't allow editing if it's a holiday
-    if (selectedType === 'holiday') {
-        return '<option value="holiday">חג</option>';
-    }
-
-    const types = {
-        'work': 'עבודה רגילה',
-        'sick': 'מחלה',
-        'family_sick': 'מחלה משפחתית',
-        'parent_sick': 'מחלת הורה',
-        'spouse_sick': 'מחלת בן/בת זוג',
-        'spouse_absence': 'היעדרות בגין בת זוג',
-        'child_sick': 'מחלת ילד',
-        'vacation': 'חופשה',
-        'reserve': 'מילואים',
-        'bereavement': 'אבל',
-        'study': 'ימי השתלמות'
-    };
-
-    return Object.entries(types)
-        .map(([value, label]) => `<option value="${value}" ${value === selectedType ? 'selected' : ''}>${label}</option>`)
-        .join('');
-}
-
-function initializeEditFormHandlers() {
-    const form = document.getElementById('edit-form');
-    const typeSelect = document.getElementById('edit-type');
-    const closeButton = document.querySelector('.close');
-
-    form.addEventListener('submit', handleEditFormSubmit);
-    typeSelect.addEventListener('change', () => updateAttachmentVisibility(typeSelect));
-    closeButton.addEventListener('click', () => closeModal('edit-modal'));
-
-    // Initial attachment visibility
-    updateAttachmentVisibility(typeSelect);
-}
-
-function updateAttachmentVisibility(typeSelect) {
-    const attachmentContainer = document.getElementById('edit-attachment-container');
-    if (leaveTypesRequiringAttachment.includes(typeSelect.value)) {
-        attachmentContainer.classList.remove('hidden');
-    } else {
-        attachmentContainer.classList.add('hidden');
-    }
-}
-
-// Find and delete a specific log
-function deleteLog(id) {
-    showConfirmDialog('מחיקת דיווח', 'האם אתה בטוח שברצונך למחוק רשומה זו?')
-        .then(confirmed => {
-            if (confirmed) {
-                // Find the index of the specific log
-                const logIndex = workLogs.findIndex(log => log.id === id);
-                
-                if (logIndex !== -1) {
-                    // Remove only the specific log
-                    workLogs.splice(logIndex, 1);
-                    
-                    // Save the updated logs
-                    saveWorkLogs();
-                    
-                    // Get the current view
-                    const currentView = document.getElementById('view-selector').value;
-                    
-                    // Update the display based on current view
-                    if (currentView === 'month') {
-                        displayMonthCalendar();
-                    } else {
-                        displayDayView(currentDate.toISO());
-                    }
-                    
-                    showNotification('הדיווח נמחק בהצלחה', 'success');
-                } else {
-                    showNotification('לא נמצא הדיווח למחיקה', 'error');
-                }
+        function generateTypeOptions(selectedType) {
+            // Don't allow editing if it's a holiday
+            if (selectedType === 'holiday') {
+                return '<option value="holiday">חג</option>';
             }
-        });
-}
-// Event Handlers and Initialization
-function initializeApp() {
-    // Load stored data
-    lazyLoadWorkLogs();
-    workTemplates.loadTemplates();
-    recentLocations.load();
-    initializeViewSelector();
-    // Initialize view
-    updateReport();
 
-    // Add event listeners
-    addEventListeners();
-}
+            const types = {
+                'work': 'עבודה רגילה',
+                'sick': 'מחלה',
+                'family_sick': 'מחלה משפחתית',
+                'parent_sick': 'מחלת הורה',
+                'spouse_sick': 'מחלת בן/בת זוג',
+                'spouse_absence': 'היעדרות בגין בת זוג',
+                'child_sick': 'מחלת ילד',
+                'vacation': 'חופשה',
+                'reserve': 'מילואים',
+                'bereavement': 'אבל',
+                'study': 'ימי השתלמות'
+            };
 
-function addEventListeners() {
-    // View selector
-    document.getElementById('view-selector')
-        .addEventListener('change', updateReport);
-
-    // Export button
-    document.getElementById('export-csv')
-        .addEventListener('click', exportToCSV);
-
-    // Keyboard navigation
-    document.addEventListener('keydown', handleKeyboardShortcuts);
-
-    // Modal handling
-    document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('modal')) {
-            closeModal(event.target.id);
+            return Object.entries(types)
+                .map(([value, label]) => `<option value="${value}" ${value === selectedType ? 'selected' : ''}>${label}</option>`)
+                .join('');
         }
-    });
-}
 
-function handleKeyboardShortcuts(e) {
-    // Alt + N: New entry for today
-    if (e.altKey && e.key === 'n') {
-        displayDayView(DateTime.now().toISO());
-        e.preventDefault();
-    }
-    
-    // Alt + Left/Right: Navigate between days
-    if (e.altKey && e.key === 'ArrowLeft') {
-        if (document.getElementById('view-selector').value === 'day') {
-            changeDay(1);
-        } else {
-            changeMonth(1);
+        function initializeEditFormHandlers() {
+            const form = document.getElementById('edit-form');
+            const typeSelect = document.getElementById('edit-type');
+            const closeButton = document.querySelector('.close');
+
+            form.addEventListener('submit', handleEditFormSubmit);
+            typeSelect.addEventListener('change', () => updateAttachmentVisibility(typeSelect));
+            closeButton.addEventListener('click', () => closeModal('edit-modal'));
+
+            // Initial attachment visibility
+            updateAttachmentVisibility(typeSelect);
         }
-        e.preventDefault();
-    }
-    if (e.altKey && e.key === 'ArrowRight') {
-        if (document.getElementById('view-selector').value === 'day') {
-            changeDay(-1);
-        } else {
-            changeMonth(-1);
+
+        function updateAttachmentVisibility(typeSelect) {
+            const attachmentContainer = document.getElementById('edit-attachment-container');
+            if (leaveTypesRequiringAttachment.includes(typeSelect.value)) {
+                attachmentContainer.classList.remove('hidden');
+            } else {
+                attachmentContainer.classList.add('hidden');
+            }
         }
-        e.preventDefault();
-    }
 
-    // Calendar keyboard navigation
-    if (document.getElementById('view-selector').value === 'month') {
-        handleCalendarKeyboardNavigation(e);
-    }
-}
+        // Find and delete a specific log
+        function deleteLog(id) {
+            showConfirmDialog('מחיקת דיווח', 'האם אתה בטוח שברצונך למחוק רשומה זו?')
+                .then(confirmed => {
+                    if (confirmed) {
+                        // Find the index of the specific log
+                        const logIndex = workLogs.findIndex(log => log.id === id);
 
-// CSV Export Function
-function exportToCSV() {
-    const headers = ['תאריך', 'סוג דיווח', 'מיקום עבודה', 'לקוח לחיוב', 'שעת התחלה', 'שעת סיום'];
-    const rows = workLogs.map(log => [
-        log.date,
-        getHebrewType(log.type),
-        log.location,
-        log.client,
-        log['start-time'],
-        log['end-time']
-    ]);
+                        if (logIndex !== -1) {
+                            // Remove only the specific log
+                            workLogs.splice(logIndex, 1);
 
-    // Prepare CSV content
-    let csvContent = [headers, ...rows].map(row => 
-        row.map(cell => `"${cell?.replace(/"/g, '""') || ''}"`)
-           .join(',')
-    ).join('\r\n');
+                            // Save the updated logs
+                            saveWorkLogs();
 
-    // Add BOM for Hebrew support
-    const bom = '\uFEFF';
-    const blob = new Blob([bom + csvContent], { 
-        type: 'text/csv;charset=utf-8;' 
-    });
+                            // Get the current view
+                            const currentView = document.getElementById('view-selector').value;
 
-    // Download file
-    const link = document.createElement("a");
-    if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", `work_logs_${currentDate.toFormat('yyyy-MM')}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-}
+                            // Update the display based on current view
+                            if (currentView === 'month') {
+                                displayMonthCalendar();
+                            } else {
+                                displayDayView(currentDate.toISO());
+                            }
 
-// Update Functions
-function updateFormFieldsBasedOnType() {
-    const typeSelect = document.getElementById('day-type');
-    const attachmentContainer = document.getElementById('attachment-container');
-    const locationContainer = document.getElementById('day-location-container');
-    const clientContainer = document.getElementById('day-client-container');
-    
-    const selectedType = typeSelect.value;
-
-    // Show/hide attachment input
-    if (leaveTypesRequiringAttachment.includes(selectedType)) {
-        attachmentContainer.classList.remove('hidden');
-    } else {
-        attachmentContainer.classList.add('hidden');
-    }
-
-    // Update labels based on type
-    if (selectedType === 'work') {
-        locationContainer.querySelector('label').textContent = 'מיקום עבודה:';
-        clientContainer.querySelector('label').textContent = 'לקוח לחיוב:';
-        locationContainer.querySelector('select, input').disabled = false;
-    } else if (selectedType) {
-        locationContainer.querySelector('label').textContent = 'סיבת היעדרות:';
-        clientContainer.querySelector('label').textContent = 'פרטים נוספים:';
-        // Disable location select for non-work types
-        locationContainer.querySelector('select, input').disabled = true;
-    }
-
-    // Show/hide containers
-    locationContainer.style.display = selectedType ? 'block' : 'none';
-    clientContainer.style.display = selectedType ? 'block' : 'none';
-}
-
-function updateReport() {
-    const view = document.getElementById('view-selector').value;
-    const reportContent = document.getElementById('report-content');
-    reportContent.innerHTML = '';
-
-    // Update view selector buttons without triggering events
-    const buttons = document.querySelectorAll('.view-option');
-    buttons.forEach(button => {
-        if (button.dataset.view === view) {
-            button.classList.add('selected');
-            button.setAttribute('aria-pressed', 'true');
-        } else {
-            button.classList.remove('selected');
-            button.setAttribute('aria-pressed', 'false');
+                            showNotification('הדיווח נמחק בהצלחה', 'success');
+                        } else {
+                            showNotification('לא נמצא הדיווח למחיקה', 'error');
+                        }
+                    }
+                });
         }
-    });
+        // Event Handlers and Initialization
+        function initializeApp() {
+            // Load stored data
+            lazyLoadWorkLogs();
+            workTemplates.loadTemplates();
+            recentLocations.load();
+            initializeViewSelector();
+            // Initialize view
+            updateReport();
 
-    switch (view) {
-        case 'month':
-            displayMonthCalendar();
-            break;
-        case 'day':
-            displayDayView(currentDate.toISO(), false); // Add flag to prevent recursion
-            break;
-    }
-}
+            // Add event listeners
+            addEventListeners();
+        }
 
-// Initialize Flatpickr instances
-function initializeFlatpickr() {
-    const dateConfig = {
-        dateFormat: "Y-m-d",
-        allowInput: true,
-        altInput: true,
-        altFormat: "d/m/Y"
-    };
+        function addEventListeners() {
+            // View selector
+            document.getElementById('view-selector')
+                .addEventListener('change', updateReport);
 
-    const timeConfig = {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i",
-        time_24hr: true,
-        minuteIncrement: 15
-    };
+            // Export button
+            document.getElementById('export-csv')
+                .addEventListener('click', exportToCSV);
 
-    flatpickr("#edit-date", dateConfig);
-    flatpickr("#edit-start-time", timeConfig);
-    flatpickr("#edit-end-time", timeConfig);
-    flatpickr("#day-start-time", timeConfig);
-    flatpickr("#day-end-time", timeConfig);
-}
-document.addEventListener('DOMContentLoaded', initializeDarkMode);
-// Initialize application when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeApp);
-// Enhanced Features - Templates and Quick Actions
-const quickTimePresets = [
-    { label: 'יום עבודה רגיל', start: '09:00', end: '18:00' },
-    { label: 'חצי יום - בוקר', start: '09:00', end: '13:00' },
-    { label: 'חצי יום - אחה"צ', start: '13:00', end: '17:00' },
-    { label: 'משמרת ערב', start: '16:00', end: '00:00' },
-    { label: 'יום קצר', start: '08:00', end: '15:00' },
-    { label: 'יום ארוך', start: '08:00', end: '19:00' }
-];
+            // Keyboard navigation
+            document.addEventListener('keydown', handleKeyboardShortcuts);
 
-function addQuickActionsToForm() {
-    const startTimeInput = document.getElementById('day-start-time');
-    if (!startTimeInput) return;
+            // Modal handling
+            document.addEventListener('click', (event) => {
+                if (event.target.classList.contains('modal')) {
+                    closeModal(event.target.id);
+                }
+            });
+        }
 
-    const container = document.createElement('div');
-    container.className = 'mt-2 flex flex-wrap gap-2';
-    
-    quickTimePresets.forEach(preset => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded-full transition-colors';
-        button.textContent = preset.label;
-        button.onclick = () => {
-            document.getElementById('day-start-time')._flatpickr.setDate(preset.start);
-            document.getElementById('day-end-time')._flatpickr.setDate(preset.end);
-        };
-        container.appendChild(button);
-    });
+        function handleKeyboardShortcuts(e) {
+            // Alt + N: New entry for today
+            if (e.altKey && e.key === 'n') {
+                displayDayView(DateTime.now().toISO());
+                e.preventDefault();
+            }
 
-    startTimeInput.parentNode.appendChild(container);
-}
+            // Alt + Left/Right: Navigate between days
+            if (e.altKey && e.key === 'ArrowLeft') {
+                if (document.getElementById('view-selector').value === 'day') {
+                    changeDay(1);
+                } else {
+                    changeMonth(1);
+                }
+                e.preventDefault();
+            }
+            if (e.altKey && e.key === 'ArrowRight') {
+                if (document.getElementById('view-selector').value === 'day') {
+                    changeDay(-1);
+                } else {
+                    changeMonth(-1);
+                }
+                e.preventDefault();
+            }
 
-function addCopyPreviousButton() {
-    const formContainer = document.querySelector('#day-work-log-form');
-    if (!formContainer) return;
+            // Calendar keyboard navigation
+            if (document.getElementById('view-selector').value === 'month') {
+                handleCalendarKeyboardNavigation(e);
+            }
+        }
 
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'mb-4 text-indigo-600 hover:text-indigo-800 text-sm flex items-center gap-2';
-    button.innerHTML = `
+        // CSV Export Function
+        function exportToCSV() {
+            const headers = ['תאריך', 'סוג דיווח', 'מיקום עבודה', 'לקוח לחיוב', 'שעת התחלה', 'שעת סיום'];
+            const rows = workLogs.map(log => [
+                log.date,
+                getHebrewType(log.type),
+                log.location,
+                log.client,
+                log['start-time'],
+                log['end-time']
+            ]);
+
+            // Prepare CSV content
+            let csvContent = [headers, ...rows].map(row =>
+                row.map(cell => `"${cell?.replace(/"/g, '""') || ''}"`)
+                    .join(',')
+            ).join('\r\n');
+
+            // Add BOM for Hebrew support
+            const bom = '\uFEFF';
+            const blob = new Blob([bom + csvContent], {
+                type: 'text/csv;charset=utf-8;'
+            });
+
+            // Download file
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `work_logs_${currentDate.toFormat('yyyy-MM')}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Update Functions
+        function updateFormFieldsBasedOnType() {
+            const typeSelect = document.getElementById('day-type');
+            const attachmentContainer = document.getElementById('attachment-container');
+            const locationContainer = document.getElementById('day-location-container');
+            const clientContainer = document.getElementById('day-client-container');
+
+            const selectedType = typeSelect.value;
+
+            // Show/hide attachment input
+            if (leaveTypesRequiringAttachment.includes(selectedType)) {
+                attachmentContainer.classList.remove('hidden');
+            } else {
+                attachmentContainer.classList.add('hidden');
+            }
+
+            // Update labels based on type
+            if (selectedType === 'work') {
+                locationContainer.querySelector('label').textContent = 'מיקום עבודה:';
+                clientContainer.querySelector('label').textContent = 'לקוח לחיוב:';
+                locationContainer.querySelector('select, input').disabled = false;
+            } else if (selectedType) {
+                locationContainer.querySelector('label').textContent = 'סיבת היעדרות:';
+                clientContainer.querySelector('label').textContent = 'פרטים נוספים:';
+                // Disable location select for non-work types
+                locationContainer.querySelector('select, input').disabled = true;
+            }
+
+            // Show/hide containers
+            locationContainer.style.display = selectedType ? 'block' : 'none';
+            clientContainer.style.display = selectedType ? 'block' : 'none';
+        }
+
+        function updateReport() {
+            const view = document.getElementById('view-selector').value;
+            const reportContent = document.getElementById('report-content');
+            reportContent.innerHTML = '';
+
+            // Update view selector buttons without triggering events
+            const buttons = document.querySelectorAll('.view-option');
+            buttons.forEach(button => {
+                if (button.dataset.view === view) {
+                    button.classList.add('selected');
+                    button.setAttribute('aria-pressed', 'true');
+                } else {
+                    button.classList.remove('selected');
+                    button.setAttribute('aria-pressed', 'false');
+                }
+            });
+
+            switch (view) {
+                case 'month':
+                    displayMonthCalendar();
+                    break;
+                case 'day':
+                    displayDayView(currentDate.toISO(), false); // Add flag to prevent recursion
+                    break;
+            }
+        }
+
+        // Initialize Flatpickr instances
+        function initializeFlatpickr() {
+            const dateConfig = {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                altInput: true,
+                altFormat: "d/m/Y"
+            };
+
+            const timeConfig = {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                time_24hr: true,
+                minuteIncrement: 15
+            };
+
+            flatpickr("#edit-date", dateConfig);
+            flatpickr("#edit-start-time", timeConfig);
+            flatpickr("#edit-end-time", timeConfig);
+            flatpickr("#day-start-time", timeConfig);
+            flatpickr("#day-end-time", timeConfig);
+        }
+        document.addEventListener('DOMContentLoaded', initializeDarkMode);
+        // Initialize application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+        // Enhanced Features - Templates and Quick Actions
+        const quickTimePresets = [
+            { label: 'יום עבודה רגיל', start: '09:00', end: '18:00' },
+            { label: 'חצי יום - בוקר', start: '09:00', end: '13:00' },
+            { label: 'חצי יום - אחה"צ', start: '13:00', end: '17:00' },
+            { label: 'משמרת ערב', start: '16:00', end: '00:00' },
+            { label: 'יום קצר', start: '08:00', end: '15:00' },
+            { label: 'יום ארוך', start: '08:00', end: '19:00' }
+        ];
+
+        function addQuickActionsToForm() {
+            const startTimeInput = document.getElementById('day-start-time');
+            if (!startTimeInput) return;
+
+            const container = document.createElement('div');
+            container.className = 'mt-2 flex flex-wrap gap-2';
+
+            quickTimePresets.forEach(preset => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded-full transition-colors';
+                button.textContent = preset.label;
+                button.onclick = () => {
+                    document.getElementById('day-start-time')._flatpickr.setDate(preset.start);
+                    document.getElementById('day-end-time')._flatpickr.setDate(preset.end);
+                };
+                container.appendChild(button);
+            });
+
+            startTimeInput.parentNode.appendChild(container);
+        }
+
+        function addCopyPreviousButton() {
+            const formContainer = document.querySelector('#day-work-log-form');
+            if (!formContainer) return;
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'mb-4 text-indigo-600 hover:text-indigo-800 text-sm flex items-center gap-2';
+            button.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
@@ -1912,29 +2194,29 @@ function addCopyPreviousButton() {
         העתק דיווחי יום קודם
     `;
 
-    button.onclick = async () => {
-        const previousDay = currentDate.minus({ days: 1 });
-        const previousLogs = workLogs.filter(log => 
-            DateTime.fromISO(log.date).hasSame(previousDay, 'day')
-        );
+            button.onclick = async () => {
+                const previousDay = currentDate.minus({ days: 1 });
+                const previousLogs = workLogs.filter(log =>
+                    DateTime.fromISO(log.date).hasSame(previousDay, 'day')
+                );
 
-        if (previousLogs.length === 0) {
-            showNotification('לא נמצאו דיווחים מהיום הקודם', 'warning');
-            return;
+                if (previousLogs.length === 0) {
+                    showNotification('לא נמצאו דיווחים מהיום הקודם', 'warning');
+                    return;
+                }
+
+                showCopySelectionModal(previousLogs, previousDay);
+            };
+
+            formContainer.insertBefore(button, formContainer.firstChild);
         }
 
-        showCopySelectionModal(previousLogs, previousDay);
-    };
+        function showCopySelectionModal(logs, previousDay) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center';
+            modal.id = 'copy-selection-modal';
 
-    formContainer.insertBefore(button, formContainer.firstChild);
-}
-
-function showCopySelectionModal(logs, previousDay) {
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center';
-    modal.id = 'copy-selection-modal';
-
-    modal.innerHTML = `
+            modal.innerHTML = `
         <div class="relative w-[90%] max-w-[360px] p-5 border shadow-lg rounded-md bg-white mx-auto">
             <div class="mt-3">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
@@ -1979,65 +2261,65 @@ function showCopySelectionModal(logs, previousDay) {
         </div>
     `;
 
-    document.body.appendChild(modal);
+            document.body.appendChild(modal);
 
-    // Event Listeners
-    const copyTypeRadios = modal.querySelectorAll('input[name="copy-type"]');
-    const logsSelection = modal.querySelector('#logs-selection');
+            // Event Listeners
+            const copyTypeRadios = modal.querySelectorAll('input[name="copy-type"]');
+            const logsSelection = modal.querySelector('#logs-selection');
 
-    copyTypeRadios.forEach(radio => {
-        radio.addEventListener('change', () => {
-            if (radio.value === 'selected') {
-                logsSelection.classList.remove('hidden');
-            } else {
-                logsSelection.classList.add('hidden');
-            }
-        });
-    });
+            copyTypeRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.value === 'selected') {
+                        logsSelection.classList.remove('hidden');
+                    } else {
+                        logsSelection.classList.add('hidden');
+                    }
+                });
+            });
 
-    modal.querySelector('#cancel-copy').addEventListener('click', () => {
-        modal.remove();
-    });
+            modal.querySelector('#cancel-copy').addEventListener('click', () => {
+                modal.remove();
+            });
 
-    modal.querySelector('#confirm-copy').addEventListener('click', () => {
-        const copyType = modal.querySelector('input[name="copy-type"]:checked').value;
-        let logsToCopy = [];
+            modal.querySelector('#confirm-copy').addEventListener('click', () => {
+                const copyType = modal.querySelector('input[name="copy-type"]:checked').value;
+                let logsToCopy = [];
 
-        if (copyType === 'all') {
-            logsToCopy = logs;
-        } else {
-            const selectedLogIds = Array.from(modal.querySelectorAll('#logs-selection input[type="checkbox"]:checked'))
-                .map(checkbox => checkbox.value);
-            logsToCopy = logs.filter(log => selectedLogIds.includes(log.id));
+                if (copyType === 'all') {
+                    logsToCopy = logs;
+                } else {
+                    const selectedLogIds = Array.from(modal.querySelectorAll('#logs-selection input[type="checkbox"]:checked'))
+                        .map(checkbox => checkbox.value);
+                    logsToCopy = logs.filter(log => selectedLogIds.includes(log.id));
+                }
+
+                if (logsToCopy.length === 0) {
+                    showNotification('יש לבחור לפחות דיווח אחד להעתקה', 'warning');
+                    return;
+                }
+
+                // Copy selected logs
+                logsToCopy.forEach(log => {
+                    const newLog = { ...log };
+                    newLog.date = currentDate.toFormat('yyyy-MM-dd');
+                    newLog.id = Date.now().toString() + Math.random().toString(36).slice(2);
+                    workLogs.push(newLog);
+                });
+
+                saveWorkLogs();
+                updateReport();
+                showNotification(`${logsToCopy.length} דיווחים הועתקו בהצלחה`, 'success');
+                modal.remove();
+            });
         }
 
-        if (logsToCopy.length === 0) {
-            showNotification('יש לבחור לפחות דיווח אחד להעתקה', 'warning');
-            return;
-        }
+        function addRecurrenceFields(formId) {
+            const form = document.getElementById(formId);
+            const submitButton = form.querySelector('button[type="submit"]');
 
-        // Copy selected logs
-        logsToCopy.forEach(log => {
-            const newLog = { ...log };
-            newLog.date = currentDate.toFormat('yyyy-MM-dd');
-            newLog.id = Date.now().toString() + Math.random().toString(36).slice(2);
-            workLogs.push(newLog);
-        });
-
-        saveWorkLogs();
-        updateReport();
-        showNotification(`${logsToCopy.length} דיווחים הועתקו בהצלחה`, 'success');
-        modal.remove();
-    });
-}
-
-function addRecurrenceFields(formId) {
-    const form = document.getElementById(formId);
-    const submitButton = form.querySelector('button[type="submit"]');
-
-    const recurrenceSection = document.createElement('div');
-    recurrenceSection.className = 'space-y-4 mt-6 p-4 bg-gray-50 rounded-lg';
-    recurrenceSection.innerHTML = `
+            const recurrenceSection = document.createElement('div');
+            recurrenceSection.className = 'space-y-4 mt-6 p-4 bg-gray-50 rounded-lg';
+            recurrenceSection.innerHTML = `
         <div class="flex items-center mb-4">
             <input type="checkbox" id="${formId}-enable-recurrence" class="ml-2">
             <label for="${formId}-enable-recurrence" class="text-sm font-medium text-gray-900">
@@ -2086,50 +2368,51 @@ function addRecurrenceFields(formId) {
         </div>
     `;
 
-    // Insert before submit button
-    submitButton.parentNode.insertBefore(recurrenceSection, submitButton);
+            // Insert before submit button
+            submitButton.parentNode.insertBefore(recurrenceSection, submitButton);
 
-    // Initialize end date picker
-    flatpickr(`#${formId}-end-date`, {
-        dateFormat: "Y-m-d",
-        allowInput: true,
-        altInput: true,
-        altFormat: "d/m/Y",
-        minDate: 'today'
-    });
+            // Initialize end date picker
+            flatpickr(`#${formId}-end-date`, {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                altInput: true,
+                altFormat: "d/m/Y",
+                minDate: 'today'
+            });
 
-    // Toggle recurrence options visibility
-    const enableRecurrence = document.getElementById(`${formId}-enable-recurrence`);
-    const recurrenceOptions = document.getElementById(`${formId}-recurrence-options`);
-    
-    enableRecurrence.addEventListener('change', () => {
-        recurrenceOptions.classList.toggle('hidden', !enableRecurrence.checked);
-    });
-}
-function addKeyboardShortcutsHelp() {
-    const helpButton = document.createElement('button');
-    helpButton.className = 'fixed bottom-4 left-4 bg-gray-800 text-white p-2 rounded-full';
-    helpButton.innerHTML = '⌨️';
-    helpButton.title = `
+            // Toggle recurrence options visibility
+            const enableRecurrence = document.getElementById(`${formId}-enable-recurrence`);
+            const recurrenceOptions = document.getElementById(`${formId}-recurrence-options`);
+
+            enableRecurrence.addEventListener('change', () => {
+                recurrenceOptions.classList.toggle('hidden', !enableRecurrence.checked);
+            });
+        }
+        function addKeyboardShortcutsHelp() {
+            const helpButton = document.createElement('button');
+            helpButton.className = 'fixed bottom-4 left-4 bg-gray-800 text-white p-2 rounded-full';
+            helpButton.innerHTML = '⌨️';
+            helpButton.title = `
         קיצורי מקלדת:
         Alt + N: דיווח חדש להיום
         Alt + ←/→: ניווט בין ימים
     `;
-    document.body.appendChild(helpButton);
-}
+            document.body.appendChild(helpButton);
+        }
 
-// Initialize enhanced features
-document.addEventListener('DOMContentLoaded', () => {
-    const originalDisplayDayView = displayDayView;
-    displayDayView = function(dateString) {
-        originalDisplayDayView(dateString);
-        addQuickActionsToForm();
-        addCopyPreviousButton();
-    };
-    
-    addKeyboardShortcutsHelp();
-});
+        // Initialize enhanced features
+        document.addEventListener('DOMContentLoaded', () => {
+            const originalDisplayDayView = displayDayView;
+            displayDayView = function (dateString) {
+                originalDisplayDayView(dateString);
+                addQuickActionsToForm();
+                addCopyPreviousButton();
+            };
+
+            addKeyboardShortcutsHelp();
+        });
     </script>
 
 </body>
+
 </html>
