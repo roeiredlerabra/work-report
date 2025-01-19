@@ -2937,13 +2937,78 @@ function fillSplitGaps(startTime1, endTime1, startTime2, endTime2) {
         }
     }, 100);
 }
+function initializeGapHandlers() {
+    document.addEventListener('click', function(event) {
+        const button = event.target.closest('.gap-fill-button');
+        if (!button) return;
 
+        try {
+            const gapsData = JSON.parse(atob(button.dataset.gaps));
+            handleMultipleGaps(gapsData);
+        } catch (error) {
+            console.error('Error processing gaps data:', error);
+        }
+    });
+}function handleMultipleGaps(gaps) {
+    let currentIndex = 0;
+
+    function processNextGap() {
+        if (currentIndex >= gaps.length) return;
+
+        const gap = gaps[currentIndex];
+        const form = document.getElementById('day-work-log-form');
+        
+        if (form) {
+            if (currentIndex > 0) {
+                form.reset();
+            }
+            
+            // Fill the form
+            const startInput = document.getElementById('day-start-time');
+            const endInput = document.getElementById('day-end-time');
+            const typeSelect = document.getElementById('day-type');
+            const locationInputs = document.querySelectorAll('input[name="location"]');
+            
+            // Set times
+            if (startInput && startInput._flatpickr) {
+                startInput._flatpickr.setDate(gap.start);
+            }
+            if (endInput && endInput._flatpickr) {
+                endInput._flatpickr.setDate(gap.end);
+            }
+            
+            // Set work type
+            if (typeSelect) {
+                typeSelect.value = 'work';
+                typeSelect.dispatchEvent(new Event('change'));
+            }
+            
+            // Set location to משרד
+            locationInputs.forEach(input => {
+                if (input.value === 'משרד') {
+                    input.checked = true;
+                }
+            });
+
+            currentIndex++;
+            
+            // Process next gap after a delay
+            if (currentIndex < gaps.length) {
+                setTimeout(processNextGap, 100);
+            }
+        }
+    }
+
+    // Start processing gaps
+    processNextGap();
+}
 
 function generateGapButton(suggestion) {
     switch (suggestion.type) {
         case 'single':
             return `
-                <button onclick="fillGap('${suggestion.start.toFormat('HH:mm')}', '${suggestion.end.toFormat('HH:mm')}')" 
+                <button type="button" 
+                        onclick="fillGap('${suggestion.start.toFormat('HH:mm')}', '${suggestion.end.toFormat('HH:mm')}')" 
                         class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
                                dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
                                transition-colors border border-blue-200 dark:border-blue-700">
@@ -2956,28 +3021,51 @@ function generateGapButton(suggestion) {
             `;
             
         case 'multiple':
-            const gapsJSON = JSON.stringify(suggestion.gaps.map(g => ({
-                start: g.start.toFormat('HH:mm'),
-                end: g.end.toFormat('HH:mm')
-            })));
+            // Store gaps data as a base64 encoded string to avoid any HTML parsing issues
+            const gapsData = btoa(JSON.stringify(suggestion.gaps.map(gap => ({
+                start: gap.start.toFormat('HH:mm'),
+                end: gap.end.toFormat('HH:mm')
+            }))));
             
             return `
-                <button onclick='fillMultipleGaps(${gapsJSON})' 
+                <button type="button" 
+                        class="gap-fill-button flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
+                               dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
+                               transition-colors border border-blue-200 dark:border-blue-700"
+                        data-gaps="${gapsData}">
+                    <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                        ${suggestion.description}
+                    </span>
+                    השלמה מפוצלת: ${suggestion.gaps.map(g => 
+                        `${g.start.toFormat('HH:mm')}-${g.end.toFormat('HH:mm')}`
+                    ).join(', ')}
+                    ${suggestion.durationText ? `(${suggestion.durationText})` : ''}
+                </button>
+            `;
+
+        case 'split':
+            return `
+                <button type="button"
+                        onclick="fillSplitGaps('${suggestion.parts[0].start.toFormat('HH:mm')}', 
+                                             '${suggestion.parts[0].end.toFormat('HH:mm')}',
+                                             '${suggestion.parts[1].start.toFormat('HH:mm')}',
+                                             '${suggestion.parts[1].end.toFormat('HH:mm')}')" 
                         class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
                                dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
                                transition-colors border border-blue-200 dark:border-blue-700">
                     <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
                         ${suggestion.description}
                     </span>
-                    ${suggestion.gaps.map(g => 
-                        `${g.start.toFormat('HH:mm')}-${g.end.toFormat('HH:mm')}`
-                    ).join(', ')}
-                    (${suggestion.durationText})
+                    ${suggestion.parts[0].start.toFormat('HH:mm')}-${suggestion.parts[0].end.toFormat('HH:mm')} 
+                    ו- ${suggestion.parts[1].start.toFormat('HH:mm')}-${suggestion.parts[1].end.toFormat('HH:mm')}
+                    ${suggestion.durationText ? `(${suggestion.durationText})` : ''}
                 </button>
             `;
+            
+        default:
+            return '';
     }
 }
-
 function fillFormFields(startTime, endTime) {
     const startInput = document.getElementById('day-start-time');
     const endInput = document.getElementById('day-end-time');
@@ -3042,24 +3130,25 @@ function generateSuggestionUI(gapInfo) {
                                         </div>
                                     `;
                                 case 'multiple':
-                                    return `
-                                        <div class="flex items-center gap-2">
-                                            <button onclick="fillMultipleGaps(${JSON.stringify(suggestion.gaps.map(g => ({
-                                                start: g.start.toFormat('HH:mm'),
-                                                end: g.end.toFormat('HH:mm')
-                                            })))})" 
-                                                    class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
-                                                           dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
-                                                           transition-colors border border-blue-200 dark:border-blue-700">
-                                                <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
-                                                    אפשרות ${index + 1}
-                                                </span>
-                                                ${suggestion.description}: ${suggestion.gaps.map(g => 
-                                                    `${g.start.toFormat('HH:mm')}-${g.end.toFormat('HH:mm')}`
-                                                ).join(', ')}
-                                            </button>
-                                        </div>
-                                    `;
+                                return `
+    <div class="flex items-center gap-2">
+        <button onclick='fillMultipleGaps(${JSON.stringify(suggestion.gaps.map(g => ({
+            start: g.start.toFormat("HH:mm"),
+            end: g.end.toFormat("HH:mm")
+        })))})' 
+                class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
+                       dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
+                       transition-colors border border-blue-200 dark:border-blue-700">
+            <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                אפשרות ${index + 1}
+            </span>
+            ${suggestion.description}: ${suggestion.gaps.map(g => 
+                `${g.start.toFormat("HH:mm")}-${g.end.toFormat("HH:mm")}`
+            ).join(", ")}
+        </button>
+    </div>
+`;
+
                                 case 'split':
                                     return `
                                         <div class="flex items-center gap-2">
@@ -3094,34 +3183,51 @@ function safeJSONParse(str) {
         return null;
     }
 }
-
+function serializeGapsForOnclick(gaps) {
+    // Convert gaps to a simpler format
+    const simpleGaps = gaps.map(g => ({
+        start: g.start.toFormat('HH:mm'),
+        end: g.end.toFormat('HH:mm')
+    }));
+    
+    // Create a properly escaped string
+    return `[${simpleGaps.map(g => 
+        `{start:'${g.start}',end:'${g.end}'}`
+    ).join(',')}]`;
+}
 function fillMultipleGaps(gaps) {
-    // If gaps is a string, try to parse it
-    if (typeof gaps === 'string') {
-        gaps = safeJSONParse(gaps);
-    }
-
-    // Validate gaps array
-    if (!Array.isArray(gaps) || gaps.length === 0) {
-        console.error('Invalid gaps data:', gaps);
+    console.log('Received gaps:', gaps); // Debug logging
+    
+    if (!Array.isArray(gaps)) {
+        console.error('Expected array, got:', typeof gaps);
         return;
     }
 
     // Fill the first gap immediately
-    fillFormFields(gaps[0].start, gaps[0].end);
-    
-    // Schedule the rest with small delays
-    for (let i = 1; i < gaps.length; i++) {
-        setTimeout(() => {
-            const form = document.getElementById('day-work-log-form');
-            if (form) {
-                form.reset();
-                fillFormFields(gaps[i].start, gaps[i].end);
-            }
-        }, i * 100);
+    if (gaps.length > 0) {
+        console.log('Filling first gap:', gaps[0]);
+        fillFormFields(gaps[0].start, gaps[0].end);
+        
+        // Schedule the rest with small delays
+        for (let i = 1; i < gaps.length; i++) {
+            const currentGap = gaps[i];
+            setTimeout(() => {
+                console.log('Filling gap:', currentGap);
+                const form = document.getElementById('day-work-log-form');
+                if (form) {
+                    form.reset();
+                    fillFormFields(currentGap.start, currentGap.end);
+                }
+            }, i * 100);
+        }
     }
 }
-
+function createOnClickData(gaps) {
+    // Create a JavaScript array literal string without JSON quotes
+    return `[${gaps.map(gap => 
+        `{start:'${gap.start.toFormat('HH:mm')}',end:'${gap.end.toFormat('HH:mm')}'}`
+    ).join(',')}]`;
+}
 // Auto-fill gap times in the form
 function fillGap(startTime, endTime) {
     fillFormFields(startTime, endTime);
@@ -3269,7 +3375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     workTemplates.loadTemplates();
     recentLocations.load();
     initializeViewSelector();
-    
+    initializeGapHandlers();
     // Store the original displayDayView
     const originalDisplayDayView = displayDayView;
     
