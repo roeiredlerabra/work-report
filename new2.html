@@ -2755,69 +2755,261 @@ function initializeTimelineInteractions(timelineContainer) {
         }
 // Find gaps in daily schedule between 08:00 and 18:00
 function findTimeGaps(dayLogs) {
-    const dayPercentage = calculateDayPercentage(dayLogs);
+    const WORK_START = DateTime.fromObject({ hour: 8, minute: 0 });
+    const WORK_END = DateTime.fromObject({ hour: 18, minute: 0 });
+    const REQUIRED_HOURS = 9;
     
-    // Only proceed if we haven't reached 100%
-    if (dayPercentage >= 100) {
-        return [];
+    // Calculate current work hours precisely
+    const currentHours = calculateWorkHours(dayLogs);
+    const missingHours = REQUIRED_HOURS - currentHours;
+    
+    // Add small buffer for floating point comparison
+    if (missingHours <= 0.01) {
+        return { missingHours: 0, suggestions: [] };
     }
-
-    const workStart = DateTime.fromObject({ hour: 8, minute: 0 });
-    const workEnd = DateTime.fromObject({ hour: 18, minute: 0 });
     
-    // Convert existing logs to time ranges
-    const busyRanges = dayLogs
-        .filter(log => {
-            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-            return !(endTime < workStart || startTime > workEnd);
-        })
+    // Get existing work periods with precise times
+    const workPeriods = dayLogs
+        .filter(log => log.type === 'work')
         .map(log => ({
             start: DateTime.fromFormat(log['start-time'], 'HH:mm'),
             end: DateTime.fromFormat(log['end-time'], 'HH:mm')
         }))
         .sort((a, b) => a.start.toMillis() - b.start.toMillis());
 
-    // Find gaps
+    // Find all available gaps
     const gaps = [];
-    let currentTime = workStart;
-
-    busyRanges.forEach(range => {
-        // If there's a gap before this range
-        if (currentTime < range.start) {
+    
+    // Check gaps between work periods (middle gaps)
+    for (let i = 0; i < workPeriods.length - 1; i++) {
+        const gapStart = workPeriods[i].end;
+        const gapEnd = workPeriods[i + 1].start;
+        const duration = gapEnd.diff(gapStart, 'minutes').minutes / 60;
+        
+        if (duration >= 0.25) { // Minimum 15 minutes gap
             gaps.push({
-                start: currentTime < workStart ? workStart : currentTime,
-                end: range.start
+                start: gapStart,
+                end: gapEnd,
+                duration: duration,
+                type: 'middle'
             });
         }
-        currentTime = range.end > currentTime ? range.end : currentTime;
-    });
+    }
+    
+    // Check morning gap
+    if (workPeriods.length > 0 && workPeriods[0].start > WORK_START) {
+        const duration = workPeriods[0].start.diff(WORK_START, 'minutes').minutes / 60;
+        if (duration >= 0.25) {
+            gaps.push({
+                start: WORK_START,
+                end: workPeriods[0].start,
+                duration: duration,
+                type: 'morning'
+            });
+        }
+    }
+    
+    // Check evening gap
+    if (workPeriods.length > 0 && workPeriods[workPeriods.length - 1].end < WORK_END) {
+        const duration = WORK_END.diff(workPeriods[workPeriods.length - 1].end, 'minutes').minutes / 60;
+        if (duration >= 0.25) {
+            gaps.push({
+                start: workPeriods[workPeriods.length - 1].end,
+                end: WORK_END,
+                duration: duration,
+                type: 'evening'
+            });
+        }
+    }
 
-    // Check for gap after last range
-    if (currentTime < workEnd) {
-        gaps.push({
-            start: currentTime,
-            end: workEnd
+    // Generate suggestions based on available gaps
+    const suggestions = [];
+
+    // Helper function to format duration
+    function formatDuration(hours) {
+        const fullHours = Math.floor(hours);
+        const minutes = Math.round((hours - fullHours) * 60);
+        if (minutes === 0) return `${fullHours} שעות`;
+        return `${fullHours} שעות ו-${minutes} דקות`;
+    }
+
+    // Priority 1: Fill middle gaps first
+    for (const gap of gaps.filter(g => g.type === 'middle')) {
+        if (gap.duration >= 0.25) { // At least 15 minutes
+            const durationToUse = Math.min(gap.duration, missingHours);
+            suggestions.push({
+                priority: 1,
+                type: 'single',
+                description: 'השלמה בהפסקה',
+                start: gap.start,
+                end: gap.start.plus({ minutes: Math.round(durationToUse * 60) }),
+                duration: durationToUse,
+                durationText: formatDuration(durationToUse)
+            });
+        }
+    }
+
+    // Priority 2: Morning or evening continuous block
+    const morningGap = gaps.find(g => g.type === 'morning');
+    const eveningGap = gaps.find(g => g.type === 'evening');
+
+    if (morningGap && morningGap.duration >= 0.25) {
+        const durationToUse = Math.min(morningGap.duration, missingHours);
+        suggestions.push({
+            priority: 2,
+            type: 'single',
+            description: 'השלמה בתחילת היום',
+            start: morningGap.start,
+            end: morningGap.start.plus({ minutes: Math.round(durationToUse * 60) }),
+            duration: durationToUse,
+            durationText: formatDuration(durationToUse)
         });
     }
 
-    // Filter out gaps smaller than 30 minutes
-    return gaps.filter(gap => {
-        const duration = gap.end.diff(gap.start, 'minutes').minutes;
-        return duration >= 30;
-    });
+    if (eveningGap && eveningGap.duration >= 0.25) {
+        const durationToUse = Math.min(eveningGap.duration, missingHours);
+        suggestions.push({
+            priority: 2,
+            type: 'single',
+            description: 'השלמה בסוף היום',
+            start: eveningGap.end.minus({ minutes: Math.round(durationToUse * 60) }),
+            end: eveningGap.end,
+            duration: durationToUse,
+            durationText: formatDuration(durationToUse)
+        });
+    }
+
+    // Priority 3: Split between available gaps
+    if (gaps.length >= 2) {
+        const combinableGaps = gaps.filter(g => g.duration >= 0.25);
+        if (combinableGaps.length >= 2) {
+            let remainingHours = missingHours;
+            const splitGaps = [];
+            
+            for (const gap of combinableGaps) {
+                if (remainingHours <= 0) break;
+                
+                const durationForThisGap = Math.min(gap.duration, remainingHours / combinableGaps.length);
+                if (durationForThisGap >= 0.25) {
+                    splitGaps.push({
+                        start: gap.type === 'evening' ? 
+                            gap.end.minus({ minutes: Math.round(durationForThisGap * 60) }) :
+                            gap.start,
+                        end: gap.type === 'evening' ? 
+                            gap.end :
+                            gap.start.plus({ minutes: Math.round(durationForThisGap * 60) }),
+                        duration: durationForThisGap
+                    });
+                    remainingHours -= durationForThisGap;
+                }
+            }
+
+            if (splitGaps.length >= 2) {
+                suggestions.push({
+                    priority: 3,
+                    type: 'multiple',
+                    description: 'השלמה מפוצלת',
+                    gaps: splitGaps,
+                    durationText: formatDuration(splitGaps.reduce((sum, g) => sum + g.duration, 0))
+                });
+            }
+        }
+    }
+
+    return {
+        missingHours,
+        missingHoursText: formatDuration(missingHours),
+        suggestions: suggestions.sort((a, b) => a.priority - b.priority)
+    };
 }
+
+
+function fillSplitGaps(startTime1, endTime1, startTime2, endTime2) {
+    // Fill first gap immediately
+    fillFormFields(startTime1, endTime1);
+    
+    // Schedule second gap after a small delay
+    setTimeout(() => {
+        const form = document.getElementById('day-work-log-form');
+        if (form) {
+            form.reset();
+            fillFormFields(startTime2, endTime2);
+        }
+    }, 100);
+}
+
+
+function generateGapButton(suggestion) {
+    switch (suggestion.type) {
+        case 'single':
+            return `
+                <button onclick="fillGap('${suggestion.start.toFormat('HH:mm')}', '${suggestion.end.toFormat('HH:mm')}')" 
+                        class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
+                               dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
+                               transition-colors border border-blue-200 dark:border-blue-700">
+                    <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                        ${suggestion.description}
+                    </span>
+                    ${suggestion.start.toFormat('HH:mm')} - ${suggestion.end.toFormat('HH:mm')}
+                    (${suggestion.durationText})
+                </button>
+            `;
+            
+        case 'multiple':
+            const gapsJSON = JSON.stringify(suggestion.gaps.map(g => ({
+                start: g.start.toFormat('HH:mm'),
+                end: g.end.toFormat('HH:mm')
+            })));
+            
+            return `
+                <button onclick='fillMultipleGaps(${gapsJSON})' 
+                        class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
+                               dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
+                               transition-colors border border-blue-200 dark:border-blue-700">
+                    <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                        ${suggestion.description}
+                    </span>
+                    ${suggestion.gaps.map(g => 
+                        `${g.start.toFormat('HH:mm')}-${g.end.toFormat('HH:mm')}`
+                    ).join(', ')}
+                    (${suggestion.durationText})
+                </button>
+            `;
+    }
+}
+
+function fillFormFields(startTime, endTime) {
+    const startInput = document.getElementById('day-start-time');
+    const endInput = document.getElementById('day-end-time');
+    const locationInputs = document.querySelectorAll('input[name="location"]');
+    
+    // Fill time inputs
+    if (startInput && endInput) {
+        startInput._flatpickr.setDate(startTime);
+        endInput._flatpickr.setDate(endTime);
+    }
+    
+    // Set location to "משרד"
+    locationInputs.forEach(input => {
+        if (input.value === 'משרד') {
+            input.checked = true;
+        }
+    });
+
+    // Also set work type if it's not already set
+    const typeSelect = document.getElementById('day-type');
+    if (typeSelect && !typeSelect.value) {
+        typeSelect.value = 'work';
+        // Trigger change event to update form fields if needed
+        typeSelect.dispatchEvent(new Event('change'));
+    }
+}
+
 // Generate suggestion UI
-function generateSuggestionUI(gaps, dayPercentage) {
-    if (!gaps.length) return '';
-
-    const totalMinutes = gaps.reduce((total, gap) => {
-        return total + gap.end.diff(gap.start, 'minutes').minutes;
-    }, 0);
-
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    const percentageNeeded = Math.ceil(100 - dayPercentage);
+function generateSuggestionUI(gapInfo) {
+    const { missingHours, suggestions } = gapInfo;
+    
+    if (!suggestions.length) return '';
 
     return `
         <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg mb-4 shadow-sm border-l-4 border-blue-500">
@@ -2829,38 +3021,64 @@ function generateSuggestionUI(gaps, dayPercentage) {
                     </svg>
                 </div>
                 <div class="ml-3 flex-grow">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">
-                            נדרשות עוד ${percentageNeeded}% להשלמת יום העבודה
-                        </h3>
-                        <span class="text-sm text-blue-600 dark:text-blue-300">
-                            ${Math.round(dayPercentage)}% הושלמו
-                        </span>
-                    </div>
-                    <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
-                        נמצאו ${gaps.length} מקטעי זמן פנויים (סה"כ ${hours} שעות ${minutes > 0 ? `ו-${minutes} דקות` : ''})
-                    </div>
-                    <div class="mt-3 space-y-2">
-                        ${gaps.map((gap, index) => {
-                            const gapHours = Math.floor(gap.end.diff(gap.start, 'minutes').minutes / 60);
-                            const gapMinutes = gap.end.diff(gap.start, 'minutes').minutes % 60;
-                            return `
-                                <div class="flex items-center gap-2">
-                                    <button onclick="fillGap('${gap.start.toFormat('HH:mm')}', '${gap.end.toFormat('HH:mm')}')" 
-                                            class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
-                                                   dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
-                                                   transition-colors border border-blue-200 dark:border-blue-700">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M12 4v16m8-8H4"/>
-                                        </svg>
-                                        <span>${gap.start.toFormat('HH:mm')} - ${gap.end.toFormat('HH:mm')}</span>
-                                    </button>
-                                    <span class="text-sm text-blue-600 dark:text-blue-300">
-                                        ${gapHours}:${gapMinutes.toString().padStart(2, '0')} שעות
-                                    </span>
-                                </div>
-                            `;
+                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-3">
+                        חסרות ${missingHours.toFixed(1)} שעות להשלמת יום עבודה (9 שעות)
+                    </h3>
+                    <div class="space-y-3">
+                        ${suggestions.map((suggestion, index) => {
+                            switch (suggestion.type) {
+                                case 'single':
+                                    return `
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="fillGap('${suggestion.start.toFormat('HH:mm')}', '${suggestion.end.toFormat('HH:mm')}')" 
+                                                    class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
+                                                           dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
+                                                           transition-colors border border-blue-200 dark:border-blue-700">
+                                                <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                                                    אפשרות ${index + 1}
+                                                </span>
+                                                ${suggestion.description}: ${suggestion.start.toFormat('HH:mm')} - ${suggestion.end.toFormat('HH:mm')}
+                                            </button>
+                                        </div>
+                                    `;
+                                case 'multiple':
+                                    return `
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="fillMultipleGaps(${JSON.stringify(suggestion.gaps.map(g => ({
+                                                start: g.start.toFormat('HH:mm'),
+                                                end: g.end.toFormat('HH:mm')
+                                            })))})" 
+                                                    class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
+                                                           dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
+                                                           transition-colors border border-blue-200 dark:border-blue-700">
+                                                <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                                                    אפשרות ${index + 1}
+                                                </span>
+                                                ${suggestion.description}: ${suggestion.gaps.map(g => 
+                                                    `${g.start.toFormat('HH:mm')}-${g.end.toFormat('HH:mm')}`
+                                                ).join(', ')}
+                                            </button>
+                                        </div>
+                                    `;
+                                case 'split':
+                                    return `
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="fillSplitGaps('${suggestion.parts[0].start.toFormat('HH:mm')}', 
+                                                                          '${suggestion.parts[0].end.toFormat('HH:mm')}',
+                                                                          '${suggestion.parts[1].start.toFormat('HH:mm')}',
+                                                                          '${suggestion.parts[1].end.toFormat('HH:mm')}')" 
+                                                    class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
+                                                           dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
+                                                           transition-colors border border-blue-200 dark:border-blue-700">
+                                                <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                                                    אפשרות ${index + 1}
+                                                </span>
+                                                ${suggestion.description}: ${suggestion.parts[0].start.toFormat('HH:mm')}-${suggestion.parts[0].end.toFormat('HH:mm')} 
+                                                ו- ${suggestion.parts[1].start.toFormat('HH:mm')}-${suggestion.parts[1].end.toFormat('HH:mm')}
+                                            </button>
+                                        </div>
+                                    `;
+                            }
                         }).join('')}
                     </div>
                 </div>
@@ -2868,15 +3086,45 @@ function generateSuggestionUI(gaps, dayPercentage) {
         </div>
     `;
 }
+function safeJSONParse(str) {
+    try {
+        return JSON.parse(str);
+    } catch (e) {
+        console.error('Error parsing JSON:', e);
+        return null;
+    }
+}
+
+function fillMultipleGaps(gaps) {
+    // If gaps is a string, try to parse it
+    if (typeof gaps === 'string') {
+        gaps = safeJSONParse(gaps);
+    }
+
+    // Validate gaps array
+    if (!Array.isArray(gaps) || gaps.length === 0) {
+        console.error('Invalid gaps data:', gaps);
+        return;
+    }
+
+    // Fill the first gap immediately
+    fillFormFields(gaps[0].start, gaps[0].end);
+    
+    // Schedule the rest with small delays
+    for (let i = 1; i < gaps.length; i++) {
+        setTimeout(() => {
+            const form = document.getElementById('day-work-log-form');
+            if (form) {
+                form.reset();
+                fillFormFields(gaps[i].start, gaps[i].end);
+            }
+        }, i * 100);
+    }
+}
+
 // Auto-fill gap times in the form
 function fillGap(startTime, endTime) {
-    const startInput = document.getElementById('day-start-time');
-    const endInput = document.getElementById('day-end-time');
-    
-    if (startInput && endInput) {
-        startInput._flatpickr.setDate(startTime);
-        endInput._flatpickr.setDate(endTime);
-    }
+    fillFormFields(startTime, endTime);
 }
 
 // Update displayDayView to include suggestions
@@ -2900,7 +3148,18 @@ function updateDisplayDayView() {
         }
     };
 }
-
+function calculateWorkHours(dayLogs) {
+    return dayLogs.reduce((total, log) => {
+        if (log.type === 'work') {
+            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+            // Calculate exact hours including minutes
+            const duration = endTime.diff(startTime, 'minutes').minutes / 60;
+            return total + duration;
+        }
+        return total;
+    }, 0);
+}
 function calculateDayPercentage(dayLogs) {
     const FULL_DAY_MINUTES = 9 * 60; // 9 hours in minutes
     const totalMinutes = dayLogs.reduce((sum, log) => {
@@ -3019,32 +3278,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call original first
     originalDisplayDayView(dateString, updateView);
     
-    // Calculate day percentage and find gaps
     const date = DateTime.fromISO(dateString);
     const dayLogs = workLogs.filter(log => {
         const logDate = DateTime.fromISO(log.date);
         return logDate && logDate.hasSame(date, 'day');
     });
 
-    const dayPercentage = calculateDayPercentage(dayLogs);
+    const workHours = calculateWorkHours(dayLogs);
     
-    // Only show suggestions if day is not complete
-    if (dayPercentage < 100) {
-        const gaps = findTimeGaps(dayLogs);
-        if (gaps.length > 0) {
+    // Only show suggestions if less than 9 hours
+    if (workHours < 9) {
+        const gapInfo = findTimeGaps(dayLogs);
+        if (gapInfo.suggestions.length > 0) {
             const form = document.getElementById('day-work-log-form');
             if (form) {
-                const suggestionHtml = generateSuggestionUI(gaps, dayPercentage);
+                const suggestionHtml = generateSuggestionUI(gapInfo);
                 form.insertAdjacentHTML('beforebegin', suggestionHtml);
             }
         }
     }
     
-    // Add quick actions and copy button
     addQuickActionsToForm();
     addCopyPreviousButton();
-}   
-    // Replace the original function with our enhanced version
+}   // Replace the original function with our enhanced version
     displayDayView = enhancedDisplayDayView;
     
     // Initialize view
