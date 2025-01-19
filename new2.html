@@ -1597,13 +1597,10 @@ tr:hover {
     const date = DateTime.fromISO(dateString);
     currentDate = date;
 
-    // Only update the view selector if explicitly requested
     if (updateView) {
-        // Update hidden select without triggering change event
         const viewSelector = document.getElementById('view-selector');
         viewSelector.value = 'day';
 
-        // Update buttons directly
         const buttons = document.querySelectorAll('.view-option');
         buttons.forEach(button => {
             if (button.dataset.view === 'day') {
@@ -1632,7 +1629,10 @@ tr:hover {
     let html = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
             <button onclick="changeDay(-1)" class="w-full sm:w-auto mb-2 sm:mb-0 text-blue-600 hover:text-blue-800">&lt; יום קודם</button>
-            <h3 class="text-lg font-semibold">${date.toFormat('dd/MM/yyyy')}</h3>
+            <div class="flex items-center gap-4">
+                <h3 class="text-lg font-semibold">${date.toFormat('dd/MM/yyyy')}</h3>
+                ${generateDonutChart(dayLogs, 60)} <!-- Added donut chart here -->
+            </div>
             <button onclick="changeDay(1)" class="w-full sm:w-auto mt-2 sm:mt-0 text-blue-600 hover:text-blue-800">יום הבא &gt;</button>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1651,18 +1651,15 @@ tr:hover {
 
     reportContent.innerHTML = html;
 
-    // Initialize timeline interactions after adding the HTML
     const timelineContainer = document.querySelector('.timeline-container');
     if (timelineContainer) {
         initializeTimelineInteractions(timelineContainer);
     }
 
-    // Initialize other components
     initializeFlatpickr();
     initializeDayFormHandlers();
     addRecurrenceFields('day-work-log-form');
 }
-
 function generateTimelineHtml(logs) {
     // Create time slots (hours) markers
     const timeSlots = new Array(24).fill().map((_, i) => {
@@ -2756,7 +2753,167 @@ function initializeTimelineInteractions(timelineContainer) {
                 modal.remove();
             });
         }
+// Find gaps in daily schedule between 08:00 and 18:00
+function findTimeGaps(dayLogs) {
+    const dayPercentage = calculateDayPercentage(dayLogs);
+    
+    // Only proceed if we haven't reached 100%
+    if (dayPercentage >= 100) {
+        return [];
+    }
 
+    const workStart = DateTime.fromObject({ hour: 8, minute: 0 });
+    const workEnd = DateTime.fromObject({ hour: 18, minute: 0 });
+    
+    // Convert existing logs to time ranges
+    const busyRanges = dayLogs
+        .filter(log => {
+            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+            return !(endTime < workStart || startTime > workEnd);
+        })
+        .map(log => ({
+            start: DateTime.fromFormat(log['start-time'], 'HH:mm'),
+            end: DateTime.fromFormat(log['end-time'], 'HH:mm')
+        }))
+        .sort((a, b) => a.start.toMillis() - b.start.toMillis());
+
+    // Find gaps
+    const gaps = [];
+    let currentTime = workStart;
+
+    busyRanges.forEach(range => {
+        // If there's a gap before this range
+        if (currentTime < range.start) {
+            gaps.push({
+                start: currentTime < workStart ? workStart : currentTime,
+                end: range.start
+            });
+        }
+        currentTime = range.end > currentTime ? range.end : currentTime;
+    });
+
+    // Check for gap after last range
+    if (currentTime < workEnd) {
+        gaps.push({
+            start: currentTime,
+            end: workEnd
+        });
+    }
+
+    // Filter out gaps smaller than 30 minutes
+    return gaps.filter(gap => {
+        const duration = gap.end.diff(gap.start, 'minutes').minutes;
+        return duration >= 30;
+    });
+}
+// Generate suggestion UI
+function generateSuggestionUI(gaps, dayPercentage) {
+    if (!gaps.length) return '';
+
+    const totalMinutes = gaps.reduce((total, gap) => {
+        return total + gap.end.diff(gap.start, 'minutes').minutes;
+    }, 0);
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    const percentageNeeded = Math.ceil(100 - dayPercentage);
+
+    return `
+        <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg mb-4 shadow-sm border-l-4 border-blue-500">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-3 flex-grow">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                            נדרשות עוד ${percentageNeeded}% להשלמת יום העבודה
+                        </h3>
+                        <span class="text-sm text-blue-600 dark:text-blue-300">
+                            ${Math.round(dayPercentage)}% הושלמו
+                        </span>
+                    </div>
+                    <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                        נמצאו ${gaps.length} מקטעי זמן פנויים (סה"כ ${hours} שעות ${minutes > 0 ? `ו-${minutes} דקות` : ''})
+                    </div>
+                    <div class="mt-3 space-y-2">
+                        ${gaps.map((gap, index) => {
+                            const gapHours = Math.floor(gap.end.diff(gap.start, 'minutes').minutes / 60);
+                            const gapMinutes = gap.end.diff(gap.start, 'minutes').minutes % 60;
+                            return `
+                                <div class="flex items-center gap-2">
+                                    <button onclick="fillGap('${gap.start.toFormat('HH:mm')}', '${gap.end.toFormat('HH:mm')}')" 
+                                            class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
+                                                   dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
+                                                   transition-colors border border-blue-200 dark:border-blue-700">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                  d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        <span>${gap.start.toFormat('HH:mm')} - ${gap.end.toFormat('HH:mm')}</span>
+                                    </button>
+                                    <span class="text-sm text-blue-600 dark:text-blue-300">
+                                        ${gapHours}:${gapMinutes.toString().padStart(2, '0')} שעות
+                                    </span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+// Auto-fill gap times in the form
+function fillGap(startTime, endTime) {
+    const startInput = document.getElementById('day-start-time');
+    const endInput = document.getElementById('day-end-time');
+    
+    if (startInput && endInput) {
+        startInput._flatpickr.setDate(startTime);
+        endInput._flatpickr.setDate(endTime);
+    }
+}
+
+// Update displayDayView to include suggestions
+function updateDisplayDayView() {
+    const originalDisplayDayView = displayDayView;
+    return function(dateString, updateView = true) {
+        originalDisplayDayView(dateString, updateView);
+        
+        // Add suggestions after the form
+        const date = DateTime.fromISO(dateString);
+        const dayLogs = workLogs.filter(log => {
+            const logDate = DateTime.fromISO(log.date);
+            return logDate && logDate.hasSame(date, 'day');
+        });
+
+        const gaps = findTimeGaps(dayLogs);
+        if (gaps.length > 0) {
+            const form = document.getElementById('day-work-log-form');
+            const suggestionHtml = generateSuggestionUI(gaps);
+            form.insertAdjacentHTML('beforebegin', suggestionHtml);
+        }
+    };
+}
+
+function calculateDayPercentage(dayLogs) {
+    const FULL_DAY_MINUTES = 9 * 60; // 9 hours in minutes
+    const totalMinutes = dayLogs.reduce((sum, log) => {
+        if (log.type === 'work') {
+            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+            return sum + endTime.diff(startTime, 'minutes').minutes;
+        }
+        return sum;
+    }, 0);
+
+    return (totalMinutes / FULL_DAY_MINUTES) * 100;
+}
         function addRecurrenceFields(formId) {
             const form = document.getElementById(formId);
             const submitButton = form.querySelector('button[type="submit"]');
@@ -2845,17 +3002,65 @@ function initializeTimelineInteractions(timelineContainer) {
         }
 
         // Initialize enhanced features
-        document.addEventListener('DOMContentLoaded', () => {
-            const originalDisplayDayView = displayDayView;
-            displayDayView = function (dateString) {
-                originalDisplayDayView(dateString);
-                addQuickActionsToForm();
-                addCopyPreviousButton();
-            };
-            const timelineContainer = document.querySelector('.relative.h-[400px]');
-            initializeTimelineInteractions(timelineContainer);
-            addKeyboardShortcutsHelp();
-        });
+// Initialize application when DOM is loaded
+// Initialize application when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Load initial data
+    lazyLoadWorkLogs();
+    workTemplates.loadTemplates();
+    recentLocations.load();
+    initializeViewSelector();
+    
+    // Store the original displayDayView
+    const originalDisplayDayView = displayDayView;
+    
+    // Create one enhanced function that includes all our additions
+    function enhancedDisplayDayView(dateString, updateView = true) {
+    // Call original first
+    originalDisplayDayView(dateString, updateView);
+    
+    // Calculate day percentage and find gaps
+    const date = DateTime.fromISO(dateString);
+    const dayLogs = workLogs.filter(log => {
+        const logDate = DateTime.fromISO(log.date);
+        return logDate && logDate.hasSame(date, 'day');
+    });
+
+    const dayPercentage = calculateDayPercentage(dayLogs);
+    
+    // Only show suggestions if day is not complete
+    if (dayPercentage < 100) {
+        const gaps = findTimeGaps(dayLogs);
+        if (gaps.length > 0) {
+            const form = document.getElementById('day-work-log-form');
+            if (form) {
+                const suggestionHtml = generateSuggestionUI(gaps, dayPercentage);
+                form.insertAdjacentHTML('beforebegin', suggestionHtml);
+            }
+        }
+    }
+    
+    // Add quick actions and copy button
+    addQuickActionsToForm();
+    addCopyPreviousButton();
+}   
+    // Replace the original function with our enhanced version
+    displayDayView = enhancedDisplayDayView;
+    
+    // Initialize view
+    updateReport();
+    
+    // Add keyboard shortcuts help
+    addKeyboardShortcutsHelp();
+    
+    const timelineContainer = document.querySelector('.timeline-container');
+    if (timelineContainer) {
+        initializeTimelineInteractions(timelineContainer);
+    }
+    
+    // Initialize dark mode
+    initializeDarkMode();
+});
     </script>
 <script src="navigation.js"></script>
 </body>
