@@ -21,412 +21,485 @@
         .overflow-visible {
             overflow: visible !important;
         }
-/* Form elements and inputs */
-.dark input[type="text"],
-.dark input[type="search"],
-.dark input[type="email"],
-.dark input[type="password"],
-.dark input[type="number"],
-.dark input[type="tel"],
-.dark input[type="url"],
-.dark input[type="date"],
-.dark input[type="datetime-local"],
-.dark input[type="month"],
-.dark input[type="week"],
-.dark input[type="time"],
-.dark select,
-.dark textarea {
-    background-color: rgb(31 41 55);
-    border-color: rgb(55 65 81);
-    color: rgb(229 231 235);
-}
-/* Base styles */
-:root {
-    color-scheme: light;
-    --bg-primary: #ffffff;
-    --bg-secondary: #f3f4f6;
-    --bg-tertiary: #e5e7eb;
-    --text-primary: #111827;
-    --text-secondary: #4b5563;
-    --text-tertiary: #6b7280;
-    --border-color: #e5e7eb;
-    --highlight-color: #3b82f6;
-    --highlight-hover: #2563eb;
-    --danger-color: #ef4444;
-    --danger-hover: #dc2626;
-    --success-color: #10b981;
-    --success-hover: #059669;
+
+        /* Form elements and inputs */
+        .dark input[type="text"],
+        .dark input[type="search"],
+        .dark input[type="email"],
+        .dark input[type="password"],
+        .dark input[type="number"],
+        .dark input[type="tel"],
+        .dark input[type="url"],
+        .dark input[type="date"],
+        .dark input[type="datetime-local"],
+        .dark input[type="month"],
+        .dark input[type="week"],
+        .dark input[type="time"],
+        .dark select,
+        .dark textarea {
+            background-color: rgb(31 41 55);
+            border-color: rgb(55 65 81);
+            color: rgb(229 231 235);
+        }
+
+        /* Base styles */
+        :root {
+            color-scheme: light;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --bg-tertiary: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --border-color: #e5e7eb;
+            --highlight-color: #3b82f6;
+            --highlight-hover: #2563eb;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
+            --success-color: #10b981;
+            --success-hover: #059669;
+        }
+
+        /* Dark mode */
+        :root[class~="dark"] {
+            color-scheme: dark;
+            --bg-primary: #1f2937;
+            --bg-secondary: #111827;
+            --bg-tertiary: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #e5e7eb;
+            --text-tertiary: #9ca3af;
+            --border-color: #374151;
+            --highlight-color: #3b82f6;
+            --highlight-hover: #60a5fa;
+            --danger-color: #ef4444;
+            --danger-hover: #f87171;
+            --success-color: #10b981;
+            --success-hover: #34d399;
+        }
+
+        /* Common elements */
+        body {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        /* Navigation */
+        .nav-link {
+            color: var(--text-tertiary);
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            color: var(--highlight-color);
+        }
+
+        /* Cards and containers */
+        .card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .card {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        /* Forms and inputs */
+        input,
+        select,
+        textarea {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--highlight-color);
+            outline: 2px solid var(--highlight-color);
+            outline-offset: 2px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--highlight-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--highlight-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th {
+            background-color: var(--bg-secondary);
+            color: var(--text-tertiary);
+            font-weight: 500;
+            text-align: right;
+            padding: 0.75rem 1rem;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Modals */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .modal-content {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Charts and data visualization */
+        .chart-container {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        /* Stats cards */
+        .stat-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-size: 1.875rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        /* Search inputs */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding-right: 2.5rem;
+            width: 100%;
+            background-color: var(--bg-primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+        }
+
+        /* Notifications */
+        .notification {
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+        }
+
+        .notification-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .notification-error {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        /* Loading states */
+        .loading-spinner {
+            border: 3px solid var(--bg-tertiary);
+            border-top: 3px solid var(--highlight-color);
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Utilities */
+        .divide-y>*+* {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .dark .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            td,
+            th {
+                padding: 0.5rem;
+            }
+        }
+
+        .dark input::placeholder {
+            color: rgb(156 163 175);
+        }
+
+
+
+        /* Calendar and timeline specific styles */
+        .dark .day-header {
+            color: rgb(229 231 235);
+        }
+
+        .dark .timeline-event {
+            border-color: rgb(55 65 81);
+        }
+
+        .dark .quick-action-button {
+            background-color: rgb(31 41 55);
+            border-color: rgb(55 65 81);
+        }
+
+        .dark .quick-action-button:hover {
+            background-color: rgb(55 65 81);
+        }
+
+        /* Modal and overlay styles */
+        .dark .modal-content {
+            background-color: rgb(31 41 55);
+            border-color: rgb(55 65 81);
+        }
+
+        .dark .modal-header {
+            border-bottom-color: rgb(55 65 81);
+        }
+        .suggestion-container {
+    background-color: #cff4fc;
+    border-color: #0dcaf0;
 }
 
-/* Dark mode */
-:root[class~="dark"] {
-    color-scheme: dark;
-    --bg-primary: #1f2937;
-    --bg-secondary: #111827;
-    --bg-tertiary: #374151;
-    --text-primary: #f9fafb;
-    --text-secondary: #e5e7eb;
-    --text-tertiary: #9ca3af;
-    --border-color: #374151;
-    --highlight-color: #3b82f6;
-    --highlight-hover: #60a5fa;
-    --danger-color: #ef4444;
-    --danger-hover: #f87171;
-    --success-color: #10b981;
-    --success-hover: #34d399;
+.suggestion-icon {
+    color: #055160;
 }
 
-/* Common elements */
-body {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
+.suggestion-title {
+    color: #055160;
 }
 
-/* Navigation */
-.nav-link {
-    color: var(--text-tertiary);
-    transition: color 0.2s ease;
+.suggestion-button {
+    background-color: white;
+    border: 1px solid #0dcaf0;
+    color: #055160;
 }
 
-.nav-link:hover {
-    color: var(--text-primary);
+.suggestion-button:hover {
+    background-color: #f1fbfd;
 }
 
-.nav-link.active {
-    color: var(--highlight-color);
-}
-
-/* Cards and containers */
-.card {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-}
-
-.dark .card {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
-}
-
-/* Forms and inputs */
-input, select, textarea {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-}
-
-input:focus, select:focus, textarea:focus {
-    border-color: var(--highlight-color);
-    outline: 2px solid var(--highlight-color);
-    outline-offset: 2px;
-}
-
-/* Buttons */
-.btn {
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background-color: var(--highlight-color);
+.suggestion-badge {
+    background-color: #0dcaf0;
     color: white;
 }
 
-.btn-primary:hover {
-    background-color: var(--highlight-hover);
-}
-
-.btn-danger {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: var(--danger-hover);
-}
-
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-th {
-    background-color: var(--bg-secondary);
-    color: var(--text-tertiary);
-    font-weight: 500;
-    text-align: right;
-    padding: 0.75rem 1rem;
-}
-
-td {
-    padding: 0.75rem 1rem;
-    color: var(--text-primary);
-    border-bottom: 1px solid var(--border-color);
-}
-
-tr:hover {
-    background-color: var(--bg-secondary);
-}
-
-/* Modals */
-.modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.dark .modal-content {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-}
-
-/* Charts and data visualization */
-.chart-container {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    padding: 1rem;
-}
-
-/* Stats cards */
-.stat-card {
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-}
-
-.stat-value {
-    color: var(--text-primary);
-    font-size: 1.875rem;
-    font-weight: bold;
-}
-
-.stat-label {
-    color: var(--text-tertiary);
-    font-size: 0.875rem;
-}
-
-/* Search inputs */
-.search-container {
-    position: relative;
-}
-
-.search-input {
-    padding-right: 2.5rem;
-    width: 100%;
-    background-color: var(--bg-primary);
-}
-
-.search-icon {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-tertiary);
-}
-
-/* Notifications */
-.notification {
-    border-radius: 0.375rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-}
-
-.notification-success {
-    background-color: var(--success-color);
-    color: white;
-}
-
-.notification-error {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-/* Loading states */
-.loading-spinner {
-    border: 3px solid var(--bg-tertiary);
-    border-top: 3px solid var(--highlight-color);
-    border-radius: 50%;
-    width: 1.5rem;
-    height: 1.5rem;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Utilities */
-.divide-y > * + * {
-    border-top: 1px solid var(--border-color);
-}
-
-.shadow-sm {
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.dark .shadow-sm {
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-    .stat-card {
-        padding: 1rem;
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
-    }
-
-    td, th {
-        padding: 0.5rem;
-    }
-}
-.dark input::placeholder {
-    color: rgb(156 163 175);
-}
-
-
-
-/* Calendar and timeline specific styles */
-.dark .day-header {
-    color: rgb(229 231 235);
-}
-
-.dark .timeline-event {
-    border-color: rgb(55 65 81);
-}
-
-.dark .quick-action-button {
+/* Dark mode suggestion styles */
+.dark .suggestion-container {
     background-color: rgb(31 41 55);
     border-color: rgb(55 65 81);
 }
 
-.dark .quick-action-button:hover {
-    background-color: rgb(55 65 81);
-}
-
-/* Modal and overlay styles */
-.dark .modal-content {
-    background-color: rgb(31 41 55);
-    border-color: rgb(55 65 81);
-}
-
-.dark .modal-header {
-    border-bottom-color: rgb(55 65 81);
-}
-
-.dark .modal-footer {
-    border-top-color: rgb(55 65 81);
-}
-
-/* Card and container styles */
-.dark .bg-opacity-50 {
-    background-color: rgba(17, 24, 39, 0.5);
-}
-
-.dark .bg-white\/50 {
-    background-color: rgba(31, 41, 55, 0.5);
-}
-
-/* Quick action presets */
-.dark .text-xs.bg-gray-100 {
-    background-color: rgb(31 41 55);
-    color: rgb(209 213 219);
-}
-
-.dark .text-xs.bg-gray-100:hover {
-    background-color: rgb(55 65 81);
-}
-
-/* Recurrence section */
-.dark .space-y-4.mt-6.p-4.bg-gray-50 {
-    background-color: rgb(31 41 55);
-}
-
-/* Calendar donut chart */
-.dark .donut-chart circle:first-child {
-    stroke: rgb(55 65 81);
-}
-
-/* Info messages and notifications */
-.dark .bg-blue-50 {
-    background-color: rgba(37, 99, 235, 0.1);
-    color: rgb(219 234 254);
-}
-
-.dark .text-blue-700 {
+.dark .suggestion-icon {
     color: rgb(147 197 253);
 }
 
-/* Form validation and error states */
-.dark .text-red-600 {
-    color: rgb(252 165 165);
+.dark .suggestion-title {
+    color: rgb(229 231 235);
 }
 
-.dark .border-red-500 {
-    border-color: rgb(239 68 68);
+.dark .suggestion-button {
+    background-color: rgb(31 41 55);
+    border: 1px solid rgb(55 65 81);
+    color: rgb(229 231 235);
 }
 
-/* Success states */
-.dark .text-green-600 {
-    color: rgb(110 231 183);
-}
-
-/* Hover states for interactive elements */
-.dark .hover\:bg-gray-700:hover {
+.dark .suggestion-button:hover {
     background-color: rgb(55 65 81);
 }
 
-.dark .hover\:text-gray-300:hover {
-    color: rgb(209 213 219);
-}
-/* Default text color for light mode */
-.inline-flex.items-center {
-    color: rgb(55 65 81); /* gray-700 */
-}
-
-/* Preserve correct text color in dark mode */
-.dark .inline-flex.items-center {
-    color: rgb(229 231 235); /* gray-200 */
-}
-
-/* Fix for any labels inside inline-flex items-center */
-.inline-flex.items-center label {
-    color: inherit;
-}
-
-/* Fix for any spans inside inline-flex items-center */
-.inline-flex.items-center span {
-    color: inherit;
-}
-/* Additional timeline styles */
-.dark .timeline-hour-marker {
-    border-color: rgb(55 65 81);
-    color: rgb(156 163 175);
-}
-
-.dark .timeline-event-content {
-    background-color: rgb(31 41 55);
-}
-
-/* Selection styles */
-.dark ::selection {
+.dark .suggestion-badge {
     background-color: rgb(37 99 235);
-    color: rgb(255 255 255);
+    color: rgb(219 234 254);
 }
+        .dark .modal-footer {
+            border-top-color: rgb(55 65 81);
+        }
+
+        /* Card and container styles */
+        .dark .bg-opacity-50 {
+            background-color: rgba(17, 24, 39, 0.5);
+        }
+
+        .dark .bg-white\/50 {
+            background-color: rgba(31, 41, 55, 0.5);
+        }
+
+        /* Quick action presets */
+        .dark .text-xs.bg-gray-100 {
+            background-color: rgb(31 41 55);
+            color: rgb(209 213 219);
+        }
+
+        .dark .text-xs.bg-gray-100:hover {
+            background-color: rgb(55 65 81);
+        }
+
+        /* Recurrence section */
+        .dark .space-y-4.mt-6.p-4.bg-gray-50 {
+            background-color: rgb(31 41 55);
+        }
+
+        /* Calendar donut chart */
+        .dark .donut-chart circle:first-child {
+            stroke: rgb(55 65 81);
+        }
+
+        /* Info messages and notifications */
+        .dark .bg-blue-50 {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: rgb(219 234 254);
+        }
+
+        .dark .text-blue-700 {
+            color: rgb(147 197 253);
+        }
+
+        /* Form validation and error states */
+        .dark .text-red-600 {
+            color: rgb(252 165 165);
+        }
+
+        .dark .border-red-500 {
+            border-color: rgb(239 68 68);
+        }
+
+        /* Success states */
+        .dark .text-green-600 {
+            color: rgb(110 231 183);
+        }
+
+        /* Hover states for interactive elements */
+        .dark .hover\:bg-gray-700:hover {
+            background-color: rgb(55 65 81);
+        }
+
+        .dark .hover\:text-gray-300:hover {
+            color: rgb(209 213 219);
+        }
+
+        /* Default text color for light mode */
+        .inline-flex.items-center {
+            color: rgb(55 65 81);
+            /* gray-700 */
+        }
+
+        /* Preserve correct text color in dark mode */
+        .dark .inline-flex.items-center {
+            color: rgb(229 231 235);
+            /* gray-200 */
+        }
+
+        /* Fix for any labels inside inline-flex items-center */
+        .inline-flex.items-center label {
+            color: inherit;
+        }
+
+        /* Fix for any spans inside inline-flex items-center */
+        .inline-flex.items-center span {
+            color: inherit;
+        }
+
+        /* Additional timeline styles */
+        .dark .timeline-hour-marker {
+            border-color: rgb(55 65 81);
+            color: rgb(156 163 175);
+        }
+
+        .dark .timeline-event-content {
+            background-color: rgb(31 41 55);
+        }
+
+        /* Selection styles */
+        .dark ::selection {
+            background-color: rgb(37 99 235);
+            color: rgb(255 255 255);
+        }
+
         .z-10 {
             z-index: 10 !important;
         }
@@ -586,11 +659,13 @@ tr:hover {
             color: rgb(156 163 175);
             border-radius: 5px;
         }
+
         .text-gray-500 {
             color: rgb(156 163 175);
             border-radius: 5px;
-            
+
         }
+
         /* Border colors */
         .dark .border-gray-200 {
             border-color: rgb(55 65 81);
@@ -764,19 +839,17 @@ tr:hover {
 
                 <div class="flex items-center gap-4">
                     <!-- Dark Mode Toggle -->
-                    <button id="theme-toggle" type="button"
-                        class="text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <!-- Sun icon -->
-                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor"
-                            viewBox="0 0 20 20">
-                            <path
-                                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
-                        </svg>
-                        <!-- Moon icon -->
-                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                        </svg>
-                    </button>
+                    <button id="theme-toggle" type="button" 
+                    class="text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <!-- Sun icon -->
+                <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
+                </svg>
+                <!-- Moon icon -->
+                <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                </svg>
+            </button>
 
                     <!-- Profile Dropdown -->
                     <div class="relative profile-dropdown">
@@ -1003,33 +1076,57 @@ tr:hover {
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 `;
-        function initializeDarkMode() {
-            // Check for saved theme preference or use system preference
-            if (localStorage.getItem('color-theme') === 'dark' ||
-                (!('color-theme' in localStorage) &&
-                    window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-toggle-dark-icon').classList.remove('hidden');
-            } else {
-                document.getElementById('theme-toggle-light-icon').classList.remove('hidden');
-            }
+function initializeDarkMode() {
+    // Get toggle button and icon elements
+    const toggleButton = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
 
-            // Add toggle button event listener
-            document.getElementById('theme-toggle').addEventListener('click', function () {
-                // Toggle icons
-                document.getElementById('theme-toggle-dark-icon').classList.toggle('hidden');
-                document.getElementById('theme-toggle-light-icon').classList.toggle('hidden');
-
-                // Toggle dark mode class
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
-                }
-            });
+    // Function to set theme
+    function setTheme(isDark) {
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+            darkIcon.classList.remove('hidden');
+            lightIcon.classList.add('hidden');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+            lightIcon.classList.remove('hidden');
+            darkIcon.classList.add('hidden');
         }
+    }
+
+    // Initial theme setup
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const storedTheme = localStorage.getItem('color-theme');
+    const isDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
+    
+    // Set initial theme
+    setTheme(isDark);
+
+    // Remove any existing event listeners (if any)
+    toggleButton.removeEventListener('click', toggleTheme);
+
+    // Add click handler
+    function toggleTheme() {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        setTheme(!isDarkMode);
+    }
+
+    toggleButton.addEventListener('click', toggleTheme);
+
+    // Optional: Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('color-theme')) {
+            setTheme(e.matches);
+        }
+    });
+}
+
+// Only initialize once when the DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeDarkMode, { once: true });
+        
         // Function to check if a holiday already exists
         function holidayExists(workLogs, holiday) {
             return workLogs.some(log =>
@@ -1331,8 +1428,8 @@ tr:hover {
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg transition-opacity duration-500 ${type === 'success' ? 'bg-green-500' :
-                    type === 'warning' ? 'bg-yellow-500' :
-                        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                type === 'warning' ? 'bg-yellow-500' :
+                    type === 'error' ? 'bg-red-500' : 'bg-blue-500'
                 } text-white`;
 
             notification.innerHTML = `
@@ -1594,39 +1691,39 @@ tr:hover {
         }
         // Day View Functions
         function displayDayView(dateString, updateView = true) {
-    const date = DateTime.fromISO(dateString);
-    currentDate = date;
+            const date = DateTime.fromISO(dateString);
+            currentDate = date;
 
-    if (updateView) {
-        const viewSelector = document.getElementById('view-selector');
-        viewSelector.value = 'day';
+            if (updateView) {
+                const viewSelector = document.getElementById('view-selector');
+                viewSelector.value = 'day';
 
-        const buttons = document.querySelectorAll('.view-option');
-        buttons.forEach(button => {
-            if (button.dataset.view === 'day') {
-                button.classList.add('selected');
-                button.setAttribute('aria-pressed', 'true');
-            } else {
-                button.classList.remove('selected');
-                button.setAttribute('aria-pressed', 'false');
+                const buttons = document.querySelectorAll('.view-option');
+                buttons.forEach(button => {
+                    if (button.dataset.view === 'day') {
+                        button.classList.add('selected');
+                        button.setAttribute('aria-pressed', 'true');
+                    } else {
+                        button.classList.remove('selected');
+                        button.setAttribute('aria-pressed', 'false');
+                    }
+                });
             }
-        });
-    }
 
-    const reportContent = document.getElementById('report-content');
-    const dayLogs = workLogs.filter(log => {
-        const logDate = DateTime.fromISO(log.date);
-        return logDate && logDate.hasSame(date, 'day');
-    });
+            const reportContent = document.getElementById('report-content');
+            const dayLogs = workLogs.filter(log => {
+                const logDate = DateTime.fromISO(log.date);
+                return logDate && logDate.hasSame(date, 'day');
+            });
 
-    dayLogs.sort((a, b) => {
-        if (!a['start-time'] && !b['start-time']) return 0;
-        if (!a['start-time']) return 1;
-        if (!b['start-time']) return -1;
-        return a['start-time'].localeCompare(b['start-time']);
-    });
+            dayLogs.sort((a, b) => {
+                if (!a['start-time'] && !b['start-time']) return 0;
+                if (!a['start-time']) return 1;
+                if (!b['start-time']) return -1;
+                return a['start-time'].localeCompare(b['start-time']);
+            });
 
-    let html = `
+            let html = `
         <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
             <button onclick="changeDay(-1)" class="w-full sm:w-auto mb-2 sm:mb-0 text-blue-600 hover:text-blue-800">&lt; יום קודם</button>
             <div class="flex items-center gap-4">
@@ -1649,78 +1746,78 @@ tr:hover {
         </div>
     `;
 
-    reportContent.innerHTML = html;
+            reportContent.innerHTML = html;
 
-    const timelineContainer = document.querySelector('.timeline-container');
-    if (timelineContainer) {
-        initializeTimelineInteractions(timelineContainer);
-    }
+            const timelineContainer = document.querySelector('.timeline-container');
+            if (timelineContainer) {
+                initializeTimelineInteractions(timelineContainer);
+            }
 
-    initializeFlatpickr();
-    initializeDayFormHandlers();
-    addRecurrenceFields('day-work-log-form');
-}
-function generateTimelineHtml(logs) {
-    // Create time slots (hours) markers
-    const timeSlots = new Array(24).fill().map((_, i) => {
-        const time = i.toString().padStart(2, '0') + ':00';
-        return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" 
+            initializeFlatpickr();
+            initializeDayFormHandlers();
+            addRecurrenceFields('day-work-log-form');
+        }
+        function generateTimelineHtml(logs) {
+            // Create time slots (hours) markers
+            const timeSlots = new Array(24).fill().map((_, i) => {
+                const time = i.toString().padStart(2, '0') + ':00';
+                return `<div class="absolute w-full border-t border-gray-200 text-xs text-gray-500 text-right pr-1" 
             style="top: ${i * (100 / 24)}%">${time}</div>`;
-    });
+            });
 
-    const processedLogs = handleOverlappingReports(logs);
-    const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
+            const processedLogs = handleOverlappingReports(logs);
+            const maxOverlap = Math.max(...processedLogs.map(log => log.overlap));
 
-    const logElements = processedLogs.map(log => {
-        const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-        const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-        const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
-        let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
-        const minHeight = 5;
-        height = Math.max(height, minHeight);
+            const logElements = processedLogs.map(log => {
+                const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+                const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+                const top = (startTime.hour + startTime.minute / 60) * (100 / 24);
+                let height = (endTime.diff(startTime, 'minutes').minutes / 60) * (100 / 24);
+                const minHeight = 5;
+                height = Math.max(height, minHeight);
 
-        const color = getColorForLogType(log.type);
-        const width = (100 / (maxOverlap + 1)) * 0.9;
-        const left = (log.overlap * width);
+                const color = getColorForLogType(log.type);
+                const width = (100 / (maxOverlap + 1)) * 0.9;
+                const left = (log.overlap * width);
 
-        // Generate the content based on log type and available space
-        let content = '';
-        if (log.type === 'holiday') {
-            content = `
+                // Generate the content based on log type and available space
+                let content = '';
+                if (log.type === 'holiday') {
+                    content = `
                 <div class="time-display font-bold mb-1">חג</div>
                 <div>${log.client}</div>
                 <div class="text-xs mt-1">${log['start-time']} - ${log['end-time']}</div>
             `;
-        } else {
-            content = `
+                } else {
+                    content = `
                 <div class="time-display">
                     <strong>${getHebrewType(log.type)}</strong><br>
                     ${log['start-time']} - ${log['end-time']}<br>
                     ${log.type === 'work' ? `${log.client} (${log.location})` : log.client}
                 </div>
             `;
-        }
+                }
 
-        // Simplified content for small height items
-        if (height <= 8) {
-            content = `
+                // Simplified content for small height items
+                if (height <= 8) {
+                    content = `
                 <div class="time-display">
                     <strong>${getHebrewType(log.type)}</strong> 
                     ${log['start-time']} - ${log['end-time']}
                 </div>
             `;
-        }
+                }
 
-        // Generate action buttons based on log type
-        const actions = log.type === 'holiday'
-            ? '<div class="mt-1 text-xs opacity-75">חג - נקבע אוטומטית</div>'
-            : `<div class="timeline-actions mt-1">
+                // Generate action buttons based on log type
+                const actions = log.type === 'holiday'
+                    ? '<div class="mt-1 text-xs opacity-75">חג - נקבע אוטומטית</div>'
+                    : `<div class="timeline-actions mt-1">
                 <button onclick="editLog('${log.id}')" class="text-white underline mr-2">ערוך</button>
                 <button onclick="deleteLog('${log.id}')" class="text-white underline">מחק</button>
                </div>`;
 
-        // Return the complete timeline item element
-        return `
+                // Return the complete timeline item element
+                return `
             <div class="timeline-item absolute p-1 text-xs text-white rounded-sm overflow-hidden hover:overflow-visible hover:z-10"
                  data-log-id="${log.id}"
                  data-type="${log.type}"
@@ -1739,10 +1836,10 @@ function generateTimelineHtml(logs) {
                 ` : ''}
             </div>
         `;
-    });
+            });
 
-    // Return the complete timeline HTML
-    return `
+            // Return the complete timeline HTML
+            return `
         <div class="relative h-full overflow-x-auto">
             <div class="absolute inset-0 pr-12">
                 ${logElements.join('')}
@@ -1750,7 +1847,7 @@ function generateTimelineHtml(logs) {
             ${timeSlots.join('')}
         </div>
     `;
-}
+        }
         function handleOverlappingReports(logs) {
             logs.sort((a, b) => a['start-time'].localeCompare(b['start-time']));
             const overlaps = new Array(logs.length).fill(0);
@@ -2257,37 +2354,37 @@ function generateTimelineHtml(logs) {
                 }
             });
         }
-// Timeline Interaction Enhancement
-function initializeTimelineInteractions(timelineContainer) {
-    let isDragging = false;
-    let isResizing = false;
-    let resizeDirection = null;
-    let activeElement = null;
-    let initialY = 0;
-    let initialHeight = 0;
-    let initialTop = 0;
+        // Timeline Interaction Enhancement
+        function initializeTimelineInteractions(timelineContainer) {
+            let isDragging = false;
+            let isResizing = false;
+            let resizeDirection = null;
+            let activeElement = null;
+            let initialY = 0;
+            let initialHeight = 0;
+            let initialTop = 0;
 
-    // Convert timeline position to time
-    function positionToTime(position) {
-        const containerHeight = timelineContainer.clientHeight;
-        const hours = (position / containerHeight) * 24;
-        return DateTime.fromObject({ hour: Math.floor(hours), minute: Math.round((hours % 1) * 60) })
-            .toFormat('HH:mm');
-    }
+            // Convert timeline position to time
+            function positionToTime(position) {
+                const containerHeight = timelineContainer.clientHeight;
+                const hours = (position / containerHeight) * 24;
+                return DateTime.fromObject({ hour: Math.floor(hours), minute: Math.round((hours % 1) * 60) })
+                    .toFormat('HH:mm');
+            }
 
-    // Convert time to timeline position
-    function timeToPosition(time) {
-        const [hours, minutes] = time.split(':').map(Number);
-        const totalHours = hours + (minutes / 60);
-        return (totalHours / 24) * timelineContainer.clientHeight;
-    }
+            // Convert time to timeline position
+            function timeToPosition(time) {
+                const [hours, minutes] = time.split(':').map(Number);
+                const totalHours = hours + (minutes / 60);
+                return (totalHours / 24) * timelineContainer.clientHeight;
+            }
 
-    // Add resize handles to timeline items
-    function addResizeHandles(element) {
-        // Add resize zones at top and bottom
-        const topHandle = document.createElement('div');
-        topHandle.className = 'resize-handle resize-top';
-        topHandle.style.cssText = `
+            // Add resize handles to timeline items
+            function addResizeHandles(element) {
+                // Add resize zones at top and bottom
+                const topHandle = document.createElement('div');
+                topHandle.className = 'resize-handle resize-top';
+                topHandle.style.cssText = `
             position: absolute;
             top: 0;
             left: 0;
@@ -2296,9 +2393,9 @@ function initializeTimelineInteractions(timelineContainer) {
             cursor: n-resize;
         `;
 
-        const bottomHandle = document.createElement('div');
-        bottomHandle.className = 'resize-handle resize-bottom';
-        bottomHandle.style.cssText = `
+                const bottomHandle = document.createElement('div');
+                bottomHandle.className = 'resize-handle resize-bottom';
+                bottomHandle.style.cssText = `
             position: absolute;
             bottom: 0;
             left: 0;
@@ -2307,132 +2404,132 @@ function initializeTimelineInteractions(timelineContainer) {
             cursor: s-resize;
         `;
 
-        element.appendChild(topHandle);
-        element.appendChild(bottomHandle);
-    }
+                element.appendChild(topHandle);
+                element.appendChild(bottomHandle);
+            }
 
-    // Initialize draggable elements
-    function initializeDraggable() {
-        const timelineItems = timelineContainer.querySelectorAll('.timeline-item');
-        timelineItems.forEach(item => {
-            item.style.cursor = 'move';
-            item.style.position = 'absolute';
-            addResizeHandles(item);
-        });
-    }
+            // Initialize draggable elements
+            function initializeDraggable() {
+                const timelineItems = timelineContainer.querySelectorAll('.timeline-item');
+                timelineItems.forEach(item => {
+                    item.style.cursor = 'move';
+                    item.style.position = 'absolute';
+                    addResizeHandles(item);
+                });
+            }
 
-    // Handle mouse down event
-    timelineContainer.addEventListener('mousedown', (e) => {
-        const timelineItem = e.target.closest('.timeline-item');
-        if (!timelineItem) return;
+            // Handle mouse down event
+            timelineContainer.addEventListener('mousedown', (e) => {
+                const timelineItem = e.target.closest('.timeline-item');
+                if (!timelineItem) return;
 
-        if (e.target.classList.contains('resize-handle')) {
-            // Start resizing
-            isResizing = true;
-            resizeDirection = e.target.classList.contains('resize-top') ? 'top' : 'bottom';
-            activeElement = timelineItem;
-            initialY = e.clientY;
-            initialHeight = timelineItem.offsetHeight;
-            initialTop = timelineItem.offsetTop;
-        } else {
-            // Start dragging
-            isDragging = true;
-            activeElement = timelineItem;
-            initialY = e.clientY;
-            initialTop = timelineItem.offsetTop;
-        }
-
-        // Prevent text selection while dragging
-        e.preventDefault();
-    });
-
-    // Handle mouse move event
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging && !isResizing) return;
-
-        const deltaY = e.clientY - initialY;
-        const containerHeight = timelineContainer.clientHeight;
-
-        if (isDragging) {
-            let newTop = initialTop + deltaY;
-            // Constrain to timeline bounds
-            newTop = Math.max(0, Math.min(containerHeight - activeElement.offsetHeight, newTop));
-            activeElement.style.top = `${newTop}px`;
-
-            // Update time display
-            const startTime = positionToTime(newTop);
-            const endTime = positionToTime(newTop + activeElement.offsetHeight);
-            updateTimeDisplay(activeElement, startTime, endTime);
-        }
-
-        if (isResizing) {
-            if (resizeDirection === 'top') {
-                let newTop = initialTop + deltaY;
-                let newHeight = initialHeight - deltaY;
-                
-                // Constrain resize
-                if (newHeight < 20) {
-                    newHeight = 20;
-                    newTop = initialTop + initialHeight - newHeight;
+                if (e.target.classList.contains('resize-handle')) {
+                    // Start resizing
+                    isResizing = true;
+                    resizeDirection = e.target.classList.contains('resize-top') ? 'top' : 'bottom';
+                    activeElement = timelineItem;
+                    initialY = e.clientY;
+                    initialHeight = timelineItem.offsetHeight;
+                    initialTop = timelineItem.offsetTop;
+                } else {
+                    // Start dragging
+                    isDragging = true;
+                    activeElement = timelineItem;
+                    initialY = e.clientY;
+                    initialTop = timelineItem.offsetTop;
                 }
-                
-                activeElement.style.top = `${newTop}px`;
-                activeElement.style.height = `${newHeight}px`;
-            } else {
-                let newHeight = initialHeight + deltaY;
-                // Minimum height constraint
-                newHeight = Math.max(20, newHeight);
-                // Maximum height constraint
-                newHeight = Math.min(newHeight, containerHeight - activeElement.offsetTop);
-                activeElement.style.height = `${newHeight}px`;
+
+                // Prevent text selection while dragging
+                e.preventDefault();
+            });
+
+            // Handle mouse move event
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging && !isResizing) return;
+
+                const deltaY = e.clientY - initialY;
+                const containerHeight = timelineContainer.clientHeight;
+
+                if (isDragging) {
+                    let newTop = initialTop + deltaY;
+                    // Constrain to timeline bounds
+                    newTop = Math.max(0, Math.min(containerHeight - activeElement.offsetHeight, newTop));
+                    activeElement.style.top = `${newTop}px`;
+
+                    // Update time display
+                    const startTime = positionToTime(newTop);
+                    const endTime = positionToTime(newTop + activeElement.offsetHeight);
+                    updateTimeDisplay(activeElement, startTime, endTime);
+                }
+
+                if (isResizing) {
+                    if (resizeDirection === 'top') {
+                        let newTop = initialTop + deltaY;
+                        let newHeight = initialHeight - deltaY;
+
+                        // Constrain resize
+                        if (newHeight < 20) {
+                            newHeight = 20;
+                            newTop = initialTop + initialHeight - newHeight;
+                        }
+
+                        activeElement.style.top = `${newTop}px`;
+                        activeElement.style.height = `${newHeight}px`;
+                    } else {
+                        let newHeight = initialHeight + deltaY;
+                        // Minimum height constraint
+                        newHeight = Math.max(20, newHeight);
+                        // Maximum height constraint
+                        newHeight = Math.min(newHeight, containerHeight - activeElement.offsetTop);
+                        activeElement.style.height = `${newHeight}px`;
+                    }
+
+                    // Update time display
+                    const startTime = positionToTime(activeElement.offsetTop);
+                    const endTime = positionToTime(activeElement.offsetTop + activeElement.offsetHeight);
+                    updateTimeDisplay(activeElement, startTime, endTime);
+                }
+            });
+
+            // Handle mouse up event
+            document.addEventListener('mouseup', () => {
+                if (isDragging || isResizing) {
+                    // Save the new times to the work log
+                    if (activeElement) {
+                        const logId = activeElement.dataset.logId;
+                        const startTime = positionToTime(activeElement.offsetTop);
+                        const endTime = positionToTime(activeElement.offsetTop + activeElement.offsetHeight);
+
+                        updateWorkLog(logId, startTime, endTime);
+                    }
+                }
+
+                isDragging = false;
+                isResizing = false;
+                activeElement = null;
+            });
+
+            // Update work log data
+            function updateWorkLog(logId, startTime, endTime) {
+                const logIndex = workLogs.findIndex(log => log.id === logId);
+                if (logIndex !== -1) {
+                    workLogs[logIndex]['start-time'] = startTime;
+                    workLogs[logIndex]['end-time'] = endTime;
+                    saveWorkLogs();
+                }
             }
 
-            // Update time display
-            const startTime = positionToTime(activeElement.offsetTop);
-            const endTime = positionToTime(activeElement.offsetTop + activeElement.offsetHeight);
-            updateTimeDisplay(activeElement, startTime, endTime);
-        }
-    });
-
-    // Handle mouse up event
-    document.addEventListener('mouseup', () => {
-        if (isDragging || isResizing) {
-            // Save the new times to the work log
-            if (activeElement) {
-                const logId = activeElement.dataset.logId;
-                const startTime = positionToTime(activeElement.offsetTop);
-                const endTime = positionToTime(activeElement.offsetTop + activeElement.offsetHeight);
-                
-                updateWorkLog(logId, startTime, endTime);
+            // Update time display in the timeline item
+            function updateTimeDisplay(element, startTime, endTime) {
+                const timeDisplay = element.querySelector('.time-display');
+                if (timeDisplay) {
+                    timeDisplay.textContent = `${startTime} - ${endTime}`;
+                }
             }
-        }
-        
-        isDragging = false;
-        isResizing = false;
-        activeElement = null;
-    });
 
-    // Update work log data
-    function updateWorkLog(logId, startTime, endTime) {
-        const logIndex = workLogs.findIndex(log => log.id === logId);
-        if (logIndex !== -1) {
-            workLogs[logIndex]['start-time'] = startTime;
-            workLogs[logIndex]['end-time'] = endTime;
-            saveWorkLogs();
+            // Initialize draggable elements
+            initializeDraggable();
         }
-    }
-
-    // Update time display in the timeline item
-    function updateTimeDisplay(element, startTime, endTime) {
-        const timeDisplay = element.querySelector('.time-display');
-        if (timeDisplay) {
-            timeDisplay.textContent = `${startTime} - ${endTime}`;
-        }
-    }
-
-    // Initialize draggable elements
-    initializeDraggable();
-}
         function handleKeyboardShortcuts(e) {
             // Alt + N: New entry for today
             if (e.altKey && e.key === 'n') {
@@ -2585,7 +2682,7 @@ function initializeTimelineInteractions(timelineContainer) {
             flatpickr("#day-start-time", timeConfig);
             flatpickr("#day-end-time", timeConfig);
         }
-        document.addEventListener('DOMContentLoaded', initializeDarkMode);
+        
         // Initialize application when DOM is loaded
         document.addEventListener('DOMContentLoaded', initializeApp);
         // Enhanced Features - Templates and Quick Actions
@@ -2753,260 +2850,260 @@ function initializeTimelineInteractions(timelineContainer) {
                 modal.remove();
             });
         }
-// Find gaps in daily schedule between 08:00 and 18:00
-function findTimeGaps(dayLogs) {
-    const WORK_START = DateTime.fromObject({ hour: 8, minute: 0 });
-    const WORK_END = DateTime.fromObject({ hour: 18, minute: 0 });
-    const REQUIRED_HOURS = 9;
-    
-    // Calculate current work hours precisely
-    const currentHours = calculateWorkHours(dayLogs);
-    const missingHours = REQUIRED_HOURS - currentHours;
-    
-    // Add small buffer for floating point comparison
-    if (missingHours <= 0.01) {
-        return { missingHours: 0, suggestions: [] };
-    }
-    
-    // Get existing work periods with precise times
-    const workPeriods = dayLogs
-        .filter(log => log.type === 'work')
-        .map(log => ({
-            start: DateTime.fromFormat(log['start-time'], 'HH:mm'),
-            end: DateTime.fromFormat(log['end-time'], 'HH:mm')
-        }))
-        .sort((a, b) => a.start.toMillis() - b.start.toMillis());
+        // Find gaps in daily schedule between 08:00 and 18:00
+        function findTimeGaps(dayLogs) {
+            const WORK_START = DateTime.fromObject({ hour: 8, minute: 0 });
+            const WORK_END = DateTime.fromObject({ hour: 18, minute: 0 });
+            const REQUIRED_HOURS = 9;
 
-    // Find all available gaps
-    const gaps = [];
-    
-    // Check gaps between work periods (middle gaps)
-    for (let i = 0; i < workPeriods.length - 1; i++) {
-        const gapStart = workPeriods[i].end;
-        const gapEnd = workPeriods[i + 1].start;
-        const duration = gapEnd.diff(gapStart, 'minutes').minutes / 60;
-        
-        if (duration >= 0.25) { // Minimum 15 minutes gap
-            gaps.push({
-                start: gapStart,
-                end: gapEnd,
-                duration: duration,
-                type: 'middle'
-            });
-        }
-    }
-    
-    // Check morning gap
-    if (workPeriods.length > 0 && workPeriods[0].start > WORK_START) {
-        const duration = workPeriods[0].start.diff(WORK_START, 'minutes').minutes / 60;
-        if (duration >= 0.25) {
-            gaps.push({
-                start: WORK_START,
-                end: workPeriods[0].start,
-                duration: duration,
-                type: 'morning'
-            });
-        }
-    }
-    
-    // Check evening gap
-    if (workPeriods.length > 0 && workPeriods[workPeriods.length - 1].end < WORK_END) {
-        const duration = WORK_END.diff(workPeriods[workPeriods.length - 1].end, 'minutes').minutes / 60;
-        if (duration >= 0.25) {
-            gaps.push({
-                start: workPeriods[workPeriods.length - 1].end,
-                end: WORK_END,
-                duration: duration,
-                type: 'evening'
-            });
-        }
-    }
+            // Calculate current work hours precisely
+            const currentHours = calculateWorkHours(dayLogs);
+            const missingHours = REQUIRED_HOURS - currentHours;
 
-    // Generate suggestions based on available gaps
-    const suggestions = [];
+            // Add small buffer for floating point comparison
+            if (missingHours <= 0.01) {
+                return { missingHours: 0, suggestions: [] };
+            }
 
-    // Helper function to format duration
-    function formatDuration(hours) {
-        const fullHours = Math.floor(hours);
-        const minutes = Math.round((hours - fullHours) * 60);
-        if (minutes === 0) return `${fullHours} שעות`;
-        return `${fullHours} שעות ו-${minutes} דקות`;
-    }
+            // Get existing work periods with precise times
+            const workPeriods = dayLogs
+                .filter(log => log.type === 'work')
+                .map(log => ({
+                    start: DateTime.fromFormat(log['start-time'], 'HH:mm'),
+                    end: DateTime.fromFormat(log['end-time'], 'HH:mm')
+                }))
+                .sort((a, b) => a.start.toMillis() - b.start.toMillis());
 
-    // Priority 1: Fill middle gaps first
-    for (const gap of gaps.filter(g => g.type === 'middle')) {
-        if (gap.duration >= 0.25) { // At least 15 minutes
-            const durationToUse = Math.min(gap.duration, missingHours);
-            suggestions.push({
-                priority: 1,
-                type: 'single',
-                description: 'השלמה בהפסקה',
-                start: gap.start,
-                end: gap.start.plus({ minutes: Math.round(durationToUse * 60) }),
-                duration: durationToUse,
-                durationText: formatDuration(durationToUse)
-            });
-        }
-    }
+            // Find all available gaps
+            const gaps = [];
 
-    // Priority 2: Morning or evening continuous block
-    const morningGap = gaps.find(g => g.type === 'morning');
-    const eveningGap = gaps.find(g => g.type === 'evening');
+            // Check gaps between work periods (middle gaps)
+            for (let i = 0; i < workPeriods.length - 1; i++) {
+                const gapStart = workPeriods[i].end;
+                const gapEnd = workPeriods[i + 1].start;
+                const duration = gapEnd.diff(gapStart, 'minutes').minutes / 60;
 
-    if (morningGap && morningGap.duration >= 0.25) {
-        const durationToUse = Math.min(morningGap.duration, missingHours);
-        suggestions.push({
-            priority: 2,
-            type: 'single',
-            description: 'השלמה בתחילת היום',
-            start: morningGap.start,
-            end: morningGap.start.plus({ minutes: Math.round(durationToUse * 60) }),
-            duration: durationToUse,
-            durationText: formatDuration(durationToUse)
-        });
-    }
-
-    if (eveningGap && eveningGap.duration >= 0.25) {
-        const durationToUse = Math.min(eveningGap.duration, missingHours);
-        suggestions.push({
-            priority: 2,
-            type: 'single',
-            description: 'השלמה בסוף היום',
-            start: eveningGap.end.minus({ minutes: Math.round(durationToUse * 60) }),
-            end: eveningGap.end,
-            duration: durationToUse,
-            durationText: formatDuration(durationToUse)
-        });
-    }
-
-    // Priority 3: Split between available gaps
-    if (gaps.length >= 2) {
-        const combinableGaps = gaps.filter(g => g.duration >= 0.25);
-        if (combinableGaps.length >= 2) {
-            let remainingHours = missingHours;
-            const splitGaps = [];
-            
-            for (const gap of combinableGaps) {
-                if (remainingHours <= 0) break;
-                
-                const durationForThisGap = Math.min(gap.duration, remainingHours / combinableGaps.length);
-                if (durationForThisGap >= 0.25) {
-                    splitGaps.push({
-                        start: gap.type === 'evening' ? 
-                            gap.end.minus({ minutes: Math.round(durationForThisGap * 60) }) :
-                            gap.start,
-                        end: gap.type === 'evening' ? 
-                            gap.end :
-                            gap.start.plus({ minutes: Math.round(durationForThisGap * 60) }),
-                        duration: durationForThisGap
+                if (duration >= 0.25) { // Minimum 15 minutes gap
+                    gaps.push({
+                        start: gapStart,
+                        end: gapEnd,
+                        duration: duration,
+                        type: 'middle'
                     });
-                    remainingHours -= durationForThisGap;
                 }
             }
 
-            if (splitGaps.length >= 2) {
+            // Check morning gap
+            if (workPeriods.length > 0 && workPeriods[0].start > WORK_START) {
+                const duration = workPeriods[0].start.diff(WORK_START, 'minutes').minutes / 60;
+                if (duration >= 0.25) {
+                    gaps.push({
+                        start: WORK_START,
+                        end: workPeriods[0].start,
+                        duration: duration,
+                        type: 'morning'
+                    });
+                }
+            }
+
+            // Check evening gap
+            if (workPeriods.length > 0 && workPeriods[workPeriods.length - 1].end < WORK_END) {
+                const duration = WORK_END.diff(workPeriods[workPeriods.length - 1].end, 'minutes').minutes / 60;
+                if (duration >= 0.25) {
+                    gaps.push({
+                        start: workPeriods[workPeriods.length - 1].end,
+                        end: WORK_END,
+                        duration: duration,
+                        type: 'evening'
+                    });
+                }
+            }
+
+            // Generate suggestions based on available gaps
+            const suggestions = [];
+
+            // Helper function to format duration
+            function formatDuration(hours) {
+                const fullHours = Math.floor(hours);
+                const minutes = Math.round((hours - fullHours) * 60);
+                if (minutes === 0) return `${fullHours} שעות`;
+                return `${fullHours} שעות ו-${minutes} דקות`;
+            }
+
+            // Priority 1: Fill middle gaps first
+            for (const gap of gaps.filter(g => g.type === 'middle')) {
+                if (gap.duration >= 0.25) { // At least 15 minutes
+                    const durationToUse = Math.min(gap.duration, missingHours);
+                    suggestions.push({
+                        priority: 1,
+                        type: 'single',
+                        description: 'השלמה בהפסקה',
+                        start: gap.start,
+                        end: gap.start.plus({ minutes: Math.round(durationToUse * 60) }),
+                        duration: durationToUse,
+                        durationText: formatDuration(durationToUse)
+                    });
+                }
+            }
+
+            // Priority 2: Morning or evening continuous block
+            const morningGap = gaps.find(g => g.type === 'morning');
+            const eveningGap = gaps.find(g => g.type === 'evening');
+
+            if (morningGap && morningGap.duration >= 0.25) {
+                const durationToUse = Math.min(morningGap.duration, missingHours);
                 suggestions.push({
-                    priority: 3,
-                    type: 'multiple',
-                    description: 'השלמה מפוצלת',
-                    gaps: splitGaps,
-                    durationText: formatDuration(splitGaps.reduce((sum, g) => sum + g.duration, 0))
+                    priority: 2,
+                    type: 'single',
+                    description: 'השלמה בתחילת היום',
+                    start: morningGap.start,
+                    end: morningGap.start.plus({ minutes: Math.round(durationToUse * 60) }),
+                    duration: durationToUse,
+                    durationText: formatDuration(durationToUse)
                 });
             }
+
+            if (eveningGap && eveningGap.duration >= 0.25) {
+                const durationToUse = Math.min(eveningGap.duration, missingHours);
+                suggestions.push({
+                    priority: 2,
+                    type: 'single',
+                    description: 'השלמה בסוף היום',
+                    start: eveningGap.end.minus({ minutes: Math.round(durationToUse * 60) }),
+                    end: eveningGap.end,
+                    duration: durationToUse,
+                    durationText: formatDuration(durationToUse)
+                });
+            }
+
+            // Priority 3: Split between available gaps
+            if (gaps.length >= 2) {
+                const combinableGaps = gaps.filter(g => g.duration >= 0.25);
+                if (combinableGaps.length >= 2) {
+                    let remainingHours = missingHours;
+                    const splitGaps = [];
+
+                    for (const gap of combinableGaps) {
+                        if (remainingHours <= 0) break;
+
+                        const durationForThisGap = Math.min(gap.duration, remainingHours / combinableGaps.length);
+                        if (durationForThisGap >= 0.25) {
+                            splitGaps.push({
+                                start: gap.type === 'evening' ?
+                                    gap.end.minus({ minutes: Math.round(durationForThisGap * 60) }) :
+                                    gap.start,
+                                end: gap.type === 'evening' ?
+                                    gap.end :
+                                    gap.start.plus({ minutes: Math.round(durationForThisGap * 60) }),
+                                duration: durationForThisGap
+                            });
+                            remainingHours -= durationForThisGap;
+                        }
+                    }
+
+                    if (splitGaps.length >= 2) {
+                        suggestions.push({
+                            priority: 3,
+                            type: 'multiple',
+                            description: 'השלמה מפוצלת',
+                            gaps: splitGaps,
+                            durationText: formatDuration(splitGaps.reduce((sum, g) => sum + g.duration, 0))
+                        });
+                    }
+                }
+            }
+
+            return {
+                missingHours,
+                missingHoursText: formatDuration(missingHours),
+                suggestions: suggestions.sort((a, b) => a.priority - b.priority)
+            };
         }
-    }
-
-    return {
-        missingHours,
-        missingHoursText: formatDuration(missingHours),
-        suggestions: suggestions.sort((a, b) => a.priority - b.priority)
-    };
-}
 
 
-function fillSplitGaps(startTime1, endTime1, startTime2, endTime2) {
-    // Fill first gap immediately
-    fillFormFields(startTime1, endTime1);
-    
-    // Schedule second gap after a small delay
-    setTimeout(() => {
-        const form = document.getElementById('day-work-log-form');
-        if (form) {
-            form.reset();
-            fillFormFields(startTime2, endTime2);
+        function fillSplitGaps(startTime1, endTime1, startTime2, endTime2) {
+            // Fill first gap immediately
+            fillFormFields(startTime1, endTime1);
+
+            // Schedule second gap after a small delay
+            setTimeout(() => {
+                const form = document.getElementById('day-work-log-form');
+                if (form) {
+                    form.reset();
+                    fillFormFields(startTime2, endTime2);
+                }
+            }, 100);
         }
-    }, 100);
-}
-function initializeGapHandlers() {
-    document.addEventListener('click', function(event) {
-        const button = event.target.closest('.gap-fill-button');
-        if (!button) return;
+        function initializeGapHandlers() {
+            document.addEventListener('click', function (event) {
+                const button = event.target.closest('.gap-fill-button');
+                if (!button) return;
 
-        try {
-            const gapsData = JSON.parse(atob(button.dataset.gaps));
-            handleMultipleGaps(gapsData);
-        } catch (error) {
-            console.error('Error processing gaps data:', error);
-        }
-    });
-}function handleMultipleGaps(gaps) {
-    let currentIndex = 0;
-
-    function processNextGap() {
-        if (currentIndex >= gaps.length) return;
-
-        const gap = gaps[currentIndex];
-        const form = document.getElementById('day-work-log-form');
-        
-        if (form) {
-            if (currentIndex > 0) {
-                form.reset();
-            }
-            
-            // Fill the form
-            const startInput = document.getElementById('day-start-time');
-            const endInput = document.getElementById('day-end-time');
-            const typeSelect = document.getElementById('day-type');
-            const locationInputs = document.querySelectorAll('input[name="location"]');
-            
-            // Set times
-            if (startInput && startInput._flatpickr) {
-                startInput._flatpickr.setDate(gap.start);
-            }
-            if (endInput && endInput._flatpickr) {
-                endInput._flatpickr.setDate(gap.end);
-            }
-            
-            // Set work type
-            if (typeSelect) {
-                typeSelect.value = 'work';
-                typeSelect.dispatchEvent(new Event('change'));
-            }
-            
-            // Set location to משרד
-            locationInputs.forEach(input => {
-                if (input.value === 'משרד') {
-                    input.checked = true;
+                try {
+                    const gapsData = JSON.parse(atob(button.dataset.gaps));
+                    handleMultipleGaps(gapsData);
+                } catch (error) {
+                    console.error('Error processing gaps data:', error);
                 }
             });
+        } function handleMultipleGaps(gaps) {
+            let currentIndex = 0;
 
-            currentIndex++;
-            
-            // Process next gap after a delay
-            if (currentIndex < gaps.length) {
-                setTimeout(processNextGap, 100);
+            function processNextGap() {
+                if (currentIndex >= gaps.length) return;
+
+                const gap = gaps[currentIndex];
+                const form = document.getElementById('day-work-log-form');
+
+                if (form) {
+                    if (currentIndex > 0) {
+                        form.reset();
+                    }
+
+                    // Fill the form
+                    const startInput = document.getElementById('day-start-time');
+                    const endInput = document.getElementById('day-end-time');
+                    const typeSelect = document.getElementById('day-type');
+                    const locationInputs = document.querySelectorAll('input[name="location"]');
+
+                    // Set times
+                    if (startInput && startInput._flatpickr) {
+                        startInput._flatpickr.setDate(gap.start);
+                    }
+                    if (endInput && endInput._flatpickr) {
+                        endInput._flatpickr.setDate(gap.end);
+                    }
+
+                    // Set work type
+                    if (typeSelect) {
+                        typeSelect.value = 'work';
+                        typeSelect.dispatchEvent(new Event('change'));
+                    }
+
+                    // Set location to משרד
+                    locationInputs.forEach(input => {
+                        if (input.value === 'משרד') {
+                            input.checked = true;
+                        }
+                    });
+
+                    currentIndex++;
+
+                    // Process next gap after a delay
+                    if (currentIndex < gaps.length) {
+                        setTimeout(processNextGap, 100);
+                    }
+                }
             }
+
+            // Start processing gaps
+            processNextGap();
         }
-    }
 
-    // Start processing gaps
-    processNextGap();
-}
-
-function generateGapButton(suggestion) {
-    switch (suggestion.type) {
-        case 'single':
-            return `
+        function generateGapButton(suggestion) {
+            switch (suggestion.type) {
+                case 'single':
+                    return `
                 <button type="button" 
                         onclick="fillGap('${suggestion.start.toFormat('HH:mm')}', '${suggestion.end.toFormat('HH:mm')}')" 
                         class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
@@ -3019,15 +3116,15 @@ function generateGapButton(suggestion) {
                     (${suggestion.durationText})
                 </button>
             `;
-            
-        case 'multiple':
-            // Store gaps data as a base64 encoded string to avoid any HTML parsing issues
-            const gapsData = btoa(JSON.stringify(suggestion.gaps.map(gap => ({
-                start: gap.start.toFormat('HH:mm'),
-                end: gap.end.toFormat('HH:mm')
-            }))));
-            
-            return `
+
+                case 'multiple':
+                    // Store gaps data as a base64 encoded string to avoid any HTML parsing issues
+                    const gapsData = btoa(JSON.stringify(suggestion.gaps.map(gap => ({
+                        start: gap.start.toFormat('HH:mm'),
+                        end: gap.end.toFormat('HH:mm')
+                    }))));
+
+                    return `
                 <button type="button" 
                         class="gap-fill-button flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
                                dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
@@ -3036,15 +3133,15 @@ function generateGapButton(suggestion) {
                     <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
                         ${suggestion.description}
                     </span>
-                    השלמה מפוצלת: ${suggestion.gaps.map(g => 
+                    השלמה מפוצלת: ${suggestion.gaps.map(g =>
                         `${g.start.toFormat('HH:mm')}-${g.end.toFormat('HH:mm')}`
                     ).join(', ')}
                     ${suggestion.durationText ? `(${suggestion.durationText})` : ''}
                 </button>
             `;
 
-        case 'split':
-            return `
+                case 'split':
+                    return `
                 <button type="button"
                         onclick="fillSplitGaps('${suggestion.parts[0].start.toFormat('HH:mm')}', 
                                              '${suggestion.parts[0].end.toFormat('HH:mm')}',
@@ -3061,55 +3158,55 @@ function generateGapButton(suggestion) {
                     ${suggestion.durationText ? `(${suggestion.durationText})` : ''}
                 </button>
             `;
-            
-        default:
-            return '';
-    }
-}
-function fillFormFields(startTime, endTime) {
-    const startInput = document.getElementById('day-start-time');
-    const endInput = document.getElementById('day-end-time');
-    const locationInputs = document.querySelectorAll('input[name="location"]');
-    
-    // Fill time inputs
-    if (startInput && endInput) {
-        startInput._flatpickr.setDate(startTime);
-        endInput._flatpickr.setDate(endTime);
-    }
-    
-    // Set location to "משרד"
-    locationInputs.forEach(input => {
-        if (input.value === 'משרד') {
-            input.checked = true;
+
+                default:
+                    return '';
+            }
         }
-    });
+        function fillFormFields(startTime, endTime) {
+            const startInput = document.getElementById('day-start-time');
+            const endInput = document.getElementById('day-end-time');
+            const locationInputs = document.querySelectorAll('input[name="location"]');
 
-    // Also set work type if it's not already set
-    const typeSelect = document.getElementById('day-type');
-    if (typeSelect && !typeSelect.value) {
-        typeSelect.value = 'work';
-        // Trigger change event to update form fields if needed
-        typeSelect.dispatchEvent(new Event('change'));
-    }
-}
+            // Fill time inputs
+            if (startInput && endInput) {
+                startInput._flatpickr.setDate(startTime);
+                endInput._flatpickr.setDate(endTime);
+            }
 
-// Generate suggestion UI
-function generateSuggestionUI(gapInfo) {
+            // Set location to "משרד"
+            locationInputs.forEach(input => {
+                if (input.value === 'משרד') {
+                    input.checked = true;
+                }
+            });
+
+            // Also set work type if it's not already set
+            const typeSelect = document.getElementById('day-type');
+            if (typeSelect && !typeSelect.value) {
+                typeSelect.value = 'work';
+                // Trigger change event to update form fields if needed
+                typeSelect.dispatchEvent(new Event('change'));
+            }
+        }
+
+        // Generate suggestion UI
+        function generateSuggestionUI(gapInfo) {
     const { missingHours, suggestions } = gapInfo;
-    
+
     if (!suggestions.length) return '';
 
     return `
-        <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg mb-4 shadow-sm border-l-4 border-blue-500">
+        <div class="suggestion-container p-4 rounded-lg mb-4 shadow-sm border-l-4">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
-                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 suggestion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 <div class="ml-3 flex-grow">
-                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-3">
+                    <h3 class="text-sm font-medium suggestion-title mb-3">
                         חסרות ${missingHours.toFixed(1)} שעות להשלמת יום עבודה (9 שעות)
                     </h3>
                     <div class="space-y-3">
@@ -3119,10 +3216,9 @@ function generateSuggestionUI(gapInfo) {
                                     return `
                                         <div class="flex items-center gap-2">
                                             <button onclick="fillGap('${suggestion.start.toFormat('HH:mm')}', '${suggestion.end.toFormat('HH:mm')}')" 
-                                                    class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
-                                                           dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
-                                                           transition-colors border border-blue-200 dark:border-blue-700">
-                                                <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                                                    class="suggestion-button flex items-center gap-2 text-sm px-4 py-2 rounded-lg 
+                                                           transition-colors">
+                                                <span class="suggestion-badge text-xs px-2 py-1 rounded-full">
                                                     אפשרות ${index + 1}
                                                 </span>
                                                 ${suggestion.description}: ${suggestion.start.toFormat('HH:mm')} - ${suggestion.end.toFormat('HH:mm')}
@@ -3136,19 +3232,16 @@ function generateSuggestionUI(gapInfo) {
             start: g.start.toFormat("HH:mm"),
             end: g.end.toFormat("HH:mm")
         })))})' 
-                class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
-                       dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
-                       transition-colors border border-blue-200 dark:border-blue-700">
-            <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                class="suggestion-button flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-all">
+            <span class="suggestion-badge text-xs px-2 py-1 rounded-full">
                 אפשרות ${index + 1}
             </span>
-            ${suggestion.description}: ${suggestion.gaps.map(g => 
+            ${suggestion.description}: ${suggestion.gaps.map(g =>
                 `${g.start.toFormat("HH:mm")}-${g.end.toFormat("HH:mm")}`
             ).join(", ")}
         </button>
     </div>
 `;
-
                                 case 'split':
                                     return `
                                         <div class="flex items-center gap-2">
@@ -3156,10 +3249,10 @@ function generateSuggestionUI(gapInfo) {
                                                                           '${suggestion.parts[0].end.toFormat('HH:mm')}',
                                                                           '${suggestion.parts[1].start.toFormat('HH:mm')}',
                                                                           '${suggestion.parts[1].end.toFormat('HH:mm')}')" 
-                                                    class="flex items-center gap-2 text-sm bg-white dark:bg-blue-800 hover:bg-blue-50 
-                                                           dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-lg 
-                                                           transition-colors border border-blue-200 dark:border-blue-700">
-                                                <span class="text-xs bg-blue-100 dark:bg-blue-700 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                                                    class="flex items-center gap-2 text-sm bg-white dark:bg-slate-700 hover:bg-[#f1fbfd] 
+                                                           dark:hover:bg-slate-600 text-[#055160] dark:text-gray-100 px-4 py-2 rounded-lg 
+                                                           transition-colors border border-[#0dcaf0] dark:border-slate-600">
+                                                <span class="text-xs bg-[#0dcaf0] dark:bg-blue-900 text-white dark:text-blue-100 px-2 py-1 rounded-full">
                                                     אפשרות ${index + 1}
                                                 </span>
                                                 ${suggestion.description}: ${suggestion.parts[0].start.toFormat('HH:mm')}-${suggestion.parts[0].end.toFormat('HH:mm')} 
@@ -3174,111 +3267,110 @@ function generateSuggestionUI(gapInfo) {
             </div>
         </div>
     `;
-}
-function safeJSONParse(str) {
-    try {
-        return JSON.parse(str);
-    } catch (e) {
-        console.error('Error parsing JSON:', e);
-        return null;
-    }
-}
-function serializeGapsForOnclick(gaps) {
-    // Convert gaps to a simpler format
-    const simpleGaps = gaps.map(g => ({
-        start: g.start.toFormat('HH:mm'),
-        end: g.end.toFormat('HH:mm')
-    }));
-    
-    // Create a properly escaped string
-    return `[${simpleGaps.map(g => 
-        `{start:'${g.start}',end:'${g.end}'}`
-    ).join(',')}]`;
-}
-function fillMultipleGaps(gaps) {
-    console.log('Received gaps:', gaps); // Debug logging
-    
-    if (!Array.isArray(gaps)) {
-        console.error('Expected array, got:', typeof gaps);
-        return;
-    }
+}        function safeJSONParse(str) {
+            try {
+                return JSON.parse(str);
+            } catch (e) {
+                console.error('Error parsing JSON:', e);
+                return null;
+            }
+        }
+        function serializeGapsForOnclick(gaps) {
+            // Convert gaps to a simpler format
+            const simpleGaps = gaps.map(g => ({
+                start: g.start.toFormat('HH:mm'),
+                end: g.end.toFormat('HH:mm')
+            }));
 
-    // Fill the first gap immediately
-    if (gaps.length > 0) {
-        console.log('Filling first gap:', gaps[0]);
-        fillFormFields(gaps[0].start, gaps[0].end);
-        
-        // Schedule the rest with small delays
-        for (let i = 1; i < gaps.length; i++) {
-            const currentGap = gaps[i];
-            setTimeout(() => {
-                console.log('Filling gap:', currentGap);
-                const form = document.getElementById('day-work-log-form');
-                if (form) {
-                    form.reset();
-                    fillFormFields(currentGap.start, currentGap.end);
+            // Create a properly escaped string
+            return `[${simpleGaps.map(g =>
+                `{start:'${g.start}',end:'${g.end}'}`
+            ).join(',')}]`;
+        }
+        function fillMultipleGaps(gaps) {
+            console.log('Received gaps:', gaps); // Debug logging
+
+            if (!Array.isArray(gaps)) {
+                console.error('Expected array, got:', typeof gaps);
+                return;
+            }
+
+            // Fill the first gap immediately
+            if (gaps.length > 0) {
+                console.log('Filling first gap:', gaps[0]);
+                fillFormFields(gaps[0].start, gaps[0].end);
+
+                // Schedule the rest with small delays
+                for (let i = 1; i < gaps.length; i++) {
+                    const currentGap = gaps[i];
+                    setTimeout(() => {
+                        console.log('Filling gap:', currentGap);
+                        const form = document.getElementById('day-work-log-form');
+                        if (form) {
+                            form.reset();
+                            fillFormFields(currentGap.start, currentGap.end);
+                        }
+                    }, i * 100);
                 }
-            }, i * 100);
+            }
         }
-    }
-}
-function createOnClickData(gaps) {
-    // Create a JavaScript array literal string without JSON quotes
-    return `[${gaps.map(gap => 
-        `{start:'${gap.start.toFormat('HH:mm')}',end:'${gap.end.toFormat('HH:mm')}'}`
-    ).join(',')}]`;
-}
-// Auto-fill gap times in the form
-function fillGap(startTime, endTime) {
-    fillFormFields(startTime, endTime);
-}
+        function createOnClickData(gaps) {
+            // Create a JavaScript array literal string without JSON quotes
+            return `[${gaps.map(gap =>
+                `{start:'${gap.start.toFormat('HH:mm')}',end:'${gap.end.toFormat('HH:mm')}'}`
+            ).join(',')}]`;
+        }
+        // Auto-fill gap times in the form
+        function fillGap(startTime, endTime) {
+            fillFormFields(startTime, endTime);
+        }
 
-// Update displayDayView to include suggestions
-function updateDisplayDayView() {
-    const originalDisplayDayView = displayDayView;
-    return function(dateString, updateView = true) {
-        originalDisplayDayView(dateString, updateView);
-        
-        // Add suggestions after the form
-        const date = DateTime.fromISO(dateString);
-        const dayLogs = workLogs.filter(log => {
-            const logDate = DateTime.fromISO(log.date);
-            return logDate && logDate.hasSame(date, 'day');
-        });
+        // Update displayDayView to include suggestions
+        function updateDisplayDayView() {
+            const originalDisplayDayView = displayDayView;
+            return function (dateString, updateView = true) {
+                originalDisplayDayView(dateString, updateView);
 
-        const gaps = findTimeGaps(dayLogs);
-        if (gaps.length > 0) {
-            const form = document.getElementById('day-work-log-form');
-            const suggestionHtml = generateSuggestionUI(gaps);
-            form.insertAdjacentHTML('beforebegin', suggestionHtml);
-        }
-    };
-}
-function calculateWorkHours(dayLogs) {
-    return dayLogs.reduce((total, log) => {
-        if (log.type === 'work') {
-            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-            // Calculate exact hours including minutes
-            const duration = endTime.diff(startTime, 'minutes').minutes / 60;
-            return total + duration;
-        }
-        return total;
-    }, 0);
-}
-function calculateDayPercentage(dayLogs) {
-    const FULL_DAY_MINUTES = 9 * 60; // 9 hours in minutes
-    const totalMinutes = dayLogs.reduce((sum, log) => {
-        if (log.type === 'work') {
-            const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
-            const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
-            return sum + endTime.diff(startTime, 'minutes').minutes;
-        }
-        return sum;
-    }, 0);
+                // Add suggestions after the form
+                const date = DateTime.fromISO(dateString);
+                const dayLogs = workLogs.filter(log => {
+                    const logDate = DateTime.fromISO(log.date);
+                    return logDate && logDate.hasSame(date, 'day');
+                });
 
-    return (totalMinutes / FULL_DAY_MINUTES) * 100;
-}
+                const gaps = findTimeGaps(dayLogs);
+                if (gaps.length > 0) {
+                    const form = document.getElementById('day-work-log-form');
+                    const suggestionHtml = generateSuggestionUI(gaps);
+                    form.insertAdjacentHTML('beforebegin', suggestionHtml);
+                }
+            };
+        }
+        function calculateWorkHours(dayLogs) {
+            return dayLogs.reduce((total, log) => {
+                if (log.type === 'work') {
+                    const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+                    const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+                    // Calculate exact hours including minutes
+                    const duration = endTime.diff(startTime, 'minutes').minutes / 60;
+                    return total + duration;
+                }
+                return total;
+            }, 0);
+        }
+        function calculateDayPercentage(dayLogs) {
+            const FULL_DAY_MINUTES = 9 * 60; // 9 hours in minutes
+            const totalMinutes = dayLogs.reduce((sum, log) => {
+                if (log.type === 'work') {
+                    const startTime = DateTime.fromFormat(log['start-time'], 'HH:mm');
+                    const endTime = DateTime.fromFormat(log['end-time'], 'HH:mm');
+                    return sum + endTime.diff(startTime, 'minutes').minutes;
+                }
+                return sum;
+            }, 0);
+
+            return (totalMinutes / FULL_DAY_MINUTES) * 100;
+        }
         function addRecurrenceFields(formId) {
             const form = document.getElementById(formId);
             const submitButton = form.querySelector('button[type="submit"]');
@@ -3367,64 +3459,64 @@ function calculateDayPercentage(dayLogs) {
         }
 
         // Initialize enhanced features
-// Initialize application when DOM is loaded
-// Initialize application when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Load initial data
-    lazyLoadWorkLogs();
-    workTemplates.loadTemplates();
-    recentLocations.load();
-    initializeViewSelector();
-    initializeGapHandlers();
-    // Store the original displayDayView
-    const originalDisplayDayView = displayDayView;
-    
-    // Create one enhanced function that includes all our additions
-    function enhancedDisplayDayView(dateString, updateView = true) {
-    // Call original first
-    originalDisplayDayView(dateString, updateView);
-    
-    const date = DateTime.fromISO(dateString);
-    const dayLogs = workLogs.filter(log => {
-        const logDate = DateTime.fromISO(log.date);
-        return logDate && logDate.hasSame(date, 'day');
-    });
+        // Initialize application when DOM is loaded
+        // Initialize application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load initial data
+            lazyLoadWorkLogs();
+            workTemplates.loadTemplates();
+            recentLocations.load();
+            initializeViewSelector();
+            initializeGapHandlers();
+            // Store the original displayDayView
+            const originalDisplayDayView = displayDayView;
 
-    const workHours = calculateWorkHours(dayLogs);
-    
-    // Only show suggestions if less than 9 hours
-    if (workHours < 9) {
-        const gapInfo = findTimeGaps(dayLogs);
-        if (gapInfo.suggestions.length > 0) {
-            const form = document.getElementById('day-work-log-form');
-            if (form) {
-                const suggestionHtml = generateSuggestionUI(gapInfo);
-                form.insertAdjacentHTML('beforebegin', suggestionHtml);
+            // Create one enhanced function that includes all our additions
+            function enhancedDisplayDayView(dateString, updateView = true) {
+                // Call original first
+                originalDisplayDayView(dateString, updateView);
+
+                const date = DateTime.fromISO(dateString);
+                const dayLogs = workLogs.filter(log => {
+                    const logDate = DateTime.fromISO(log.date);
+                    return logDate && logDate.hasSame(date, 'day');
+                });
+
+                const workHours = calculateWorkHours(dayLogs);
+
+                // Only show suggestions if less than 9 hours
+                if (workHours < 9) {
+                    const gapInfo = findTimeGaps(dayLogs);
+                    if (gapInfo.suggestions.length > 0) {
+                        const form = document.getElementById('day-work-log-form');
+                        if (form) {
+                            const suggestionHtml = generateSuggestionUI(gapInfo);
+                            form.insertAdjacentHTML('beforebegin', suggestionHtml);
+                        }
+                    }
+                }
+
+                addQuickActionsToForm();
+                addCopyPreviousButton();
+            }   // Replace the original function with our enhanced version
+            displayDayView = enhancedDisplayDayView;
+
+            // Initialize view
+            updateReport();
+
+            // Add keyboard shortcuts help
+            addKeyboardShortcutsHelp();
+
+            const timelineContainer = document.querySelector('.timeline-container');
+            if (timelineContainer) {
+                initializeTimelineInteractions(timelineContainer);
             }
-        }
-    }
-    
-    addQuickActionsToForm();
-    addCopyPreviousButton();
-}   // Replace the original function with our enhanced version
-    displayDayView = enhancedDisplayDayView;
-    
-    // Initialize view
-    updateReport();
-    
-    // Add keyboard shortcuts help
-    addKeyboardShortcutsHelp();
-    
-    const timelineContainer = document.querySelector('.timeline-container');
-    if (timelineContainer) {
-        initializeTimelineInteractions(timelineContainer);
-    }
-    
-    // Initialize dark mode
-    initializeDarkMode();
-});
+
+            
+           
+        });
     </script>
-<script src="navigation.js"></script>
+    <script src="navigation.js"></script>
 </body>
 
 </html>
