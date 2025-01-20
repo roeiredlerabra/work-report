@@ -820,7 +820,7 @@
             <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto"></div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+    
     <script>// Constants and Initial Setup
         const DateTime = luxon.DateTime;
         let workLogs = [];
@@ -2206,8 +2206,8 @@
         function initializeApp() {
             // Load stored data
             lazyLoadWorkLogs();
-            workTemplates.loadTemplates();
-            recentLocations.load();
+            //workTemplates.loadTemplates();
+            //recentLocations.load();
             initializeViewSelector();
             // Initialize view
             updateReport();
@@ -3396,7 +3396,7 @@
 
 
         });</script>
-    <script src="navigation.js"></script>
+   
 </body>
 
 </html>
